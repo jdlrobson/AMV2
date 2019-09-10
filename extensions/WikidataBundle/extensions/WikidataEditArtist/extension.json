@@ -1,0 +1,52 @@
+{
+	"name": "WikidataEditArtist",
+	"version": "0.0.0",
+	"author": [
+		"Your Name"
+	],
+	"url": "https://www.mediawiki.org/wiki/Extension:WikidataEditArtist",
+	"descriptionmsg": "WikidataEditArtist-desc",
+	"license-name": "MIT",
+	"type": "other",
+	"AutoloadClasses": {
+		"WikidataEditArtistHooks": "WikidataEditArtist.hooks.php",
+		"SpecialWikidataEditArtist": "specials/SpecialWikidataEditArtist.php"
+	},
+	"config": {
+		"WikidataEditArtistEnableFoo": true
+	},
+	"ExtensionMessagesFiles": {
+		"WikidataEditArtistAlias": "WikidataEditArtist.i18n.alias.php"
+	},
+	"Hooks": {
+		"NameOfHook": [
+			"WikidataEditArtistHooks::onNameOfHook"
+		]
+	},
+	"MessagesDirs": {
+		"WikidataEditArtist": [
+			"i18n"
+		]
+	},
+	"ResourceModules": {
+		"ext.WikidataEditArtist.foo": {
+			"scripts": [
+				"modules/ext.WikidataEditArtist.js",
+				"modules/ext.WikidataEditArtist.foo.js"
+			],
+			"styles": [
+				"modules/ext.WikidataEditArtist.foo.css"
+			],
+			"messages": [],
+			"dependencies": []
+		}
+	},
+	"ResourceFileModulePaths": {
+		"localBasePath": "",
+		"remoteExtPath": "WikidataEditArtist"
+	},
+	"SpecialPages": {
+		"WikidataEditArtist": "SpecialWikidataEditArtist"
+	},
+	"manifest_version": 1
+}

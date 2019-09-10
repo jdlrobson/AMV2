@@ -1,0 +1,52 @@
+{
+	"name": "WikidataQuery",
+	"version": "0.0.0",
+	"author": [
+		"Your Name"
+	],
+	"url": "https://www.mediawiki.org/wiki/Extension:WikidataQuery",
+	"descriptionmsg": "WikidataQuery-desc",
+	"license-name": "MIT",
+	"type": "other",
+	"AutoloadClasses": {
+		"WikidataQueryHooks": "WikidataQuery.hooks.php",
+		"SpecialWikidataQuery": "specials/SpecialWikidataQuery.php"
+	},
+	"config": {
+		"WikidataQueryEnableFoo": true
+	},
+	"ExtensionMessagesFiles": {
+		"WikidataQueryAlias": "WikidataQuery.i18n.alias.php"
+	},
+	"Hooks": {
+		"NameOfHook": [
+			"WikidataQueryHooks::onNameOfHook"
+		]
+	},
+	"MessagesDirs": {
+		"WikidataQuery": [
+			"i18n"
+		]
+	},
+	"ResourceModules": {
+		"ext.WikidataQuery.foo": {
+			"scripts": [
+				"modules/ext.WikidataQuery.js",
+				"modules/ext.WikidataQuery.foo.js"
+			],
+			"styles": [
+				"modules/ext.WikidataQuery.foo.css"
+			],
+			"messages": [],
+			"dependencies": []
+		}
+	},
+	"ResourceFileModulePaths": {
+		"localBasePath": "",
+		"remoteExtPath": "WikidataQuery"
+	},
+	"SpecialPages": {
+		"WikidataQuery": "SpecialWikidataQuery"
+	},
+	"manifest_version": 1
+}

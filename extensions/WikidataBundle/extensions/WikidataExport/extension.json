@@ -1,0 +1,52 @@
+{
+	"name": "WikidataExport",
+	"version": "0.0.0",
+	"author": [
+		"Your Name"
+	],
+	"url": "https://www.mediawiki.org/wiki/Extension:WikidataExport",
+	"descriptionmsg": "WikidataExport-desc",
+	"license-name": "MIT",
+	"type": "other",
+	"AutoloadClasses": {
+		"WikidataExportHooks": "WikidataExport.hooks.php",
+		"SpecialWikidataExport": "specials/SpecialWikidataExport.php"
+	},
+	"config": {
+		"WikidataExportEnableFoo": true
+	},
+	"ExtensionMessagesFiles": {
+		"WikidataExportAlias": "WikidataExport.i18n.alias.php"
+	},
+	"Hooks": {
+		"NameOfHook": [
+			"WikidataExportHooks::onNameOfHook"
+		]
+	},
+	"MessagesDirs": {
+		"WikidataExport": [
+			"i18n"
+		]
+	},
+	"ResourceModules": {
+		"ext.WikidataExport.foo": {
+			"scripts": [
+				"modules/ext.WikidataExport.js",
+				"modules/ext.WikidataExport.foo.js"
+			],
+			"styles": [
+				"modules/ext.WikidataExport.foo.css"
+			],
+			"messages": [],
+			"dependencies": []
+		}
+	},
+	"ResourceFileModulePaths": {
+		"localBasePath": "",
+		"remoteExtPath": "WikidataExport"
+	},
+	"SpecialPages": {
+		"WikidataExport": "SpecialWikidataExport"
+	},
+	"manifest_version": 1
+}
