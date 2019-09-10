@@ -151,47 +151,51 @@ class Artist {
     $error = false;
   
     $values = [];
-  
-    if (isset($output->query->pages))
-    foreach ($output->query->pages as $page) {
-      $content = $page->revisions[0]->{'*'};
-      $lines = explode("\n", $content);
-      foreach ($lines as $line) {
-        if ($line != '{{Artiste' && $line != '<Artist' && $line != '}}') {
-          if (preg_match('/#^[\s]*\|[\s]*[^=]*[\s]*=[\s]*/', $line)) {
-            $error  =true;
-            break;
-          } else
-          if (preg_match('/^(.*)=(.*)$/', $line)) {
-            $parameter = preg_replace('/^(.*)=.*$/', '$1', $line);
-            $parameter = strtolower(str_replace(' ', '_', $parameter));
-            $parameter = str_replace('é', 'e', $parameter);
-            $value = preg_replace('/^.*=\"(.*)\"$/', '$1', $line);
-            $value = str_replace('"', '\"', $value);
 
-            if (!is_null($multiple) && array_key_exists($parameter, $multiple)) {
-              $value = str_replace(';', '\;', $value);
-              $value = str_replace(', ', ';', $value);
+    if (is_null($output->query->pages->{'-1'})) {
+      foreach ($output->query->pages as $page) {
+        $content = $page->revisions[0]->{'*'};
+        $lines = explode("\n", $content);
+        foreach ($lines as $line) {
+          if ($line != '{{Artiste' && $line != '<Artist' && $line != '}}') {
+            if (preg_match('/#^[\s]*\|[\s]*[^=]*[\s]*=[\s]*/', $line)) {
+              $error  =true;
+              break;
+            } else
+            if (preg_match('/^(.*)=(.*)$/', $line)) {
+              $parameter = preg_replace('/^(.*)=.*$/', '$1', $line);
+              $parameter = strtolower(str_replace(' ', '_', $parameter));
+              $parameter = str_replace('é', 'e', $parameter);
+              $value = preg_replace('/^.*=\"(.*)\"$/', '$1', $line);
+              $value = str_replace('"', '\"', $value);
+
+              if (!is_null($multiple) && array_key_exists($parameter, $multiple)) {
+                $value = str_replace(';', '\;', $value);
+                $value = str_replace(', ', ';', $value);
+              }
+    
+              $values[$parameter] = $value;
             }
-  
-            $values[$parameter] = $value;
-          }
-          else {
-            $parameter = preg_replace('/^[\s]*\|[\s]*([^=]*)[\s]*=[\s]*.*$/', '$1', $line);
-            $parameter = strtolower(str_replace(' ', '_', $parameter));
-            $parameter = str_replace('é', 'e', $parameter);
-            $value = preg_replace('/^[\s]*\|[\s]*[^=]*[\s]*=[\s]*(.*)$/', '$1', $line);
-            $value = str_replace('"', '\"', $value);
-  
-            if (!is_null($multiple) && array_key_exists($parameter, $multiple)) {
-              $value = str_replace(';', '\;', $value);
-              $value = str_replace(', ', ';', $value);
+            else {
+              $parameter = preg_replace('/^[\s]*\|[\s]*([^=]*)[\s]*=[\s]*.*$/', '$1', $line);
+              $parameter = strtolower(str_replace(' ', '_', $parameter));
+              $parameter = str_replace('é', 'e', $parameter);
+              $value = preg_replace('/^[\s]*\|[\s]*[^=]*[\s]*=[\s]*(.*)$/', '$1', $line);
+              $value = str_replace('"', '\"', $value);
+    
+              if (!is_null($multiple) && array_key_exists($parameter, $multiple)) {
+                $value = str_replace(';', '\;', $value);
+                $value = str_replace(', ', ';', $value);
+              }
+    
+              $values[$parameter] = $value;
             }
-  
-            $values[$parameter] = $value;
           }
         }
       }
+      $values['found'] = true;
+    } else {
+      $values['found'] = false;
     }
 
     $values['article'] = $article;
@@ -250,10 +254,15 @@ class Artist {
   }
 
   public static function render_artists_for_artwork($artists_wd, $artists_am) {
+    $leftovers = [];
     foreach (explode(';',$artists_am) as $artist)
       if ($artist != '') {
         $data = self::convert_artist($artist);
-        self::render_artists_for_artwork_am($artist, $data);
+        if ($data['found']) {
+          self::render_artists_for_artwork_am($artist, $data);
+        } else {
+          array_push($leftovers, $artist);
+        }
       }
 
     if (is_null($artists_am) || $artists_am == '')
@@ -261,6 +270,57 @@ class Artist {
       foreach ($artists_wd as $artist) {
         $artist_id = $artist->mainsnak->datavalue->value->id;
 
+        // Recherche si l'artiste possède déjà une notice am
+        $query = 'SELECT article FROM tmp_artist WHERE wikidata="' . $artist_id . '" LIMIT 1';
+        $result = query($query);
+        $row = $result->fetch_assoc();
+
+        if (!is_null($row)) {
+          $data = self::convert_artist($row['article']);
+          self::render_artists_for_artwork_am($row['article'], $data);
+        } else {
+          $artist_data = self::get_props($artist_id);
+          $artist_ids = self::get_ids($artist_data);
+          array_push($artist_ids, $artist_id);
+          $artist_labels = self::get_labels($artist_ids);
+
+          $image_thumb = MISSING_IMAGE_FILE;
+          $image_url = MISSING_IMAGE_LINK;
+
+          if (isset($artist_data->entities->{$artist_id}->claims->P18)) {
+            $image_url = 'https://commons.wikimedia.org/wiki/File:' . $artist_data->entities->{$artist_id}->claims->P18[0]->mainsnak->datavalue->value;
+            $tmp = self::get_image_commons($artist_data->entities->{$artist_id}->claims->P18[0]->mainsnak->datavalue->value);
+            foreach($tmp->query->pages as $image)
+              $image_thumb = $image->imageinfo[0]->thumburl;
+          }
+
+          ?>
+          <h3>
+            <span class="mw-headline" id="">
+              <a href="<?php print ATLASMUSEUM_PATH . 'Spécial:WikidataArtist/' . $artist_id; ?>" title=""><?php (isset($artist_labels[$artist_id]) ? print $artist_labels[$artist_id] : print $artist_id); ?></a>
+            </span>
+          </h3>
+          <p style="text-align:center">
+            <a href="<?php print $image_url; ?>" class="image">
+              <img alt="" src="<?php print $image_thumb; ?>" style="width:auto;max-width224px;max-height:149px" />
+            </a>
+          </p>
+          <table class="wikitable">
+            <?php
+              self::render_claim_wd_from_artwork($artist_data->entities->{$artist_id}->claims, 'P19', $artist_labels, 'Lieu de naissance');
+              self::render_claim_wd_from_artwork($artist_data->entities->{$artist_id}->claims, 'P569', $artist_labels, 'Date de naissance');
+              self::render_claim_wd_from_artwork($artist_data->entities->{$artist_id}->claims, 'P20', $artist_labels, 'Lieu de décès');
+              self::render_claim_wd_from_artwork($artist_data->entities->{$artist_id}->claims, 'P570', $artist_labels, 'Date de décès');
+              self::render_claim_wd_from_artwork($artist_data->entities->{$artist_id}->claims, 'P27', $artist_labels, 'Pays de nationalité');
+            ?>
+          </table>
+          <?php
+        }
+      }
+    }
+
+    if (sizeof($leftovers) > 0) {
+      foreach ($leftovers as $artist_id) {
         // Recherche si l'artiste possède déjà une notice am
         $query = 'SELECT article FROM tmp_artist WHERE wikidata="' . $artist_id . '" LIMIT 1';
         $result = query($query);

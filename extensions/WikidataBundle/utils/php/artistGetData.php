@@ -36,7 +36,7 @@ class ArtistGetData {
   public static function get_ids($data) {
     $ids = [];
 
-    if (is_null($data->entities))
+    if (!is_null($data->entities))
       foreach ($data->entities as $q)
         foreach ($q->claims as $property=>$value)
           foreach ($value as $claim)
