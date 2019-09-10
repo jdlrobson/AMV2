@@ -312,7 +312,7 @@ class ArtworkGetData {
                 $data['label'] = $value;
                 break;
               case 'site_coordonnees':
-                $c = explode(', ', $value);
+                $c = preg_split('/[\s]*,[\s]*/', $value);
                 $data['P625'] = [
                   'latitude' => floatval($c[0]),
                   'longitude' => floatval($c[1])

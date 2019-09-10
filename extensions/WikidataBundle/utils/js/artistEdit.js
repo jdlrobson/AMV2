@@ -291,7 +291,7 @@ publish = function() {
     const ret = [];
     for (let p in params)
      ret.push(encodeURIComponent(p) + '=' + encodeURIComponent(params[p]));
-    const url = 'http://publicartmuseum.net/tmp/w/Wikidata/php/updateDB.php?' + ret.join('&')
+    const url = 'http://publicartmuseum.net/tmp/w/extensions/WikidataBundle/utils/php/updateDB.php?' + ret.join('&')
     console.log(url)
     $.get(url, function(res) {
       console.log(res)
@@ -307,7 +307,7 @@ publish = function() {
     const ret = [];
     for (let p in params)
      ret.push(encodeURIComponent(p) + '=' + encodeURIComponent(params[p]));
-    const url = 'http://publicartmuseum.net/tmp/w/Wikidata/php/updateDB.php?' + ret.join('&')
+    const url = 'http://publicartmuseum.net/tmp/w/extensions/WikidataBundle/utils/php/updateDB.php?' + ret.join('&')
     console.log(url)
     $.get(url, function(res) {
       console.log(res)

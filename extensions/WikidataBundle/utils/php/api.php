@@ -25,6 +25,8 @@ class Api {
         break;
     }
     $url = sprintf("%s?%s", $url, http_build_query($data));
+
+    $url = str_replace('%5Cn', '%0A', $url);
     curl_setopt($curl, CURLOPT_URL, $url);
     return json_decode(curl_exec($curl));
   }
@@ -135,6 +137,24 @@ class Api {
     //exit;
     return json_decode($data, false);
     */
+  }
+
+  public static function convert_to_wiki_text($text) {
+    $text = str_replace('\\n', '\n', $text);
+
+    $data = self::call_api(array(
+      'action' => 'parse',
+      'text' => $text,
+      'contentmodel' => 'wikitext',
+      'prop' => 'text',
+      'disablelimitreport' => '1'
+    ));
+
+    $result = $data->parse->text->{'*'};
+    $result = str_replace('<div class="mw-parser-output">', '', $result);
+    $result = preg_replace('/<\/div>$/', '', $result);
+
+    return $result;
   }
 
 }

@@ -17,7 +17,7 @@ class Collection {
 
     $articles = explode(';', $param['notices']);
     $articlesList = join('","', $articles);
-    $query = 'SELECT DISTINCT article,title,artist,latitude,longitude,`date`,wikidata FROM tmp_library_2 WHERE article IN ("' . $articlesList . '") OR wikidata IN ("' . $articlesList . '") ORDER BY article,artist';
+    $query = 'SELECT DISTINCT article,title,artist,latitude,longitude,`date`,wikidata,nature FROM tmp_library_2 WHERE article IN ("' . $articlesList . '") OR wikidata IN ("' . $articlesList . '") ORDER BY article,artist';
     $result = query($query);
 
     while ($row = $result->fetch_row()) {
@@ -29,7 +29,8 @@ class Collection {
         'longitude' => (double)$row[4],
         'date' => $row[5],
         'wikidata' => $row[6],
-        'origin' => 'atlasmuseum'
+        'origin' => 'atlasmuseum',
+        'nature' => $row[7]
       ];
 
       $artists = explode(';', $row[2]);
@@ -89,7 +90,8 @@ class Collection {
           'longitude' => null,
           'date' => '',
           'wikidata' => $q,
-          'origin' => 'wikidata'
+          'origin' => 'wikidata',
+          'nature' => 'wikidata'
         ];
         if (array_key_exists('qLabel', $artwork)) {
           $data['title'] = $artwork->qLabel->value;
@@ -130,7 +132,7 @@ class Collection {
     if ($param['description']) {
       ?>
         <div class="description">
-          <?php print $param['description']; ?>
+          <?php print API::convert_to_wiki_text($param['description']); ?>
         </div>
       <?php
     }
@@ -138,13 +140,20 @@ class Collection {
     if ($param['institution']) {
       ?>
         <div class="institution">
-          <?php print $param['institution']; ?>
+          <?php print API::convert_to_wiki_text($param['institution']); ?>
         </div>
       <?php
     }
 
     ?>
     <div class="mapCtnr dalm">
+      <div id="map" style="height:400px">
+        <div id="mapData" data-artworks="<?php print htmlspecialchars(json_encode($artworks), ENT_QUOTES, 'UTF-8'); ?>" />
+      </div>
+      <div id="map-popup" class="ol-popup" class="popupOeuvre">
+        <a href="#" id="map-popup-closer" class="ol-popup-closer"></a>
+        <p id="map-popup-content"></p>
+      </div>
     </div>
 
     <div class="homeCtnr dalm">
@@ -200,172 +209,13 @@ class Collection {
         </tbody>
       </table>
     </div>
-    <?php
-/*
-    if ($wikidata) {
-      if (array_key_exists($q, $labels)) {
-        $artworkTitle = $labels[$q];
-        ?>
-          <script>document.getElementById('firstHeading').getElementsByTagName('span')[0].textContent = "<?php print $artworkTitle; ?>"</script>
-        <?php
-      }
-      ?>
-      <div class="import">
-        <a href="<?php print ATLASMUSEUM_PATH; ?>Spécial:WikidataEdit/<?php print $q; ?>">
-          <img src="skins/AtlasMuseum/resources/images/hmodify.png" />
-          Importer cette œuvre dans atlasmuseum
-        </a>
-      </div>
-      <?php
-    } else {
-      ?>
-      <div class="import">
-        <a href="<?php print ATLASMUSEUM_PATH; ?>Spécial:WikidataExport/<?php print $_GET['title']; ?>">
-          <img src="skins/AtlasMuseum/resources/images/hmodify.png" />Exporter cette œuvre sur Wikidata
-        </a>
-      </div>
-      <?php
-    }
-    ?>
-    <script type="text/javascript" src="<?php print ATLASMUSEUM_UTILS_FULL_PATH_JS; ?>artwork.js"></script>
-    <div class="dalm">
-      <div class="topCtnr">
-        <?php
-          self::render_image($data->entities->{$q}->claims, 'P18', $param, 'image_principale');
-          self::render_map($lat, $lng);
-        ?>
-      </div>
-      <?php
-        if (isset($param['notice_augmentee'])) {
-          ?>
-            <div class="noticePlus noticePlusExpanded">
-              <h2 onclick="toggleNoticePlus(this)"> <span class="mw-headline" id="Notice.2B"> Notice+ </span></h2>
-              <div>
-                <?php print str_replace("&quot;", "\"", str_replace("\\n", "<br />", $param['notice_augmentee'])); ?>
-              </div>
-            </div>
-          <?php
-        }
-      ?>
-      <div class="ibCtnr">
-        <div class="ibOeuvre">
-          <h2 <?php if (isset($param['notice_augmentee'])) print 'onclick="toggleNoticePlusHeader(this)"'; ?>> <span class="mw-headline" id=".C5.92uvre"> Œuvre </span></h2>
-          <table class="wikitable" style="table">
-            <?php
-              self::render_title($data->entities->{$q}->labels, ['fr', 'en'], $param, 'titre', 'Titre', false);
-              self::render_claim_am($param, 'sous_titre', 'Sous-titre', true);
-              self::render_claim_am($param, 'description', 'Description', true);
-              self::render_claim2($data->entities->{$q}->claims, 'P571', $labels, $param, 'inauguration', 'Date', 'Date');
-              self::render_claim_am($param, 'restauration', 'Date de restauration', false);
-              self::render_claim_am($param, 'fin', 'Date de fin', false);
-              self::render_claim_am($param, 'precision_date', 'Précision sur les dates', false);
-              self::render_claim_am($param, 'nature', 'Nature', false);
-              self::render_claim_am($param, 'programme', 'Procédure', false);
-              self::render_claim_am($param, 'numero_inventaire', 'Numéro d\'inventaire', false);
-              self::render_claim_am($param, 'contexte_production', 'Contexte de production', true);
-              self::render_claim_am($param, 'conservation', 'État de conservation', false);
-              self::render_claim_am($param, 'precision_etat_conservation', 'Précision sur l\'état de conservation', false);
-              self::render_claim_am($param, 'autre_precision_etat_conservation', 'Autres précisions sur l\'état de conservation', false);
-              self::render_claim_am($param, 'periode_art', 'Période', false);
-              self::render_claim2($data->entities->{$q}->claims, 'P135', $labels, $param, 'mouvement_artistes', 'Mouvement', 'Mouvements');
-              self::render_claim_am($param, 'precision_mouvement_artistes', 'Précision sur le mouvement', false);
-              self::render_claim2($data->entities->{$q}->claims, 'P31', $labels, $param, 'type_art', 'Domaine', 'Domaines');
-              self::render_claim_am($param, 'precision_type_art', 'Précision sur le domaine', false);
-              self::render_claim2($data->entities->{$q}->claims, 'P462', $labels, $param, 'couleur', 'Couleur', 'Couleurs');
-              self::render_claim_am($param, 'precision_couleur', 'Précision sur les couleurs', false);
-              self::render_claim2($data->entities->{$q}->claims, 'P186', $labels, $param, 'materiaux', 'Matériau', 'Matériaux');
-              self::render_claim_am($param, 'precision_materiaux', 'Précision sur les matériaux', false);
-              self::render_claim_am($param, 'techniques', 'Techniques', false);
-              self::render_claim_am($param, 'hauteur', 'Hauteur (m)', false);
-              self::render_claim_am($param, 'longueur', 'Profondeur (m)', false);
-              self::render_claim_am($param, 'largeur', 'Largeur (m)', false);
-              self::render_claim_am($param, 'diametre', 'Largeur (m)', false);
-              self::render_claim_am($param, 'surface', 'Surface (m²)', false);
-              self::render_claim_am($param, 'precision_dimensions', 'Précision sur les dimensions', false);
-              self::render_claim_am($param, 'symbole', 'Références', false);
-              self::render_claim2($data->entities->{$q}->claims, 'P921', $labels, $param, 'forme', 'Sujet représenté', 'Sujets représentés');
-              self::render_claim_am($param, 'mot_cle', 'Mots clés', false);
-              self::render_claim_am($param, 'influences', 'Influences', false);
-              self::render_claim_am($param, 'a_influence', 'A influencé', false);
-              self::render_claim2($data->entities->{$q}->claims, 'P88', $labels, $param, 'commanditaires', 'Commanditaire', 'Commanditaires');
-              self::render_claim2($data->entities->{$q}->claims, 'P1640', $labels, $param, 'commissaires', 'Commissaire', 'Commissaires');
-              self::render_claim_am($param, 'partenaires_publics', 'Partenaires publics', false);
-              self::render_claim_am($param, 'partenaires_prives', 'Partenaires privés', false);
-              self::render_claim_am($param, 'collaborateurs', 'Collaborateurs', false);
-              self::render_claim_am($param, 'maitrise_oeuvre', 'Maîtrise d\'œuvre', false);
-              self::render_claim_am($param, 'maitrise_oeuvre_deleguee', 'Maîtrise d\'œuvre déléguée', false);
-              self::render_claim_am($param, 'maitrise_ouvrage', 'Maîtrise d\'ouvrage', false);
-              self::render_claim_am($param, 'maitrise_ouvrage_deleguee', 'Maîtrise d\'ouvrage déléguée', false);
-              self::render_claim_am($param, 'proprietaire', 'Propriétaire', false);
-            ?>
-          </table>
-        </div>
-        <div class="ibSite">
-          <h2 <?php if (isset($param['notice_augmentee'])) print 'onclick="toggleNoticePlusHeader(this)"'; ?>> <span class="mw-headline" id="Site"> Site </span></h2>
-          <table class="wikitable" style="table">
-            <?php
-              self::render_claim2($data->entities->{$q}->claims, 'P276', $labels, $param, 'site_nom', 'Lieu', 'Lieux');
-              self::render_claim_am($param, 'site_lieu_dit', 'Lieu-dit', false);
-              self::render_claim_am($param, 'site_adresse', 'Adresse', false);
-              self::render_claim_am($param, 'site_code_postal', 'Code postal', false);
-              self::render_claim2($data->entities->{$q}->claims, 'P131', $labels, $param, 'site_ville', 'Ville', 'Villes');
-              self::render_claim_am($param, 'site_departement', 'Département', false);
-              self::render_claim_am($param, 'site_region', 'Région', false);
-              self::render_claim2($data->entities->{$q}->claims, 'P17', $labels, $param, 'site_pays', 'Pays', 'Pays');
-              self::render_claim_am($param, 'site_details', 'Détails sur le site', true);
-              self::render_claim_am($param, 'site_acces', 'Accès', false);
-              self::render_claim_am($param, 'site_visibilite', 'Visibilité', false);
-              self::render_claim2($data->entities->{$q}->claims, 'P2846', $labels, $param, 'site_pmr', 'PMR', 'PMR');
-              self::render_claim_am($param, 'site_urls', 'URLs', false);
-              self::render_claim_am($param, 'site_pois', 'Points d\'intérêt', false);
-              self::render_claim_coords($lat, $lng, 'Latitude/Longitude');
-            ?>
-          </table>
-        </div>
-        <div class="ibArtiste">
-          <h2 <?php if (isset($param['notice_augmentee'])) print 'onclick="toggleNoticePlusHeader(this)"'; ?>> <span class="mw-headline" id="Artiste"> Artiste<?php (sizeof($data->entities->{$q}->claims->P170)>1 ? 's' : '') ?> </span></h2>
-          <?php
-            self::render_artists($data->entities->{$q}->claims->P170, $param['artiste']);
-          ?>
-        </div>
-        <div class="clearfix"></div>
-      </div>
-      <?php
-        if (isset($param['source'])) {
-        ?>
-          <div class="mapCtnr">
-            <b>Sources :</b><br />
-            <?php print $param['source']; ?>
-          </div>
-        <?php
-        }
-        if ($q != '') {
-          ?>
-            <div class="wikidataLink">
-              <a href="https://www.wikidata.org/wiki/<?php print $q; ?>" target="_blank">
-                <img src="skins/AtlasMuseum/resources/hwikidata.png" />
-                <span>Voir cette œuvre sur Wikidata</span>
-              </a>
-            </div>
-          <?php
-        }
-      ?>
-      <div class="atlasCtnr">
-        <h2> <span class="mw-headline" id="ATLAS"> ATLAS </span></h2>
-        <?php
-          self::render_galerie($param, 'image_galerie_construction', 'Construction / installation / Montage');
-          self::render_galerie($param, 'image_galerie_autre', 'Autres prises de vues');
-          self::render_other_works($q, $data->entities->{$q}->claims->P170, $param);
-          self::render_near_sites($q, $lat, $lng);
-          self::render_near_artworks($q, $lat, $lng);
-        ?>
-      </div>
-    </div>
+    <script type="text/javascript" src="<?php print ATLASMUSEUM_UTILS_FULL_PATH_JS; ?>jquery.min.js"></script>
+    <script type="text/javascript" src="<?php print ATLASMUSEUM_UTILS_FULL_PATH_JS; ?>jquery-ui.min.js"></script>
     <script src="<?php print OPEN_LAYER_JS; ?>"></script>
+    <script type="text/javascript" src="<?php print ATLASMUSEUM_UTILS_FULL_PATH_JS; ?>mapCollection.js"></script>
     <link rel="stylesheet" href="<?php print OPEN_LAYER_CSS; ?>" type="text/css">
-    <link rel="stylesheet" href="<?php print ATLASMUSEUM_UTILS_FULL_PATH_CSS; ?>artwork.css">
+    <link rel="stylesheet" href="<?php print ATLASMUSEUM_UTILS_FULL_PATH_CSS; ?>map.css" type="text/css">
     <?php
-    */
 
     $contents = ob_get_contents();
     ob_end_clean();
