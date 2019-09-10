@@ -1,0 +1,29 @@
+{
+	"name": "ArtworkPage",
+	"author": [
+		"Nikola Smolenski",
+		"Brion Vibber",
+		"Steve Sanbeg"
+	],
+	"license-name": "CC0-1.0",
+	"url": "https://www.mediawiki.org/wiki/Extension:ArtworkPage",
+	"descriptionmsg": "artworkPage-desc",
+	"type": "parserhook",
+	"MessagesDirs": {
+		"ArtworkPage": [
+			"i18n"
+		]
+	},
+	"Hooks": {
+		"ParserFirstCallInit": [
+			"ArtworkPage::init"
+		]
+	},
+	"AutoloadClasses": {
+		"ArtworkPage": "ArtworkPage.class.php"
+	},
+	"ParserTestFiles": [
+		"artworkPageParserTests.txt"
+	],
+	"manifest_version": 1
+}

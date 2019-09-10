@@ -1,0 +1,142 @@
+# Force the test runner to ensure the extension is loaded
+!! hooks
+artistPage
+!! endhooks
+
+#Regression tests for existing functionality, to ensure nothing was broken.
+!! test
+<artistPage>
+!! input
+<artistPage>
+this
+is
+a
+test
+</artistPage>
+!! result
+<div class="artistPage">
+<p>this<br />
+is<br />
+a<br />
+test
+</p>
+</div>
+
+!! end
+
+!!test
+  <artistPage> with recursive parsing
+!!input
+<artistPage>
+this ''is'' a '''test'''
+</artistPage>
+!! result
+<div class="artistPage">
+<p>this <i>is</i> a <b>test</b>
+</p>
+</div>
+
+!!end
+
+
+!!test
+  <artistPage> with leading whitespace
+!!input
+<artistPage>
+
+   test
+
+</artistPage>
+!! result
+<div class="artistPage">
+<p><br />
+&#160;&#160;&#160;test<br />
+</p>
+</div>
+
+!!end
+
+!!test
+Horizontal rule
+!!input
+<artistPage>
+some
+-----
+text
+</artistPage>
+!!result
+<div class="artistPage">
+<p>some<br />
+</p>
+<hr /><br />
+<p>text
+</p>
+</div>
+
+!!end
+
+#test for new artistPage/nowiki feature; should fail without new enhancement.
+!! test 2
+example of <nowiki> without <artistPage>
+!!options
+disabled
+!! input
+<nowiki>
+this
+is
+a
+test
+</nowiki>
+!! result
+<p>
+this
+is
+a
+test
+
+</p>
+!! end
+
+!! test
+  nested <artistPage><nowiki>
+!! input
+<artistPage><nowiki>
+this
+is
+a
+test
+</nowiki></artistPage>
+!! result
+<div class="artistPage">
+<p><br />
+this<br />
+is<br />
+a<br />
+test<br />
+
+</p>
+</div>
+
+!!end
+
+!! test 5
+  nested <artistPage><nowiki> with formatting
+!! input
+<artistPage><nowiki>
+this
+'''is'''
+a
+test
+</nowiki></artistPage>
+!! result
+<div class="artistPage">
+<p><br />
+this<br />
+'''is'''<br />
+a<br />
+test<br />
+
+</p>
+</div>
+
+!! end

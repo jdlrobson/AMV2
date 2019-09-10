@@ -1,0 +1,52 @@
+{
+	"name": "WikidataEdit",
+	"version": "0.0.0",
+	"author": [
+		"Your Name"
+	],
+	"url": "https://www.mediawiki.org/wiki/Extension:WikidataEdit",
+	"descriptionmsg": "WikidataEdit-desc",
+	"license-name": "MIT",
+	"type": "other",
+	"AutoloadClasses": {
+		"WikidataEditHooks": "WikidataEdit.hooks.php",
+		"SpecialWikidataEdit": "specials/SpecialWikidataEdit.php"
+	},
+	"config": {
+		"WikidataEditEnableFoo": true
+	},
+	"ExtensionMessagesFiles": {
+		"WikidataEditAlias": "WikidataEdit.i18n.alias.php"
+	},
+	"Hooks": {
+		"NameOfHook": [
+			"WikidataEditHooks::onNameOfHook"
+		]
+	},
+	"MessagesDirs": {
+		"WikidataEdit": [
+			"i18n"
+		]
+	},
+	"ResourceModules": {
+		"ext.WikidataEdit.foo": {
+			"scripts": [
+				"modules/ext.WikidataEdit.js",
+				"modules/ext.WikidataEdit.foo.js"
+			],
+			"styles": [
+				"modules/ext.WikidataEdit.foo.css"
+			],
+			"messages": [],
+			"dependencies": []
+		}
+	},
+	"ResourceFileModulePaths": {
+		"localBasePath": "",
+		"remoteExtPath": "WikidataEdit"
+	},
+	"SpecialPages": {
+		"WikidataEdit": "SpecialWikidataEdit"
+	},
+	"manifest_version": 1
+}
