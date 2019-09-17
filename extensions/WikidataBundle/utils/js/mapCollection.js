@@ -4,8 +4,6 @@ var clusterSource;
 document.addEventListener("DOMContentLoaded", function(event) {
   mapData = JSON.parse($('#mapData').attr("data-artworks"))
 
-  console.log(mapData)
-
   features = [];
 
   for (var key in mapData) 

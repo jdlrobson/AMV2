@@ -15,7 +15,7 @@ class Collection {
 
     // 1. Récupération de ce qui existe sur atlasmuseum
 
-    $articles = explode(';', $param['notices']);
+    $articles = preg_split('/[\s]*;[\s]*/', $param['notices']);
     $articlesList = join('","', $articles);
     $query = 'SELECT DISTINCT article,title,artist,latitude,longitude,`date`,wikidata,nature FROM tmp_library_2 WHERE article IN ("' . $articlesList . '") OR wikidata IN ("' . $articlesList . '") ORDER BY article,artist';
     $result = query($query);
@@ -129,6 +129,10 @@ class Collection {
 
     ob_start();
 
+    ?>
+    <script type="text/javascript" src="<?php print ATLASMUSEUM_UTILS_FULL_PATH_JS; ?>collection.js"></script>
+    <?php
+
     if ($param['description']) {
       ?>
         <div class="description">
@@ -209,6 +213,17 @@ class Collection {
         </tbody>
       </table>
     </div>
+
+    <?php
+    if ($param['texte']) {
+      ?>
+        <div class="texte">
+          <?php print API::convert_to_wiki_text($param['texte']); ?>
+        </div>
+      <?php
+    }
+    ?>
+
     <script type="text/javascript" src="<?php print ATLASMUSEUM_UTILS_FULL_PATH_JS; ?>jquery.min.js"></script>
     <script type="text/javascript" src="<?php print ATLASMUSEUM_UTILS_FULL_PATH_JS; ?>jquery-ui.min.js"></script>
     <script src="<?php print OPEN_LAYER_JS; ?>"></script>

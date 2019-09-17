@@ -18,6 +18,7 @@ wfLoadExtension(WIKIDATA_BUNDLE_EXTENSIONS_PATH . 'Wikidata'); // Page d'une œu
 wfLoadExtension(WIKIDATA_BUNDLE_EXTENSIONS_PATH . 'WikidataArtist'); // Page d'un artiste provenant de Wikidata
 wfLoadExtension(WIKIDATA_BUNDLE_EXTENSIONS_PATH . 'WikidataEdit'); // Édition d'une œuvre
 wfLoadExtension(WIKIDATA_BUNDLE_EXTENSIONS_PATH . 'WikidataEditArtist'); // Édition d'un artiste
+wfLoadExtension(WIKIDATA_BUNDLE_EXTENSIONS_PATH . 'WikidataEditCollection'); // Édition d'une collection
 wfLoadExtension(WIKIDATA_BUNDLE_EXTENSIONS_PATH . 'WikidataExport'); // Export d'une œuvre
 wfLoadExtension(WIKIDATA_BUNDLE_EXTENSIONS_PATH . 'WikidataArtistExport'); // Export d'un artiste
 wfLoadExtension(WIKIDATA_BUNDLE_EXTENSIONS_PATH . 'WikidataQuery'); // Page de requête
