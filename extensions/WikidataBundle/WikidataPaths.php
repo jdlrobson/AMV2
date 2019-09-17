@@ -23,9 +23,11 @@ function define_value($path_name, $value) {
 define_value('BASE_AM', 'http://publicartmuseum.net/');
 define_value('BASE_ROOT', $_SERVER['DOCUMENT_ROOT'] . '/');
 define_value('BASE_FOLDER', 'tmp/w/');
+#define_value('BASE_FOLDER', 'w/');
 define_value('ATLASMUSEUM_MAIN_PATH', BASE_ROOT . BASE_FOLDER);
 define_value('ATLASMUSEUM_MAIN_PATH_2', BASE_AM . BASE_FOLDER);
-define_value('ATLASMUSEUM_PATH', BASE_AM . BASE_FOLDER . 'index.php?title=');
+//define_value('ATLASMUSEUM_PATH', BASE_AM . BASE_FOLDER . 'index.php?title=');
+define_value('ATLASMUSEUM_PATH', '');
 //define_value('ATLASMUSEUM_PATH_2', ATLASMUSEUM_MAIN_PATH . 'index.php?title=');
 define_value('WIKIDATA_BUNDLE_PATH', 'WikidataBundle/');
 define_value('WIKIDATA_BUNDLE_EXTENSIONS_PATH', WIKIDATA_BUNDLE_PATH . 'extensions/');

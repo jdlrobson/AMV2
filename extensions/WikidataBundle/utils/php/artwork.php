@@ -357,7 +357,7 @@ class Artwork {
         }
 
         array_push($artworks, [
-          'article' => ATLASMUSEUM_PATH . 'Spécial:Wikidata/' . $artwork_id,
+          'article' => 'Spécial:Wikidata/' . $artwork_id,
           'canonicalArticle' => $artwork_id,
           'title' => $title,
           'image_url' => $image_url,
@@ -483,7 +483,7 @@ class Artwork {
           $image_thumb = MISSING_IMAGE_FILE;
           $image_url = MISSING_IMAGE_LINK;
         }
-        $images .= '<li><div class="thumb tright"><div class="thumbinner"><a href="' . ATLASMUSEUM_PATH . 'Spécial:Wikidata/' . $artwork_id . '" class="image"><img alt="" src="' . $image_thumb . '" style="width:auto;max-width:192px;max-height:140px;" srcset=""><br />' . $title . '</a></div></div></li>';
+        $images .= '<li><div class="thumb tright"><div class="thumbinner"><a href="Spécial:Wikidata/' . $artwork_id . '" class="image"><img alt="" src="' . $image_thumb . '" style="width:auto;max-width:192px;max-height:140px;" srcset=""><br />' . $title . '</a></div></div></li>';
         $n++;
       }
       if ($n == 8)
@@ -619,8 +619,8 @@ class Artwork {
       }
       ?>
       <div class="import">
-        <a href="<?php print ATLASMUSEUM_PATH; ?>Spécial:WikidataEdit/<?php print $q; ?>">
-          <img src="skins/AtlasMuseum/resources/images/hmodify.png" />
+        <a href="Spécial:WikidataEdit/<?php print $q; ?>">
+          <img src="http://publicartmuseum.net/tmp/w/skins/AtlasMuseum/resources/images/hmodify.png" />
           Importer cette œuvre dans atlasmuseum
         </a>
       </div>
@@ -628,8 +628,8 @@ class Artwork {
     } else {
       ?>
       <div class="import">
-        <a href="<?php print ATLASMUSEUM_PATH; ?>Spécial:WikidataExport/<?php print $_GET['title']; ?>">
-          <img src="skins/AtlasMuseum/resources/images/hmodify.png" />Exporter cette œuvre sur Wikidata
+        <a href="Spécial:WikidataExport/<?php print $_GET['title']; ?>">
+          <img src="http://publicartmuseum.net/tmp/w/skins/AtlasMuseum/resources/images/hmodify.png" />Exporter cette œuvre sur Wikidata
         </a>
       </div>
       <?php
@@ -751,7 +751,7 @@ class Artwork {
           ?>
             <div class="wikidataLink">
               <a href="https://www.wikidata.org/wiki/<?php print $q; ?>" target="_blank">
-                <img src="skins/AtlasMuseum/resources/hwikidata.png" />
+                <img src="http://publicartmuseum.net/tmp/w/skins/AtlasMuseum/resources/hwikidata.png" />
                 <span>Voir cette œuvre sur Wikidata</span>
               </a>
             </div>

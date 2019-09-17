@@ -248,9 +248,9 @@ class Artist {
 
       $link = '';
       if ($a['origin'] == 'wikidata')
-        $link = 'http://publicartmuseum.net/tmp/w/index.php?title=Spécial:Wikidata/' . $a['wikidata'];
+        $link = 'Spécial:Wikidata/' . $a['wikidata'];
       else
-        $link = 'http://publicartmuseum.net/tmp/w/index.php?title=' . $a['article'];
+        $link = $a['article'];
       $label = $a['label'];
       
       array_push($list, [
@@ -415,7 +415,7 @@ class Artist {
       ?>
       <div class="import">
         <a href="<?php print ATLASMUSEUM_PATH; ?>Spécial:WikidataEditArtist/<?php print $q; ?>">
-          <img src="skins/AtlasMuseum/resources/images/hmodify.png" />
+          <img src="http://publicartmuseum.net/tmp/w/skins/AtlasMuseum/resources/images/hmodify.png" />
           Importer cette notice dans atlasmuseum
         </a>
       </div>
@@ -424,7 +424,7 @@ class Artist {
       ?>
       <div class="import">
         <a href="<?php print ATLASMUSEUM_PATH; ?>Spécial:WikidataArtistExport/<?php print $_GET['title']; ?>">
-          <img src="skins/AtlasMuseum/resources/images/hmodify.png" />Exporter cette notice sur Wikidata
+          <img src="http://publicartmuseum.net/tmp/w/skins/AtlasMuseum/resources/images/hmodify.png" />Exporter cette notice sur Wikidata
         </a>
       </div>
       <?php

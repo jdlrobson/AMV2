@@ -232,7 +232,7 @@ class Artist {
     ?>
       <h3>
         <span class="mw-headline" id="">
-          <a href="index.php?title=<?php print $artistLink; ?>" title=""><?php print $artist["article"] != '' ? $artist["article"] : $name; ?></a>
+          <a href="<?php print $artistLink; ?>" title=""><?php print $artist["article"] != '' ? $artist["article"] : $name; ?></a>
         </span>
       </h3>
       <p style="text-align:center">

@@ -5,7 +5,7 @@ define(DB_NAME, "publicarmod1");
 define(DB_USER, "publicarmod1");
 define(DB_PASSWORD, "1dwy2Myi");
 
-define(MISSING_IMAGE_THUMB, "http://publicartmuseum.net/tmp/w/images/thumb/5/5f/Image-manquante.jpg/220px-Image-manquante.jpg");
+define(MISSING_IMAGE_THUMB, "http://publicartmuseum.net/w/images/5/5f/Image-manquante.jpg");
 
 require_once('Wikidata/php/api.php');
 
@@ -72,7 +72,7 @@ class WikidataQuery {
             foreach ($data as $artwork) {
               ?>
                 <tr class="row-<?php if ($i % 2 == 0) print 'even'; else print 'odd'; ?>">
-                  <td><a href="index.php?title=Spécial:Wikidata/<?php print $artwork['wikidata']; ?>"><?php print $artwork['wikidata']; ?></a></td>
+                  <td><a href="Spécial:Wikidata/<?php print $artwork['wikidata']; ?>"><?php print $artwork['wikidata']; ?></a></td>
                   <td><?php print $artwork['title']; ?></td>
                 </tr>
               <?php

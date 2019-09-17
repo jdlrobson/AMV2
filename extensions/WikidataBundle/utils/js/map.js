@@ -2,7 +2,7 @@ var artworks_map = [];
 var clusterSource;
 
 document.addEventListener("DOMContentLoaded", function(event) {
-  $url = 'extensions/WikidataBundle/utils/php/getMap.php'
+  $url = 'http://publicartmuseum.net/tmp/w/extensions/WikidataBundle/utils/php/getMap.php'
   $.get($url, function(result, status) {
     artworks_map = JSON.parse(result)
 
@@ -179,7 +179,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
         else
           link = "Spécial:Wikidata/"+id
 
-        var text = "<p><b><a href=\"index.php?title="+link+"\">"+title+"</a></b></p><hr />";
+        //var text = "<p><b><a href=\"index.php?title="+link+"\">"+title+"</a></b></p><hr />";
+        var text = "<p><b><a href=\""+link+"\">"+title+"</a></b></p><hr />";
 
         /*if (image != "")
           text += "<div class=\"map_infowindow_image\"><a href=\"index.php?action=artwork&q="+id+"&origin="+((type == "Wikidata")?"wikidata":"atlasmuseum")+"\"><img src=\""+image+"\" /></a></div>";*/

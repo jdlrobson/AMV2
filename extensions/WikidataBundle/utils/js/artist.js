@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
     newLi.classList.add('collapsible')
     newLi.classList.add('selected')
 
-    newLi.innerHTML = '<span><a href="index.php?title=Spécial:WikidataEditArtist/'+page+'">Modifier avec formulaire</a></span></li>';
+    newLi.innerHTML = '<span><a href="Spécial:WikidataEditArtist/'+page+'">Modifier avec formulaire</a></span></li>';
 
     ul.insertBefore(newLi, li)
   }

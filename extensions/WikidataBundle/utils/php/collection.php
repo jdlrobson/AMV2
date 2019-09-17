@@ -161,9 +161,9 @@ class Collection {
       <table class="sortable wikitable smwtable jquery-tablesorter" width="100%">
         <thead>
           <tr>
-            <th class="Titre-de-l'œuvre headerSort" tabindex="0" role="columnheader button" title="Tri croissant"><a href="/tmp/w/index.php?title=Attribut:Titre" title="Attribut:Titre">Titre de l'œuvre</a></th>
-            <th class="Artiste headerSort" tabindex="0" role="columnheader button" title="Tri croissant"><a href="/tmp/w/index.php?title=Attribut:Auteur" title="Attribut:Auteur">Artiste</a></th>
-            <th class="Date headerSort" tabindex="0" role="columnheader button" title="Tri croissant"><a href="/tmp/w/index.php?title=Attribut:Date_d%27inauguration" title="Attribut:Date d'inauguration">Date</a></th>
+            <th class="Titre-de-l'œuvre headerSort" tabindex="0" role="columnheader button" title="Tri croissant"><a href="Attribut:Titre" title="Attribut:Titre">Titre de l'œuvre</a></th>
+            <th class="Artiste headerSort" tabindex="0" role="columnheader button" title="Tri croissant"><a href="Attribut:Auteur" title="Attribut:Auteur">Artiste</a></th>
+            <th class="Date headerSort" tabindex="0" role="columnheader button" title="Tri croissant"><a href="Attribut:Date_d%27inauguration" title="Attribut:Date d'inauguration">Date</a></th>
           </tr>
         </thead>
         <tbody>
@@ -194,7 +194,7 @@ class Collection {
                     </a>
                   </td>
                   <td class="Artiste smwtype_wpg">
-                    <a href="/tmp/w/index.php?title=Philippe_Cazal" title="Philippe Cazal">
+                    <a href="Philippe_Cazal" title="Philippe Cazal">
                       <?php print implode(', ', $artists); ?>
                     </a>
                   </td>

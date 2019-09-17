@@ -186,7 +186,7 @@ class AtlasMuseumTemplate extends BaseTemplate {
 	<div id="navigation-panel">
 		<!--<div id="p-logo" role="banner"><a class="mw-wiki-logo" href="<?php echo htmlspecialchars( $this->data['nav_urls']['mainpage']['href'] ) ?>" <?php echo Xml::expandAttributes( Linker::tooltipAndAccesskeyAttribs( 'p-logo' ) ) ?>></a></div>-->
 		<!--<div id="p-logo" role="banner"><a href="<?php echo htmlspecialchars( $this->data['nav_urls']['mainpage']['href'] ) ?>">atlasmuseum</a></div>-->
-		<div id="p-logo" role="banner"><a href="index.php">atlasmuseum</a></div>
+		<div id="p-logo" role="banner"><a href="/tmp/wiki/Accueil">atlasmuseum</a></div>
 		<?php $this->renderPortals($this->data['sidebar']); ?>
 	</div>
 </div>
