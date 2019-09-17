@@ -25,7 +25,7 @@ class Artwork {
   public static function render_image($claims, $property, $param, $param_name) {
 
     $image_thumb = MISSING_IMAGE_FILE;
-    $image_url = ATLASMUSEUM_PATH . ATLASMUSEUM_FILE_PREFIX . 'Image-manquante.jpg';
+    $image_url = MISSING_IMAGE;
     $image_legend = '';
 
     if (isset($param[$param_name])) {
@@ -85,7 +85,7 @@ class Artwork {
               anchorXUnits: 'fraction',
               anchorYUnits: 'pixels',
               opacity: 0.75,
-              src: 'images/a/a0/Picto-gris.png'
+              src: '<?php print BASE_MAIN; ?>images/a/a0/Picto-gris.png'
             }))
           });
           var vectorLayer = new ol.layer.Vector({

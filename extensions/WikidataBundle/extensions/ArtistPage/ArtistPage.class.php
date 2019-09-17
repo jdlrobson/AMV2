@@ -23,6 +23,7 @@ class ArtistPage {
 	 */
 	public static function renderArtistPage( $in, $param = array(), $parser = null, $frame = false ) {
     $attribs = Sanitizer::validateTagAttributes( $param, 'div' );
+
     if (!isset($param['full_name'])) {
       $fullName = preg_replace('/^.*\/wiki\//', '', $_SERVER['REQUEST_URI']);
       $fullName = urldecode(str_replace('_', ' ', $fullName));

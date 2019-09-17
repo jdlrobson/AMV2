@@ -24,16 +24,18 @@ define_value('BASE_AM', 'http://publicartmuseum.net/');
 define_value('BASE_ROOT', $_SERVER['DOCUMENT_ROOT'] . '/');
 define_value('BASE_FOLDER', 'tmp/w/');
 define_value('BASE_WIKI', 'tmp/wiki/');
+define_value('BASE_MAIN', 'http://publicartmuseum.net/tmp/w/');
 #define_value('BASE_FOLDER', 'w/');
 define_value('ATLASMUSEUM_MAIN_PATH', BASE_ROOT . BASE_FOLDER);
-define_value('ATLASMUSEUM_MAIN_PATH_2', BASE_AM . BASE_FOLDER);
-//define_value('ATLASMUSEUM_PATH', BASE_AM . BASE_FOLDER . 'index.php?title=');
+define_value('ATLASMUSEUM_MAIN_PATH_2', BASE_MAIN);
+//define_value('ATLASMUSEUM_PATH', BASE_MAIN . 'index.php?title=');
 define_value('ATLASMUSEUM_PATH', BASE_AM . BASE_WIKI);
 //define_value('ATLASMUSEUM_PATH_2', ATLASMUSEUM_MAIN_PATH . 'index.php?title=');
 define_value('WIKIDATA_BUNDLE_PATH', 'WikidataBundle/');
 define_value('WIKIDATA_BUNDLE_EXTENSIONS_PATH', WIKIDATA_BUNDLE_PATH . 'extensions/');
 define_value('ATLASMUSEUM_UTILS_PATH', ATLASMUSEUM_MAIN_PATH . 'extensions/' . WIKIDATA_BUNDLE_PATH . 'utils/');
 define_value('ATLASMUSEUM_UTILS_REDUCED_PATH', 'extensions/WikidataBundle/utils/');
+define_value('MISSING_IMAGE', BASE_MAIN . 'images/5/5f/Image-manquante.jpg');
 
 /**
  * Files
@@ -50,18 +52,18 @@ define_value('ATLASMUSEUM_IMAGE_PATH', ATLASMUSEUM_MAIN_PATH . 'image/');
 
 define_value('PICTO_GRIS', BASE_FOLDER + 'images/a/a0/Picto-gris.png');
 //define_value('MISSING_IMAGE_THUMB', ATLASMUSEUM_MAIN_PATH . 'images/thumb/5/5f/Image-manquante.jpg/220px-Image-manquante.jpg');
-define_value('MISSING_IMAGE_THUMB', BASE_AM . BASE_FOLDER . 'images/thumb/5/5f/Image-manquante.jpg/220px-Image-manquante.jpg');
+define_value('MISSING_IMAGE_THUMB', BASE_MAIN . 'images/thumb/5/5f/Image-manquante.jpg/220px-Image-manquante.jpg');
 //define_value('MISSING_IMAGE_FILE', ATLASMUSEUM_MAIN_PATH . 'images/5/5f/Image-manquante.jpg');
-define_value('MISSING_IMAGE_FILE', BASE_AM . BASE_FOLDER . 'images/5/5f/Image-manquante.jpg');
+define_value('MISSING_IMAGE_FILE', BASE_MAIN . 'images/5/5f/Image-manquante.jpg');
 define_value('MISSING_IMAGE_LINK', ATLASMUSEUM_PATH . ATLASMUSEUM_FILE_PREFIX . 'Image-manquante.jpg');
 
 /**
  * Utils
  */
 define_value('ATLASMUSEUM_UTILS_PATH_JS', ATLASMUSEUM_UTILS_PATH . 'js/');
-define_value('ATLASMUSEUM_UTILS_FULL_PATH_JS', BASE_AM . BASE_FOLDER . 'extensions/' . WIKIDATA_BUNDLE_PATH . 'utils/js/');
+define_value('ATLASMUSEUM_UTILS_FULL_PATH_JS', BASE_MAIN . 'extensions/' . WIKIDATA_BUNDLE_PATH . 'utils/js/');
 define_value('ATLASMUSEUM_UTILS_PATH_CSS', ATLASMUSEUM_UTILS_PATH . 'css/');
-define_value('ATLASMUSEUM_UTILS_FULL_PATH_CSS', BASE_AM . BASE_FOLDER . 'extensions/' . WIKIDATA_BUNDLE_PATH . 'utils/css/');
+define_value('ATLASMUSEUM_UTILS_FULL_PATH_CSS', BASE_MAIN . 'extensions/' . WIKIDATA_BUNDLE_PATH . 'utils/css/');
 define_value('ATLASMUSEUM_UTILS_PATH_PHP', ATLASMUSEUM_UTILS_PATH . 'php/');
 define_value('ATLASMUSEUM_UTILS_REDUCED_PATH_JS', ATLASMUSEUM_UTILS_REDUCED_PATH . 'js/');
 define_value('ATLASMUSEUM_UTILS_REDUCED_PATH_CSS', ATLASMUSEUM_UTILS_REDUCED_PATH . 'css/');

@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
   if (li) {
     var ul = li.parentElement,
         newLi = document.createElement("li"),
-        page = window.location.href.replace(/^.*index\.php\?title=/, '');
+        page = window.location.href.replace(/^.*index\.php\?title=/, '').replace(/^.*wiki\//, '');
 
     newLi.setAttribute('id', 'ca-form_edit')
     newLi.classList.add('collapsible')

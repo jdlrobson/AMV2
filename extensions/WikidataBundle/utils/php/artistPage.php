@@ -456,7 +456,7 @@ class Artist {
           ?>
             <div class="wikidataLink">
               <a href="<?php print WIKIDATA_BASE; ?>wiki/<?php print $q; ?>" target="_blank">
-                <img src="skins/AtlasMuseum/resources/hwikidata.png" />
+                <img src="http://publicartmuseum.net/tmp/w/skins/AtlasMuseum/resources/hwikidata.png" />
                 <span>Voir cette notice sur Wikidata</span>
               </a>
             </div>
