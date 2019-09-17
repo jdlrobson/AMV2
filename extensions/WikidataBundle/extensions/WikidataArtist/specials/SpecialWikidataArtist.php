@@ -35,6 +35,9 @@ class SpecialWikidataArtist extends SpecialPage {
         });
       </script>');
 
+    } else {
+      // $request->getText('title')
+      header('Location : . ' . 'https://www.google.com');
     }
 	}
 

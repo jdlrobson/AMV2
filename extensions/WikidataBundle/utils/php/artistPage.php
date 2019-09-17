@@ -261,7 +261,7 @@ class Artist {
 
     $text = [];
     foreach($list as $l) {
-      array_push($text, '<a href="' . $l['link'] . '">' . $l['label'] . '</a>');
+      array_push($text, '<a href="' . ATLASMUSEUM_PATH . $l['link'] . '">' . $l['label'] . '</a>');
     }
     print '<tr><th>Œuvres</th><td>' . join($text, ', ') . '</td></tr>';
   }

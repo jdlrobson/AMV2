@@ -232,12 +232,12 @@ class Artist {
     ?>
       <h3>
         <span class="mw-headline" id="">
-          <a href="<?php print $artistLink; ?>" title=""><?php print $artist["article"] != '' ? $artist["article"] : $name; ?></a>
+          <a href="<?php print ATLASMUSEUM_PATH . $artistLink; ?>" title=""><?php print $artist["article"] != '' ? $artist["article"] : $name; ?></a>
         </span>
       </h3>
       <p style="text-align:center">
         <a href="<?php print $image_url; ?>" class="image">
-          <img alt="" src="<?php print $image_thumb; ?>" style="width:auto;max-width224px;max-height:149px" />
+          <img alt="" src="<?php print ATLASMUSEUM_PATH . $image_thumb; ?>" style="width:auto;max-width224px;max-height:149px" />
         </a>
       </p>
       <table class="wikitable">
