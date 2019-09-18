@@ -10,6 +10,7 @@ require_once('WikidataPaths.php');
  * Extensions
  */
 
+
 wfLoadExtension(WIKIDATA_BUNDLE_EXTENSIONS_PATH . 'ArtworkMap'); // Carte des œuvres
 wfLoadExtension(WIKIDATA_BUNDLE_EXTENSIONS_PATH . 'ArtworkPage'); // Page d'œuvre
 wfLoadExtension(WIKIDATA_BUNDLE_EXTENSIONS_PATH . 'ArtistPage'); // Page d'artiste

@@ -79,7 +79,7 @@ import_wikidata_date = function(claim, property) {
   if (precision >= 11) 
     time = tmp[2] + '-' + tmp[1] + '-' + tmp[0]
   else
-  if ($precision === 10)
+  if (precision === 10)
     time = tmp[1] + '-' + tmp[0]
   else
     time = tmp[0]

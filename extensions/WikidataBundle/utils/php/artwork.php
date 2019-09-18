@@ -114,9 +114,9 @@ class Artwork {
   public static function render_claim_am($param, $name, $title, $two_lines = false) {
     if (isset($param[$name])) {
       if ($two_lines) {
-        print '<tr><td colspan="2"><b>' . $title . '</b><br />' . $param[$name] . '</td></tr>';
+        print '<tr><td colspan="2"><b>' . $title . '</b><br />' . API::convert_to_wiki_text($param[$name]) . '</td></tr>';
       } else {
-        print '<tr><th>' . $title . '</th><td>' . $param[$name] . '</td></tr>';
+        print '<tr><th>' . $title . '</th><td>' . API::convert_to_wiki_text($param[$name]) . '</td></tr>';
       }
     }
   }
@@ -267,7 +267,8 @@ class Artwork {
   }
 
   public static function render_other_works($id, $creators, $param) {
-    $currentArticle = html_entity_decode(str_replace('_', ' ', str_replace('title=', '', $_SERVER['QUERY_STRING'])));
+    $currentArticle = preg_replace('/^.*\/wiki\//', '', $_SERVER['REQUEST_URI']);
+    $currentArticle = urldecode(str_replace('_', ' ', $currentArticle));
 
     $artists_id = [];
     $artists_names = [];
@@ -743,7 +744,7 @@ class Artwork {
         ?>
           <div class="mapCtnr">
             <b>Sources :</b><br />
-            <?php print $param['source']; ?>
+            <?php print API::convert_to_wiki_text($param['source']); ?>
           </div>
         <?php
         }
