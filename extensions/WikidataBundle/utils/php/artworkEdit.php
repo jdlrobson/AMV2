@@ -88,6 +88,7 @@ class ArtworkEdit {
   }
 
   public static function render_textarea($data, $property, $title, $key, $mandatory=false) {
+    $data[$property] = str_replace('\\n', "\n", $data[$property]);
     ?>
       <tr>
         <th><?php print $title; ?><?php if ($mandatory) print ' <span class="mandatory">*</span>'; ?></th>

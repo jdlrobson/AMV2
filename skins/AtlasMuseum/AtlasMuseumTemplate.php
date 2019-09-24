@@ -180,7 +180,7 @@ class AtlasMuseumTemplate extends BaseTemplate {
 			<?php $this->renderNavigation( array( 'VIEWS', 'ACTIONS', 'SEARCH' ) ); ?>
 		</div>
 		<div id="base-navigation">
-			<a href="index.php?title=Spécial:WikidataEdit" id="haddnotice">Ajouter une œuvre</a><a id="haide" href="index.php?title=Aide:Accueil">Aide</a><a id="hfb" href="https://www.facebook.com/Atlasmuseum?fref=ts">FaceBook</a><a id="htwitter" href="https://twitter.com/atlasmuseum">Twitter</a>
+			<a href="Spécial:WikidataEdit" id="haddnotice">Ajouter une œuvre</a><a id="haide" href="Aide:Accueil">Aide</a><a id="hfb" href="https://www.facebook.com/Atlasmuseum?fref=ts">FaceBook</a><a id="htwitter" href="https://twitter.com/atlasmuseum">Twitter</a>
 		</div>
 	</div>
 	<div id="navigation-panel">

@@ -47,13 +47,13 @@ class Artwork {
     ?>
     <div class="topImgCtnr">
       <div class="thumb tright">
-        <div class="thumbinner" style="width:422px;">
+        <div class="thumbinner" style="width:422px;background-color: white;">
           <a href="<?php print $image_url; ?>" class="image">
-            <img alt="" src="<?php print $image_thumb; ?>" style="width:auto;max-width:420px;max-height:209px" class="thumbimage" srcset="" />
+            <img alt="" src="<?php print $image_thumb; ?>" style="width:auto;max-width:420px;max-height:250px" class="thumbimage" srcset="" />
           </a>
           <?php
-            /*if ($image_legend != '')
-              print '<div class="thumbcaption">' . $image_legend . '</div>';*/
+            if ($image_legend != '')
+              print '<div class="thumbcaption">' . $image_legend . '</div>';
           ?>
         </div>
       </div>
@@ -453,8 +453,28 @@ class Artwork {
         </div>';
     }
   }
+
+  public static function distanceInKmBetweenEarthCoordinates($lat1, $lon1, $lat2, $lon2) {
+    $earthRadiusKm = 6371;
+  
+    $dLat = deg2rad($lat2-$lat1);
+    $dLon = deg2rad($lon2-$lon1);
+  
+    $lat1 = deg2rad($lat1);
+    $lat2 = deg2rad($lat2);
+  
+    $a = sin($dLat/2) * sin($dLat/2) +
+      sin($dLon/2) * sin($dLon/2) * cos($lat1) * cos($lat2); 
+    $c = 2 * atan2(sqrt($a), sqrt(1-$a)); 
+    return $earthRadiusKm * $c;
+  }
   
   public static function render_near_artworks($id, $lat, $lng) {
+      $currentArticle = preg_replace('/^.*\/wiki\//', '', $_SERVER['REQUEST_URI']);
+      $currentArticle = urldecode(str_replace('_', ' ', $currentArticle));
+      $artworks = [];
+
+      // Œuvres WD
 
       $query = "SELECT DISTINCT ?artwork ?artworkLabel ?location ?image ?distance WHERE {".
       "  bind(strdt(\"Point(".$lng." ".$lat.")\", geo:wktLiteral) as ?artworkLoc)".
@@ -484,11 +504,96 @@ class Artwork {
           $image_thumb = MISSING_IMAGE_FILE;
           $image_url = MISSING_IMAGE_LINK;
         }
-        $images .= '<li><div class="thumb tright"><div class="thumbinner"><a href="Spécial:Wikidata/' . $artwork_id . '" class="image"><img alt="" src="' . $image_thumb . '" style="width:auto;max-width:192px;max-height:140px;" srcset=""><br />' . $title . '</a></div></div></li>';
+        array_push($artworks, [
+          'id' => $artwork_id,
+          'link' => ATLASMUSEUM_PATH . 'Spécial:Wikidata/' . $artwork_id,
+          'image' => $image_thumb,
+          'title' => $title,
+          'distance' => floatval($artwork->distance->value)
+        ]);
+        $images .= '<li><div class="thumb tright"><div class="thumbinner"><a href="' . ATLASMUSEUM_PATH . 'Spécial:Wikidata/' . $artwork_id . '" class="image"><img alt="" src="' . $image_thumb . '" style="width:auto;max-width:192px;max-height:140px;" srcset=""><br />' . $title . '</a></div></div></li>';
         $n++;
       }
-      if ($n == 8)
+      if ($n == 16)
         break;
+    }
+
+    // var_dump($artworks);
+
+    // Œuvres AM
+    if ($lat<0)
+      $txt_lat = '+' . abs($lat);
+    else
+      $txt_lat = '-' . abs($lat);
+    if ($lng<0)
+      $txt_lng = '+' . abs($lng);
+    else
+      $txt_lng = '-' . abs($lng);
+
+    $query = 'SELECT *, latitude, longitude, sqrt((latitude' . $txt_lat . ')*(latitude' . $txt_lat . ')+(longitude' . $txt_lng . ')*(longitude' . $txt_lng . ')) AS distance FROM tmp_library_2 WHERE ABS(latitude' . $txt_lat . ')<0.15 AND ABS(longitude' . $txt_lng . ')<0.1 ORDER BY distance LIMIT 16';
+    $data = query($query);
+    while ($row = $data->fetch_row()) {
+      if ($row[1] != $currentArticle) {
+        $found = false;
+        if ($row[9] != '') {
+          if ($row[9] != $id) {
+            for ($i = 0; $i < sizeof($artworks); $i++) {
+              if ($artworks[$i]['id'] == $row[9]) {
+                // var_dump($row);
+                // exit;
+                if ($row[7] != '') {
+                  $image_url = ATLASMUSEUM_PATH . ATLASMUSEUM_FILE_PREFIX . $row[7];
+                  $tmp = self::get_image_am($row[7], 420);
+                  if (isset($tmp->query->pages))
+                    foreach($tmp->query->pages as $image)
+                      $image_thumb = $image->imageinfo[0]->thumburl;
+                  // var_dump($image_url);
+                  // var_dump($image_thumb);
+                } else {
+                  $image_url = MISSING_IMAGE_LINK;
+                  $image_thumb = MISSING_IMAGE_FILE;
+                }
+                $artworks[$i]['link'] = ATLASMUSEUM_PATH . $row[1];
+                $artworks[$i]['image'] = $image_thumb;
+                $artworks[$i]['title'] = $row[2];
+                $artworks[$i]['distance'] = self::distanceInKmBetweenEarthCoordinates($row[5], $row[6], $lat, $lng);
+                $found = true;
+                break;
+              }
+            }
+          }
+        }
+        if (!$found) {
+          //var_dump($row);
+          if ($row[7] != '') {
+            $image_url = ATLASMUSEUM_PATH . ATLASMUSEUM_FILE_PREFIX . $row[7];
+            $tmp = self::get_image_am($row[7], 420);
+            if (isset($tmp->query->pages))
+              foreach($tmp->query->pages as $image)
+                $image_thumb = $image->imageinfo[0]->thumburl;
+          } else {
+            $image_url = MISSING_IMAGE_LINK;
+            $image_thumb = MISSING_IMAGE_FILE;
+          }
+          array_push($artworks, [
+            'id' => '',
+            'link' => ATLASMUSEUM_PATH . str_replace('?', '%3F', $row[1]),
+            'image' => $image_thumb,
+            'title' => $row[2],
+            'distance' => self::distanceInKmBetweenEarthCoordinates($row[5], $row[6], $lat, $lng)
+          ]);
+        }
+      }
+    }
+
+    usort($artworks, function($a, $b) {
+      return $a['distance'] - $b['distance'];
+    });
+
+    $images = '';
+    for ($i = 0; $i < sizeof($artworks) && $i < 12; $i++) {
+      // var_dump($artworks[$i]);
+      $images .= '<li><div class="thumb tright"><div class="thumbinner"><a href="' . $artworks[$i]['link'] . '" class="image"><img alt="" src="' . $artworks[$i]['image'] . '" style="width:auto;max-width:192px;max-height:140px;" srcset=""><br />' . $artworks[$i]['title'] . '</a></div></div></li>';
     }
 
     if ($images != '') {
@@ -650,7 +755,7 @@ class Artwork {
             <div class="noticePlus noticePlusExpanded">
               <h2 onclick="toggleNoticePlus(this)"> <span class="mw-headline" id="Notice.2B"> Notice+ </span></h2>
               <div>
-                <?php print str_replace("&quot;", "\"", str_replace("\\n", "<br />", $param['notice_augmentee'])); ?>
+                <?php print API::convert_to_wiki_text(str_replace("&quot;", "\"", str_replace("\\n", "<br />", $param['notice_augmentee']))); ?>
               </div>
             </div>
           <?php

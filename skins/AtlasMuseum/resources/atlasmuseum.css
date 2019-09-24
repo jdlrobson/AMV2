@@ -409,6 +409,7 @@ div.atmslideshowCtnr ul li div.thumb div.thumbinner{
     padding-bottom: 52px;
 }
 div.atmslideshowCtnr ul li div.thumb div.thumbinner div.thumbcaption{
+    text-align: center;
     position: absolute;
     width: 90%;
     bottom: 0px;

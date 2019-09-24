@@ -907,6 +907,7 @@ div.atmslideshowCtnr ul li div.thumb div.thumbinner div.thumbcaption{
     width: 90%;
     bottom: 0px;
     height: 52px;
+    text-align: center;
 }
 .catlinks{
     background-color: #505B61;

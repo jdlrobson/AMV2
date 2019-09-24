@@ -100,9 +100,11 @@ function update_artwork() {
       'WHERE article="' . $article . '"';
 
     query($query);
+
+    var_dump($query);
   
     $result = [
-      'result' => 'ok'
+      'result' => 'ok',
     ];
   } else {
     $result = [
