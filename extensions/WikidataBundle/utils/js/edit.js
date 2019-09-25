@@ -238,12 +238,12 @@ publish = function() {
           r.push(data[key][i].id)
         else
         if (data[key][i].label != '')
-          r.push(data[key][i].label.replace(/\"/g, '&quot;').replace(/\n/g, '\\n').replace(/\r/g, ''))
+          r.push(data[key][i].label.replace(/\"/g, '&quot;').replace(/\n/g, '\\n').replace(/\r/g, '').replace(/</g, '&lt;').replace(/>/g, '&gt;'))
       }
       text += key + '="' + r.join(';') + '"\n';
     } else {
       if (data[key] != '')
-        text += key + '="' + data[key].replace(/\"/g, '&quot;').replace(/\n/g, '\\n').replace(/\r/g, '') + '"\n';
+        text += key + '="' + data[key].replace(/\"/g, '&quot;').replace(/\n/g, '\\n').replace(/\r/g, '').replace(/</g, '&lt;').replace(/>/g, '&gt;') + '"\n';
     }
   }
 
