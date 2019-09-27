@@ -173,4 +173,8 @@ $wgMaxShellMemory = 100524288;
 $wgMemoryLimit = "64M";
 $wgMaxImageArea = 10e7;
 
+$wgGroupPermissions['autoconfirmed']['upload_by_url'] = true;
+$wgAllowCopyUploads = true;
+$wgCopyUploadsFromSpecialUpload = true;
+
 wfLoadExtension( 'PageForms' );
