@@ -66,3 +66,12 @@
   border-radius:1px;
   border:1px solid #aaaaaa;
 }
+
+.createboxInputMainImage {
+  width: calc(100% - 150px) !important;
+}
+
+.image_thumb {
+  margin-top: 10px;
+}
+

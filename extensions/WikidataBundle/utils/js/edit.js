@@ -62,6 +62,26 @@ get_label = function(id, callback) {
   })
 }
 
+get_image_am = function(image, width, callback) {
+  const url = 'http://publicartmuseum.net/tmp/w/api.php'
+  const params = {
+    action: 'query',
+    prop: 'imageinfo',
+    iiprop: 'url',
+    iiurlwidth: width,
+    titles: 'File:' + image,
+    format: 'json',
+  }
+  $.getJSON(url, params, function(res) {
+    if (res && res.query && res.query.pages) {
+      const keys = Object.keys(res.query.pages)
+      callback(res.query.pages[keys[0]].imageinfo[0].thumburl)
+    } else {
+      callback('')
+    }
+  })
+}
+
 import_wikidata_claim = function(claim, property) {
   for (let i = 0; i < claim.length; i++) {
     let id = claim[i].mainsnak.datavalue.value.id
@@ -494,3 +514,17 @@ document.addEventListener("DOMContentLoaded", function(event) {
     document.getElementById('coordinates_input').value = coordinates[1] + ", " + coordinates[0];
 	});
 });
+
+change_image_thumb = function(inputId) {
+  const input = document.getElementById(inputId);
+  if (input) {
+    const thumb = document.getElementById(inputId + '_thumb');
+    if (thumb) {
+      const imageName = input.value
+      get_image_am(imageName, 200, function(imageUrl) {
+        if (imageUrl != '')
+          thumb.getElementsByTagName('img')[0].src = imageUrl
+      })
+    }
+  }
+}

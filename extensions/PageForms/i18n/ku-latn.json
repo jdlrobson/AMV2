@@ -1,0 +1,18 @@
+{
+	"@metadata": {
+		"authors": [
+			"George Animal"
+		]
+	},
+	"pf_createproperty_proptype": "Cure:",
+	"createtemplate": "Şablonekî çêke",
+	"pf_createtemplate_namelabel": "Navê şablonê:",
+	"pf_createtemplate_standardformat": "Tablo",
+	"pf_createtemplate_deletefield": "Jê bibe",
+	"pf_forminputs_checkboxes_select_all": "Hemûyan hilbijêre",
+	"pf_createform_template": "Şablon:",
+	"pf_createform_add": "Lê zêde bike",
+	"pf_createcategory_name": "Navê kategorîyê:",
+	"pf-autoedit-wait": "Bisekine...",
+	"pf-datepicker-today": "Îro"
+}

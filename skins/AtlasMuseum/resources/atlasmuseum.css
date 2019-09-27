@@ -594,7 +594,6 @@ table.formtable th {
     border: 1px solid #D5DBDB;
 }
 
-
 div.checkboxes1column  {
      -moz-column-count:1;-webkit-column-count:1;column-count:1;-moz-column-gap:1em;-webkit-column-gap:1em;column-gap:1em;text-align:left;
 }
