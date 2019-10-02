@@ -84,13 +84,13 @@ import_wikidata_date = function(claim, property) {
   else
     time = tmp[0]
 
-  document.getElementById('input_text_' + property).value = time
+  document.getElementById('input_' + property).value = time
 }
 
 import_wikidata_image = function(claim, property) {
   let image = claim[0].mainsnak.datavalue.value
 
-  document.getElementById('input_text_' + property).value = image
+  document.getElementById('input_' + property).value = image
   document.getElementById('input_checkbox_' + property).checked = true
 }
 
@@ -367,4 +367,38 @@ get_semantic = function(data) {
   text += '</div>\n'
 
   return text
+}
+
+get_image_am = function(image, width, callback) {
+  const url = 'http://publicartmuseum.net/tmp/w/api.php'
+  const params = {
+    action: 'query',
+    prop: 'imageinfo',
+    iiprop: 'url',
+    iiurlwidth: width,
+    titles: 'File:' + image,
+    format: 'json',
+  }
+  $.getJSON(url, params, function(res) {
+    if (res && res.query && res.query.pages) {
+      const keys = Object.keys(res.query.pages)
+      callback(res.query.pages[keys[0]].imageinfo[0].thumburl)
+    } else {
+      callback('')
+    }
+  })
+}
+
+change_image_thumb = function(inputId) {
+  const input = document.getElementById(inputId);
+  if (input) {
+    const thumb = document.getElementById(inputId + '_thumb');
+    if (thumb) {
+      const imageName = input.value
+      get_image_am(imageName, 200, function(imageUrl) {
+        if (imageUrl != '')
+          thumb.getElementsByTagName('img')[0].src = imageUrl
+      })
+    }
+  }
 }

@@ -239,6 +239,10 @@ class ArtistGetData {
       $data['P625']['longitude'] = floatval($tmp[1]);
     }
 
+    if (isset($data_am['thumbnail'])) {
+      $data['P18'] = $data_am['thumbnail'];
+    }
+
     $data['P31'] = self::convert_item($data_am, 'type');
     $data['P21'] = self::convert_item($data_am, 'genre');
     $data['P27'] = self::convert_item($data_am, 'nationality');
@@ -333,6 +337,12 @@ class ArtistGetData {
                 break;
               case 'nationality':
                 $data['P27'] = self::convert_am_item($value);
+                break;
+              case 'thumbnail':
+                $data['P18'] = [
+                  "file" => $value,
+                  "origin" => 'atlasmuseum'
+                ];
                 break;
               default:
                 $data[$parameter] = $value;

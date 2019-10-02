@@ -4,6 +4,15 @@ require_once(ATLASMUSEUM_UTILS_PATH_PHP . 'artistGetData.php');
 require_once(ATLASMUSEUM_UTILS_PATH_PHP . 'constants.php');
 
 class ArtistEdit {
+  public static function get_image_am($image, $width=320) {
+    return Api::call_api(array(
+      'action' => 'query',
+      'prop' => 'imageinfo',
+      'iiprop' => 'url',
+      'iiurlwidth' => $width,
+      'titles' => 'File:'.$image
+    ), 'atlasmuseum');
+  }
 
   public static function render_wikidata($data, $wikidata = false) {
     ?>
@@ -25,8 +34,8 @@ class ArtistEdit {
     ?>
       <tr>
         <th><?php print $title; ?><?php if ($mandatory) print ' <span class="mandatory">*</span>'; ?></th>
-        <td id="input_<?php print $property; ?>">
-          <input type="text" id="input_text_<?php print $property; ?>" value="<?php print $data[$property]; ?>" name="Edit[<?php print $key; ?>]" class="createboxInput" size="45">
+        <td id="input_<?php print $property; ?>_cell">
+          <input type="text" id="input_<?php print $property; ?>" value="<?php print $data[$property]; ?>" name="Edit[<?php print $key; ?>]" class="createboxInput" size="45">
         </td>
       </tr>
     <?
@@ -36,7 +45,7 @@ class ArtistEdit {
     ?>
       <tr>
         <th><?php print $title; ?><?php if ($mandatory) print ' <span class="mandatory">*</span>'; ?></th>
-        <td id="input_<?php print $property; ?>">
+        <td id="input_<?php print $property; ?>_cell">
           <textarea id="input_<?php print $property; ?>" name="Edit[<?php print $key; ?>]" class="createboxInput" rows="5" cols="40" style="width: 100%;resize: none;"><?php print $data[$property]; ?></textarea>
         </td>
       </tr>
@@ -47,9 +56,31 @@ class ArtistEdit {
     ?>
       <tr>
         <th><?php print $title; ?><?php if ($mandatory) print ' <span class="mandatory">*</span>'; ?></th>
-        <td id="input_<?php print $property; ?>">
-          <input type="text" id="input_text_<?php print $property; ?>" value="<?php print $data[$property]['file']; ?>" name="Edit[<?php print $key; ?>]" class="createboxInput" size="45"><br /><br />
+        <td id="input_<?php print $property; ?>_cell">
+          <input type="text" id="input_<?php print $property; ?>" value="<?php print $data[$property]['file']; ?>" name="Edit[<?php print $key; ?>]" class="createboxInput createboxInputMainImage" size="45">
+          <a data-fancybox data-type="iframe" data-src="<?php print BASE_MAIN; ?>index.php?title=Sp%C3%A9cial:UploadWindow&amp;pfInputID=input_<?php print $property; ?>" href="javascript:;">Importer un fichier</a>
+          <br />
           <input id="input_checkbox_<?php print $property; ?>" name="Edit[<?php print $key; ?>_origin]" type="checkbox" class="createboxInput" <?php if ($data[$property]['origin'] == 'commons') print 'checked'; ?>><i>Cette image provient de Wikimedia Commons</i>
+          <?php
+            if (isset($data[$property]) && $data[$property] != '') {
+              $tmp = self::get_image_am($data[$property], 200);
+              $image_thumb = '';
+              if (isset($tmp->query->pages))
+                foreach($tmp->query->pages as $image)
+                  $image_thumb = $image->imageinfo[0]->thumburl;
+                  if ($image_thumb != '') {
+                ?>
+                  <div id="input_<?php print $property; ?>_thumb"  class="image_thumb">
+                    <img src="<?php print $image_thumb; ?>" />
+                  </div>
+                <?php
+              }
+            }
+          ?>
+          <div class="image_disclaimer">
+            Avant d'importer une image, assurez vous que vous avez les droits suffisants pour le faire (œuvres originales dont vous êtes l'auteur, œuvres dans le domaine public, œuvres sous licence libre). Veuillez consulter l'aide sur les droits d'auteur.<br />
+            Si vous n'avez pas les droits sur l'image ou si avez un doute, laissez le nom de l'image : image-manquante.jpg dans le zone de saisie "Image principale".
+          </div>
         </td>
       </tr>
     <?
@@ -59,7 +90,7 @@ class ArtistEdit {
     ?>
       <tr>
         <th><?php print $title; ?><?php if ($mandatory) print ' <span class="mandatory">*</span>'; ?></th>
-        <td id="input_<?php print $property; ?>">
+        <td id="input_<?php print $property; ?>_cell">
     <?php
       foreach ($data[$property] as $index => $value) {
     ?>
@@ -186,14 +217,16 @@ class ArtistEdit {
 </form>
 </div>
 
-<script type="text/javascript" src="<?php print ATLASMUSEUM_UTILS_FULL_PATH_JS; ?>jquery.min.js"></script>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 <script type="text/javascript" src="<?php print ATLASMUSEUM_UTILS_FULL_PATH_JS; ?>jquery-ui.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
 <script type="text/javascript" src="<?php print OPEN_LAYER_JS; ?>"></script>
 <script type="text/javascript" src="<?php print ATLASMUSEUM_UTILS_FULL_PATH_JS; ?>autocomplete.js"></script>
 <script type="text/javascript" src="<?php print ATLASMUSEUM_UTILS_FULL_PATH_JS; ?>artistEdit.js"></script>
 <link rel="stylesheet" href="<?php print ATLASMUSEUM_UTILS_FULL_PATH_CSS; ?>edit.css">
 <link rel="stylesheet" href="<?php print ATLASMUSEUM_UTILS_FULL_PATH_CSS; ?>autocomplete.css">
 <link rel="stylesheet" href="<?php print OPEN_LAYER_CSS; ?>" type="text/css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
 <?php
 
       $contents = ob_get_contents();
