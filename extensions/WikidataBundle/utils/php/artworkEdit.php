@@ -86,16 +86,6 @@ class ArtworkEdit {
     <?php
   }
   
-  public static function render_image($data) {
-    ?>
-      <tr>
-        <th>Image principale</th>
-        <td>
-        </td>
-      </tr>
-    <?php
-  }
-
   public static function render_text($data, $property, $title, $key, $mandatory=false) {
     ?>
       <tr>
@@ -137,6 +127,50 @@ class ArtworkEdit {
         </td>
       </tr>
     <?
+  }
+
+  public static function render_image_list($data, $property, $title, $key, $mandatory=false) {
+    $images = explode(';', $data[$property]);
+    ?>
+    <div class="multipleTemplateWrapper">
+	    <div class="multipleTemplateList ui-sortable" id="input_<?php print $property; ?>_container">
+      <?php
+        for ($i=0; $i < sizeof($images); $i++) {
+          
+          ?>
+          <div class="multipleTemplateInstance multipleTemplate" id="input_<?php print $property; ?>_instance_<?php print $i; ?>">
+            <table>
+              <tbody>
+                <tr>
+                  <td> 
+                    <table>
+                      <tbody>
+                        <tr>
+                          <td style="width:140px;"><b>Importer une image&nbsp;:</b></td>
+                          <td>
+                            <span class="inputSpan">
+                              <input id="input_<?php print $property; ?>_<?php print $i; ?>" class="createboxInput" size="35" value="<?php print $images[$i]; ?>" name="Edit[<?php print $key; ?>][<?php print $i; ?>]" type="text">
+                              <a data-fancybox data-type="iframe" data-src="<?php print BASE_MAIN; ?>index.php?title=Sp%C3%A9cial:UploadWindow&amp;pfInputID=input_<?php print $property; ?>_<?php print $i; ?>" href="javascript:;">Importer un fichier</a>
+                            </span>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </td>
+			            <td><a class="addAboveButton" title="Ajouter une autre instance au-dessus de celle-ci"><img src="/w/extensions/SemanticForms/skins/SF_add_above.png" class="multipleTemplateButton"></a></td>
+			            <td><button class="removeButton" title="Enlever cette instance" onclick="remove_image_line('<?php print $property; ?>', <?php print $i; ?>)"><img src="/w/extensions/SemanticForms/skins/SF_remove.png" class="multipleTemplateButton"></button></td>
+			            <td class="instanceRearranger"><img src="/w/extensions/SemanticForms/skins/rearranger.png" class="rearrangerImage"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <?php
+        }
+      ?>
+      </div>
+      <p><button class="multipleTemplateAdder" onclick="add_image_line('<?php print $property; ?>');">Importer d'autres images</button></p>
+    </div>
+    <?php
   }
 
   public static function render_textarea($data, $property, $title, $key, $mandatory=false) {
@@ -449,18 +483,10 @@ class ArtworkEdit {
 
     <div id="Photos" class="edit_section section_unselected">
       <h2> <span class="mw-headline" id="Description_oeuvre"> Construction / installation / Montage </span></h2>
-      <table class="formtable">
-        <tbody>
-          <?php self::render_textarea($data, 'has_imagegalerieconstruction', 'Construction', 'has_imagegalerieconstruction', false); ?> 
-        </tbody>
-      </table>
+      <?php self::render_image_list($data, 'image_galerie_construction', 'Construction', 'image_galerie_construction', false); ?>
 
       <h2> <span class="mw-headline" id="Description_oeuvre"> Autres prises de vue </span></h2>
-      <table class="formtable">
-        <tbody>
-          <?php self::render_textarea($data, 'has_imagegalerieautre', 'Autres', 'has_imagegalerieautre', false); ?> 
-        </tbody>
-      </table>
+      <?php self::render_image_list($data, 'image_galerie_autre', 'Autres', 'image_galerie_autre', false); ?>
     </div>
 
   </div>

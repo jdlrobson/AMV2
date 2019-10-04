@@ -411,6 +411,8 @@ get_semantic = function(data) {
     'titre': 'Titre',
     'type_art': 'Type d\'art',
     'site_ville': 'Ville',
+    'image_galerie_construction': 'Has ImageGalerieConstruction',
+    'image_galerie_autre': 'Has ImageGalerieAutre',
   }
 
   text = '<div style="visibility:hidden; height:0px">\n'
@@ -527,4 +529,20 @@ change_image_thumb = function(inputId) {
       })
     }
   }
+}
+
+add_image_line = function(property) {
+  let container = document.getElementById('input_' + property + '_container');
+  let n = container.childElementCount;
+  let html = '<div class="multipleTemplateInstance multipleTemplate" id="input_' + property + '_instance_' + n + '"><table><tbody><tr><td> <table><tbody><tr><td style="width:140px;"><b>Importer une image&nbsp;:</b></td><td><span class="inputSpan"><input id="input_' + property + '_' + n + '" class="createboxInput" size="35" value="" name="Edit[' + property + '][' + n + ']" type="text">\n<a data-fancybox data-type="iframe" data-src="index.php?title=Sp%C3%A9cial:UploadWindow&amp;pfInputID=input_' + property + '_' + n + '" href="javascript:;">Importer un fichier</a></span></td></tr></tbody></table></td><td><a class="addAboveButton" title="Ajouter une autre instance au-dessus de celle-ci"><img src="/w/extensions/SemanticForms/skins/SF_add_above.png" class="multipleTemplateButton"></a></td><td><button class="removeButton" title="Enlever cette instance" onclick="remove_image_line(\'' + property + '\', ' + n + ')"><img src="/w/extensions/SemanticForms/skins/SF_remove.png" class="multipleTemplateButton"></button></td><td class="instanceRearranger"><img src="/w/extensions/SemanticForms/skins/rearranger.png" class="rearrangerImage"></td></tr></tbody></table></div>';
+  let e = document.createElement('div');
+  e.innerHTML = html;
+  while(e.firstChild) {
+    container.appendChild(e.firstChild);
+  }
+}
+
+remove_image_line = function(property, index) {
+  let instance = document.getElementById('input_' + property + '_instance_' + index);
+  instance.remove();
 }
