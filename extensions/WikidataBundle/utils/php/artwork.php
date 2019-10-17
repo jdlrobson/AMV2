@@ -236,7 +236,7 @@ class Artwork {
   }
 
   public static function render_galerie($param, $name, $title) {
-    if (isset($param[$name])) {
+    if (isset($param[$name]) && $param[$name] != '') {
       ?>
       <div class="atmslideshowCtnr">
         <div class="atmslideshowHead" onclick="toggleFold(this)"><h3><?php print $title; ?></h3></div>
@@ -518,8 +518,6 @@ class Artwork {
         break;
     }
 
-    // var_dump($artworks);
-
     // Œuvres AM
     if ($lat<0)
       $txt_lat = '+' . abs($lat);
@@ -533,7 +531,7 @@ class Artwork {
     $query = 'SELECT *, latitude, longitude, sqrt((latitude' . $txt_lat . ')*(latitude' . $txt_lat . ')+(longitude' . $txt_lng . ')*(longitude' . $txt_lng . ')) AS distance FROM tmp_library_2 WHERE ABS(latitude' . $txt_lat . ')<0.15 AND ABS(longitude' . $txt_lng . ')<0.1 ORDER BY distance LIMIT 16';
     $data = query($query);
     while ($row = $data->fetch_row()) {
-      if ($row[1] != $currentArticle) {
+      if (strtolower($row[1]) != strtolower($currentArticle)) {
         $found = false;
         if ($row[9] != '') {
           if ($row[9] != $id) {

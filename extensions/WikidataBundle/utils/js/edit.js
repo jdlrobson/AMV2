@@ -301,11 +301,13 @@ publish = function() {
      ret.push(encodeURIComponent(p) + '=' + encodeURIComponent(params[p]));
     const url = 'http://publicartmuseum.net/tmp/w/extensions/WikidataBundle/utils/php/updateDB.php?' + ret.join('&')
     console.log(url)
+    /*
     $.get(url, function(res) {
       console.log(res)
-      document.getElementById('editform').action = '/tmp/w/index.php?title=' + article + '&action=submit';
-      document.getElementById("editform").submit();
+      document.getElementById('editform').action = '/tmp/w/index.php?title=' + encodeURIComponent(article) + '&action=submit';
+      document.getElementById("editform").submit();)
     })
+    */
   } else {
     const params = {
       action: 'create_artwork',
@@ -321,12 +323,12 @@ publish = function() {
     }
     const ret = [];
     for (let p in params)
-     ret.push(encodeURIComponent(p) + '=' + encodeURIComponent(params[p]));
+      ret.push(encodeURIComponent(p) + '=' + encodeURIComponent(params[p]));
     const url = 'http://publicartmuseum.net/tmp/w/extensions/WikidataBundle/utils/php/updateDB.php?' + ret.join('&')
     console.log(url)
     $.get(url, function(res) {
       console.log(res)
-      document.getElementById('editform').action = '/tmp/w/index.php?title=' + db_data.article + '&action=submit';
+      document.getElementById('editform').action = '/tmp/w/index.php?title=' + encodeURIComponent(db_data.article) + '&action=submit';
       document.getElementById("editform").submit();
     })
   }
