@@ -301,13 +301,11 @@ publish = function() {
      ret.push(encodeURIComponent(p) + '=' + encodeURIComponent(params[p]));
     const url = 'http://publicartmuseum.net/tmp/w/extensions/WikidataBundle/utils/php/updateDB.php?' + ret.join('&')
     console.log(url)
-    /*
     $.get(url, function(res) {
       console.log(res)
       document.getElementById('editform').action = '/tmp/w/index.php?title=' + encodeURIComponent(article) + '&action=submit';
-      document.getElementById("editform").submit();)
+      document.getElementById("editform").submit();
     })
-    */
   } else {
     const params = {
       action: 'create_artwork',
@@ -354,7 +352,28 @@ parse_data_for_db = function(data) {
     artist.push(data.artiste[i].label)
   db_data.artist = artist.join(';')
 
-  db_data.article = db_data.title + ' (' + artist.join(', ') + ')'
+  article_title = db_data.title != '' ? db_data.title : 'Titre inconnu'
+  article_artist = artist.length > 0 ? artist.join(', ') : 'artiste inconnu'
+
+  if (article_title === 'Titre inconnu' && article_artist === 'artiste inconnu') {
+    const today = new Date()
+    let hours = today.getHours()
+    if (hours < 10)
+      hours = '0' + hours
+    let minutes = today.getMinutes()
+    if (minutes < 10)
+      minutes = '0' + minutes
+    let dd = today.getDate()
+    let mm = today.getMonth() + 1
+    const yyyy = today.getFullYear()
+    if (dd < 10)
+      dd = '0' + dd
+    if (mm < 10)
+      mm = '0' + mm
+    const date_string = dd + '/' + mm + '/' + yyyy + ' ' + hours + ':' + minutes
+    db_data.article = article_title + ' (' + article_artist + ', ' + date_string + ')'
+  } else
+    db_data.article = article_title + ' (' + article_artist + ')'
 
   db_data.nature = (data.nature ? data.nature : '')
 

@@ -25,7 +25,7 @@ class SpecialWikidataEdit extends SpecialPage {
     // Récupère le titre ou l'id éventuellement passé en paramètre
     $id = preg_replace('/^.*\//', '', $request->getText('title'));
 
-    if ($id != $request->getText('title')) {      
+    if ($id != $request->getText('title')) {
       if (preg_match('/^Q[0-9]+$/', $id)) {
         // Provenance : Wikidata
         require_once(ATLASMUSEUM_UTILS_PATH_PHP . 'updateDB.php');

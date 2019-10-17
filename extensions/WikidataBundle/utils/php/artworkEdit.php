@@ -287,8 +287,11 @@ class ArtworkEdit {
    * Affiche le formulaire d'édition d'une œuvre
    */
   public static function renderEdit($id) {
-    if (isset($id) && preg_match('/^Q[0-9]+$/', $id)) {
+    $creation = false;
+    $wikidata = false;
 
+    if (isset($id) && preg_match('/^Q[0-9]+$/', $id)) {
+      $wikidata = true;
       require_once(ATLASMUSEUM_UTILS_PATH_PHP . 'updateDB.php');
       $article = get_artwork_from_q($id);
 
@@ -307,17 +310,18 @@ class ArtworkEdit {
       $data = ArtworkGetData::get_labels_am($data);
       $article = $id;
     } else {
+      $creation = true;
       $data = ArtworkGetData::get_data('', null, null);
       $article = '';
     }
 
-      ob_start();
+    ob_start();
 
-      if ($article == '' && array_key_exists('label', $data)) {
-        ?>
-          <script>document.getElementById('firstHeading').getElementsByTagName('span')[0].textContent = "Importer : <?php print $data['label']; ?>"</script>
-        <?php
-      }
+    if ($wikidata) {
+      ?>
+        <script>document.getElementById('firstHeading').getElementsByTagName('span')[0].textContent = "Importer : <?php print $data['label']; ?>"</script>
+      <?php
+    }
 ?>
 <form id="edit_form" onsubmit="return false;">
   <input type="hidden" id="article" name="article" value="<?php print $article; ?>">
@@ -339,7 +343,7 @@ class ArtworkEdit {
       <h2> <span class="mw-headline" id="Wikidata"> Wikidata </span></h2>
       <table class="formtable">
         <tbody>
-          <?php self::render_wikidata($data, $article == ''); ?>
+          <?php self::render_wikidata($data, $wikidata); ?>
         </tbody>
       </table>
 
