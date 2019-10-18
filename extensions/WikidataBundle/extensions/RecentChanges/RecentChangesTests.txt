@@ -1,0 +1,142 @@
+# Force the test runner to ensure the extension is loaded
+!! hooks
+recentChanges
+!! endhooks
+
+#Regression tests for existing functionality, to ensure nothing was broken.
+!! test
+<recentChanges>
+!! input
+<recentChanges>
+this
+is
+a
+test
+</recentChanges>
+!! result
+<div class="recentChanges">
+<p>this<br />
+is<br />
+a<br />
+test
+</p>
+</div>
+
+!! end
+
+!!test
+  <recentChanges> with recursive parsing
+!!input
+<recentChanges>
+this ''is'' a '''test'''
+</recentChanges>
+!! result
+<div class="recentChanges">
+<p>this <i>is</i> a <b>test</b>
+</p>
+</div>
+
+!!end
+
+
+!!test
+  <recentChanges> with leading whitespace
+!!input
+<recentChanges>
+
+   test
+
+</recentChanges>
+!! result
+<div class="recentChanges">
+<p><br />
+&#160;&#160;&#160;test<br />
+</p>
+</div>
+
+!!end
+
+!!test
+Horizontal rule
+!!input
+<recentChanges>
+some
+-----
+text
+</recentChanges>
+!!result
+<div class="recentChanges">
+<p>some<br />
+</p>
+<hr /><br />
+<p>text
+</p>
+</div>
+
+!!end
+
+#test for new recentChanges/nowiki feature; should fail without new enhancement.
+!! test 2
+example of <nowiki> without <recentChanges>
+!!options
+disabled
+!! input
+<nowiki>
+this
+is
+a
+test
+</nowiki>
+!! result
+<p>
+this
+is
+a
+test
+
+</p>
+!! end
+
+!! test
+  nested <recentChanges><nowiki>
+!! input
+<recentChanges><nowiki>
+this
+is
+a
+test
+</nowiki></recentChanges>
+!! result
+<div class="recentChanges">
+<p><br />
+this<br />
+is<br />
+a<br />
+test<br />
+
+</p>
+</div>
+
+!!end
+
+!! test 5
+  nested <recentChanges><nowiki> with formatting
+!! input
+<recentChanges><nowiki>
+this
+'''is'''
+a
+test
+</nowiki></recentChanges>
+!! result
+<div class="recentChanges">
+<p><br />
+this<br />
+'''is'''<br />
+a<br />
+test<br />
+
+</p>
+</div>
+
+!! end

@@ -29,13 +29,21 @@ class Artwork {
     $image_legend = '';
 
     if (isset($param[$param_name])) {
-      $image_url = ATLASMUSEUM_PATH . ATLASMUSEUM_FILE_PREFIX . $param[$param_name];
-      $tmp = self::get_image_am($param[$param_name], 420);
-      if (isset($tmp->query->pages))
+      if (preg_match('/^Commons:/i', $param[$param_name])) {
+        $image_name = substr($param[$param_name], 8);
+        $image_url = COMMONS_PATH . COMMONS_FILE_PREFIX . $image_name;
+        $tmp = self::get_image($image_name, 420);
         foreach($tmp->query->pages as $image)
           $image_thumb = $image->imageinfo[0]->thumburl;
-      $tmp = self::parse_page_am('Fichier:'.$param[$param_name]);
-      $image_legend = $tmp->parse->text->{'*'};
+      } else {
+        $image_url = ATLASMUSEUM_PATH . ATLASMUSEUM_FILE_PREFIX . $param[$param_name];
+        $tmp = self::get_image_am($param[$param_name], 420);
+        if (isset($tmp->query->pages))
+          foreach($tmp->query->pages as $image)
+            $image_thumb = $image->imageinfo[0]->thumburl;
+        $tmp = self::parse_page_am('Fichier:'.$param[$param_name]);
+        $image_legend = $tmp->parse->text->{'*'};
+      }
     } else
     if (isset($claims->{$property})) {
       $image_url = COMMONS_PATH . COMMONS_FILE_PREFIX . $claims->{$property}[0]->mainsnak->datavalue->value;
