@@ -109,6 +109,13 @@ import_wikidata_claim = function(claim, property) {
   }
 }
 
+import_wikidata_image = function(claim, property) {
+  if (claim[0]) {
+    document.getElementById('input_' + property).value = claim[0].mainsnak.datavalue.value
+    document.getElementById('input_checkbox_' + property).setAttribute('checked', 'true')
+  }
+}
+
 import_wikidata = function() {
   let wikidataId = document.getElementById('input_label').value
   let pattern = /^[qQ][0-9]+$/
@@ -170,6 +177,11 @@ import_wikidata = function() {
           // Commissaires
           if (claims.P1640) {
             import_wikidata_claim(claims.P1640, 'P1640')
+          }
+
+          // Image
+          if (claims.P18) {
+            import_wikidata_image(claims.P18, 'P18')
           }
         }
       }
@@ -244,6 +256,13 @@ publish = function() {
         data[eq][index] = {'label':'','id':''};
       data[eq][index][params[1]] = form_data[i].value;
     }
+  }
+
+  if (data['image_principale_origin'] && data['image_principale_origin'] === 'on') {
+    if (data['image_principale']) {
+      data['image_principale'] = 'Commons:' + data['image_principale']
+    }
+    delete data['image_principale_origin']
   }
 
   console.log(data)

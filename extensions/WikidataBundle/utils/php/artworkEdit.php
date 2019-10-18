@@ -98,15 +98,23 @@ class ArtworkEdit {
   }
 
   public static function render_main_image($data, $property, $title, $key, $mandatory=false) {
+    /*var_dump($data);
+    var_dump($property);
+    exit;*/
     ?>
       <tr>
         <th><?php print $title; ?><?php if ($mandatory) print ' <span class="mandatory">*</span>'; ?></th>
         <td id="input_<?php print $property; ?>_cell">
-          <input type="text" id="input_<?php print $property; ?>" value="<?php print $data[$property]; ?>" name="Edit[<?php print $key; ?>]" class="createboxInput createboxInputMainImage" size="45">
+          <input type="text" id="input_<?php print $property; ?>" value="<?php print $data[$property]['file']; ?>" name="Edit[<?php print $key; ?>]" class="createboxInput createboxInputMainImage" size="45">
           <a data-fancybox data-type="iframe" data-src="<?php print BASE_MAIN; ?>index.php?title=Sp%C3%A9cial:UploadWindow&amp;pfInputID=input_<?php print $property; ?>" href="javascript:;">Importer un fichier</a>
+          <br />
+          <input id="input_checkbox_<?php print $property; ?>" name="Edit[<?php print $key; ?>_origin]" type="checkbox" class="createboxInput" <?php if ($data[$property]['origin'] == 'commons') print 'checked'; ?>><i>Cette image provient de Wikimedia Commons</i>
           <?php
-            if (isset($data[$property]) && $data[$property] != '') {
-              $tmp = self::get_image_am($data[$property], 200);
+            if (isset($data[$property]['file']) && $data[$property]['file'] != '') {
+              if ($data[$property]['origin'] == 'commons')
+                $tmp = self::get_image($data[$property]['file'], 200);
+              else
+                $tmp = self::get_image_am($data[$property]['file'], 200);
               $image_thumb = '';
               if (isset($tmp->query->pages))
                 foreach($tmp->query->pages as $image)
@@ -372,7 +380,7 @@ class ArtworkEdit {
       <h2> <span class="mw-headline" id="Image_principale"> Image principale </span></h2>
       <table class="formtable">
         <tbody>
-          <?php self::render_main_image($data, 'image_principale', 'Image principale', 'image_principale', false);
+          <?php self::render_main_image($data, 'P18', 'Image principale', 'image_principale', false);
           /*self::render_image($data); */?>
         </tbody>
       </table>

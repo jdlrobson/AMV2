@@ -101,6 +101,18 @@ class ArtworkGetData {
     return $data;
   }
 
+  public static function get_claims_image($claims, $property) {
+    $data = [];
+    if (!is_null($claims) && isset($claims->{$property})) {
+      $data = [
+        'file' => $claims->{$property}[0]->mainsnak->datavalue->value,
+        'origin' => 'commons'
+      ];
+    }
+
+    return $data;
+  }
+
   public static function get_empty_data() {
     return [
       'id' => '',
@@ -166,6 +178,8 @@ class ArtworkGetData {
       $data['P2846'] = self::get_claims_item($values->entities->{$id}->claims, 'P2846', $labels);
       //-- Sujet représenté
       $data['P921'] = self::get_claims_item($values->entities->{$id}->claims, 'P921', $labels);
+      //-- Image
+      $data['P18'] = self::get_claims_image($values->entities->{$id}->claims, 'P18');
     }
 
     $data['nature'] = 'Pérenne';
@@ -353,6 +367,18 @@ class ArtworkGetData {
                 break;
               case 'forme':
                 $data['P921'] = self::convert_am_item($value);
+                break;
+              case 'image_principale':
+                if (preg_match('/^Commons:/i', $value))
+                  $data['P18'] = [
+                    "file" => substr($value, 8),
+                    "origin" => 'commons'
+                  ];
+                else
+                  $data['P18'] = [
+                    "file" => $value,
+                    "origin" => 'atlasmuseum'
+                  ];
                 break;
               default:
                 $data[$parameter] = $value;
