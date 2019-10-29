@@ -115,6 +115,31 @@ function update_artwork() {
   print json_encode($result);
 }
 
+function update_artwork_wikidata() {
+
+  if (isset($_GET['article'])) {
+
+    $article = str_replace('"', '\"', urldecode($_GET['article']));
+    $wikidata = urldecode($_GET['wikidata']);
+
+    $query = 'UPDATE tmp_library_2 SET ' .
+      'wikidata = "' . $wikidata . '" ' .
+      'WHERE article="' . $article . '"';
+
+    query($query);
+  
+    $result = [
+      'result' => 'ok',
+    ];
+  } else {
+    $result = [
+      'result' => 'ko'
+    ];
+  }
+
+  print json_encode($result);
+}
+
 function get_artist($id) {
   $query = "SELECT article FROM tmp_artist WHERE wikidata='$id' LIMIT 1";
   $data = query($query);
@@ -206,6 +231,9 @@ if (isset($_GET['action'])) {
     case 'update_artist':
       update_artist();
       break;
+    case 'update_artwork_wikidata':
+    update_artwork_wikidata();
+    break;
   }
   switch ($_GET['action']) {
     case 'create_artwork':

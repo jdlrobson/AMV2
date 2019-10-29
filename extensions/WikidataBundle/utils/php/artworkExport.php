@@ -90,7 +90,7 @@ class ArtworkExport {
       print "CREATE\n";
 
     if ($data['label'])
-      print $id."\tLFr\t\"".$data['label']."\"\n";
+      print $id."\tLfr\t\"".$data['label']."\"\n";
 
     print $id."\tDfr\t\"".$description."\"\n";
 
