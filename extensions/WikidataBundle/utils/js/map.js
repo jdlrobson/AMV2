@@ -2,7 +2,7 @@ var artworks_map = [];
 var clusterSource;
 
 document.addEventListener("DOMContentLoaded", function(event) {
-  $url = 'http://publicartmuseum.net/tmp/w/extensions/WikidataBundle/utils/php/getMap.php'
+  $url = 'http://publicartmuseum.net/w/extensions/WikidataBundle/utils/php/getMap.php'
   $.get($url, function(result, status) {
     artworks_map = JSON.parse(result)
 
@@ -98,7 +98,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
                   icon_src = "http://publicartmuseum.net/w/images/9/90/Picto-bleu.png";
                   break;
                 default:
-                  icon_src = "http://publicartmuseum.net/tmp/assets/images/Picto-Wikidata.png";
+                  icon_src = "http://publicartmuseum.net/w/images/d/dd/Picto-Wikidata.png";
               }
                   
               style = new ol.style.Style({

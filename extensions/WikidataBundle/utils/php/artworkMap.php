@@ -112,29 +112,29 @@ class GlobalArtworkMap {
       <tr>
         <td>
           <input type="checkbox" id="checkbox-perenne" class="map-checkbox" onclick="changeMarkers()" checked>
-          <label for="checkbox-perenne"><span class="imgWrapper"><img alt="Picto-gris.png" src="/tmp/w/images/a/a0/Picto-gris.png" width="48" height="48"></span> œuvres pérennes</label>
+          <label for="checkbox-perenne"><span class="imgWrapper"><img alt="Picto-gris.png" src="/w/images/a/a0/Picto-gris.png" width="48" height="48"></span> œuvres pérennes</label>
         </td>
         <td>
           <input type="checkbox" id="checkbox-ephemere" class="map-checkbox" onclick="changeMarkers()" checked>
-          <label for="checkbox-ephemere"><span class="imgWrapper"><img alt="Picto-jaune.png" src="/tmp/w/images/4/49/Picto-jaune.png" width="48" height="48"></span> œuvres éphémères</label>
+          <label for="checkbox-ephemere"><span class="imgWrapper"><img alt="Picto-jaune.png" src="/w/images/4/49/Picto-jaune.png" width="48" height="48"></span> œuvres éphémères</label>
         </td>
         <td>
           <input type="checkbox" id="checkbox-detruite" class="map-checkbox" onclick="changeMarkers()" checked>
-          <label for="checkbox-detruite"><span class="imgWrapper"><img alt="Picto-rouge.png" src="/tmp/w/images/a/a8/Picto-rouge.png" width="24" height="24"></span> œuvres détruites</label>
+          <label for="checkbox-detruite"><span class="imgWrapper"><img alt="Picto-rouge.png" src="/w/images/a/a8/Picto-rouge.png" width="24" height="24"></span> œuvres détruites</label>
         </td>
       </tr>
       <tr>
         <td>
           <input type="checkbox" id="checkbox-verifier" class="map-checkbox" onclick="changeMarkers()" checked>
-          <label for="checkbox-verifier"><span class="imgWrapper"><img alt="Picto-bleu.png" src="/tmp/w/images/9/90/Picto-bleu.png" width="32" height="32"></span> œuvres à vérifier</label>
+          <label for="checkbox-verifier"><span class="imgWrapper"><img alt="Picto-bleu.png" src="/w/images/9/90/Picto-bleu.png" width="32" height="32"></span> œuvres à vérifier</label>
         </td>
         <td>
           <input type="checkbox" id="checkbox-non-realisee" class="map-checkbox" onclick="changeMarkers()" checked>
-          <label for="checkbox-non-realisee"><span class="imgWrapper"><img alt="Picto-blanc.png" src="/tmp/w/images/2/2d/Picto-blanc.png" width="32" height="32"></span> œuvres non réalisées</label>
+          <label for="checkbox-non-realisee"><span class="imgWrapper"><img alt="Picto-blanc.png" src="/w/images/2/2d/Picto-blanc.png" width="32" height="32"></span> œuvres non réalisées</label>
         </td>
         <td>
           <input type="checkbox" id="checkbox-wikidata" class="map-checkbox" onclick="changeMarkers()" checked>
-          <label for="checkbox-wikidata"><span class="imgWrapper"><img alt="Picto-Wikidata.png" src="/tmp/w/images/d/dd/Picto-Wikidata.png" width="48" height="48"></span> Wikidata</label>
+          <label for="checkbox-wikidata"><span class="imgWrapper"><img alt="Picto-Wikidata.png" src="/w/images/d/dd/Picto-Wikidata.png" width="48" height="48"></span> Wikidata</label>
         </td>
       </tr>
   </table>

@@ -732,7 +732,7 @@ class Artwork {
       ?>
       <div class="import">
         <a href="<?php print ATLASMUSEUM_PATH; ?>Spécial:WikidataEdit/<?php print $q; ?>">
-          <img src="http://publicartmuseum.net/tmp/w/skins/AtlasMuseum/resources/images/hmodify.png" />
+          <img src="http://publicartmuseum.net/w/skins/AtlasMuseum/resources/images/hmodify.png" />
           Importer cette œuvre dans atlasmuseum
         </a>
       </div>
@@ -741,7 +741,7 @@ class Artwork {
       ?>
       <div class="import">
         <a href="<?php print ATLASMUSEUM_PATH; ?>Spécial:WikidataExport/<?php print $_GET['title']; ?>">
-          <img src="http://publicartmuseum.net/tmp/w/skins/AtlasMuseum/resources/images/hmodify.png" />Exporter cette œuvre sur Wikidata
+          <img src="http://publicartmuseum.net/w/skins/AtlasMuseum/resources/images/hmodify.png" />Exporter cette œuvre sur Wikidata
         </a>
       </div>
       <?php
@@ -863,7 +863,7 @@ class Artwork {
           ?>
             <div class="wikidataLink">
               <a href="https://www.wikidata.org/wiki/<?php print $q; ?>" target="_blank">
-                <img src="http://publicartmuseum.net/tmp/w/skins/AtlasMuseum/resources/hwikidata.png" />
+                <img src="http://publicartmuseum.net/w/skins/AtlasMuseum/resources/hwikidata.png" />
                 <span>Voir cette œuvre sur Wikidata</span>
               </a>
             </div>

@@ -63,7 +63,7 @@ get_label = function(id, callback) {
 }
 
 get_image_am = function(image, width, callback) {
-  const url = 'http://publicartmuseum.net/tmp/w/api.php'
+  const url = 'http://publicartmuseum.net/w/api.php'
   const params = {
     action: 'query',
     prop: 'imageinfo',
@@ -318,11 +318,11 @@ publish = function() {
     const ret = [];
     for (let p in params)
      ret.push(encodeURIComponent(p) + '=' + encodeURIComponent(params[p]));
-    const url = 'http://publicartmuseum.net/tmp/w/extensions/WikidataBundle/utils/php/updateDB.php?' + ret.join('&')
+    const url = 'http://publicartmuseum.net/w/extensions/WikidataBundle/utils/php/updateDB.php?' + ret.join('&')
     console.log(url)
     $.get(url, function(res) {
       console.log(res)
-      document.getElementById('editform').action = '/tmp/w/index.php?title=' + encodeURIComponent(article) + '&action=submit';
+      document.getElementById('editform').action = '/w/index.php?title=' + encodeURIComponent(article) + '&action=submit';
       document.getElementById("editform").submit();
     })
   } else {
@@ -341,11 +341,11 @@ publish = function() {
     const ret = [];
     for (let p in params)
       ret.push(encodeURIComponent(p) + '=' + encodeURIComponent(params[p]));
-    const url = 'http://publicartmuseum.net/tmp/w/extensions/WikidataBundle/utils/php/updateDB.php?' + ret.join('&')
+    const url = 'http://publicartmuseum.net/w/extensions/WikidataBundle/utils/php/updateDB.php?' + ret.join('&')
     console.log(url)
     $.get(url, function(res) {
       console.log(res)
-      document.getElementById('editform').action = '/tmp/w/index.php?title=' + encodeURIComponent(db_data.article) + '&action=submit';
+      document.getElementById('editform').action = '/w/index.php?title=' + encodeURIComponent(db_data.article) + '&action=submit';
       document.getElementById("editform").submit();
     })
   }
@@ -534,7 +534,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
       anchorXUnits: 'fraction',
       anchorYUnits: 'pixels',
       opacity: 0.75,
-      src: 'http://publicartmuseum.net/tmp/w/images/a/a0/Picto-gris.png'
+      src: 'http://publicartmuseum.net/w/images/a/a0/Picto-gris.png'
     }))
   });
   var vectorLayer = new ol.layer.Vector({

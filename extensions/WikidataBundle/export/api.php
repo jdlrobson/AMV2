@@ -6,6 +6,8 @@
 $endPoint = "https://www.wikidata.org/w/api.php";
 $amLogin = "Atlasmuseum";
 $amPass = "abywarburg";
+//$amLogin = "Poulpy";
+//$amPass = "JeSuis1Poulpe";
 $cookiefile = "/tmp/cookie.txt";
 
 function api_post($parameters) {
@@ -171,7 +173,7 @@ function editItem($id, $data) {
     $params['new'] = 'item';
 
   $result = api_post($params);
-
+var_dump($result);
   if ($id != '')
     return $id;
   else

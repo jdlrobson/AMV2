@@ -92,12 +92,12 @@ publish = function() {
     const ret = [];
     for (let p in params)
      ret.push(encodeURIComponent(p) + '=' + encodeURIComponent(params[p]));
-    const url = 'http://publicartmuseum.net/tmp/w/extensions/WikidataBundle/utils/php/updateDB.php?' + ret.join('&')
+    const url = 'http://publicartmuseum.net/w/extensions/WikidataBundle/utils/php/updateDB.php?' + ret.join('&')
     console.log(url)
     $.get(url, function(res) {
       console.log(res)
       */
-      document.getElementById('editform').action = '/tmp/w/index.php?title=' + article + '&action=submit';
+      document.getElementById('editform').action = '/w/index.php?title=' + article + '&action=submit';
       document.getElementById("editform").submit();
       /*
     })
@@ -112,12 +112,12 @@ publish = function() {
     const ret = [];
     for (let p in params)
      ret.push(encodeURIComponent(p) + '=' + encodeURIComponent(params[p]));
-    const url = 'http://publicartmuseum.net/tmp/w/extensions/WikidataBundle/utils/php/updateDB.php?' + ret.join('&')
+    const url = 'http://publicartmuseum.net/w/extensions/WikidataBundle/utils/php/updateDB.php?' + ret.join('&')
     console.log(url)
     $.get(url, function(res) {
       console.log(res)
       */
-      document.getElementById('editform').action = '/tmp/w/index.php?title=' + db_data.article + '&action=submit';
+      document.getElementById('editform').action = '/w/index.php?title=' + db_data.article + '&action=submit';
       document.getElementById("editform").submit();
       /*
     })
@@ -167,7 +167,7 @@ get_semantic = function(data) {
 }
 
 get_image_am = function(image, width, callback) {
-  const url = 'http://publicartmuseum.net/tmp/w/api.php'
+  const url = 'http://publicartmuseum.net/w/api.php'
   const params = {
     action: 'query',
     prop: 'imageinfo',

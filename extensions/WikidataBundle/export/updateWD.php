@@ -1,5 +1,9 @@
 <?php
 
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept, Authorization");
+header("Access-Control-Allow-Methods: PUT, POST, PATCH, DELETE, GET");
+
 /***************************
  * Main code
  ***************************/
@@ -71,12 +75,14 @@ if (sizeof($descriptions) > 0)
 if (sizeof($claims) > 0)
   $data['claims'] = $claims;
 
-// var_dump($data);
-
 if (sizeof($data) > 0) {
   login();
   $result = editItem($id, $data);
-  echo $result;
+  echo json_encode([
+    'id' => $result
+  ]);
 } else {
-  echo $id;
+  echo json_encode([
+    'id' => $id
+  ]);
 }

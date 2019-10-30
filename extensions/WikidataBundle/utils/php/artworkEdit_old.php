@@ -190,12 +190,12 @@ class ArtworkEdit {
     <input type="button" value="Publier" name="wpSave" onclick="publish();">
   </div>
 </form>
-<script type="text/javascript" src="http://publicartmuseum.net/tmp/w/Wikidata/js/jquery.min.js"></script>
-<script type="text/javascript" src="http://publicartmuseum.net/tmp/w/Wikidata/js/jquery-ui.min.js"></script>
-<script type="text/javascript" src="http://publicartmuseum.net/tmp/w/Wikidata/js/autocomplete.js"></script>
-<script type="text/javascript" src="http://publicartmuseum.net/tmp/w/Wikidata/js/edit.js"></script>
-<link rel="stylesheet" href="http://publicartmuseum.net/tmp/w/Wikidata/cs/edit.css">
-<link rel="stylesheet" href="http://publicartmuseum.net/tmp/w/Wikidata/css/autocomplete.css">
+<script type="text/javascript" src="http://publicartmuseum.net/w/Wikidata/js/jquery.min.js"></script>
+<script type="text/javascript" src="http://publicartmuseum.net/w/Wikidata/js/jquery-ui.min.js"></script>
+<script type="text/javascript" src="http://publicartmuseum.net/w/Wikidata/js/autocomplete.js"></script>
+<script type="text/javascript" src="http://publicartmuseum.net/w/Wikidata/js/edit.js"></script>
+<link rel="stylesheet" href="http://publicartmuseum.net/w/Wikidata/cs/edit.css">
+<link rel="stylesheet" href="http://publicartmuseum.net/w/Wikidata/css/autocomplete.css">
 <?php
 
       $contents = ob_get_contents();

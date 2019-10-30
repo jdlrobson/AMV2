@@ -415,7 +415,7 @@ class Artist {
       ?>
       <div class="import">
         <a href="<?php print ATLASMUSEUM_PATH; ?>Spécial:WikidataEditArtist/<?php print $q; ?>">
-          <img src="http://publicartmuseum.net/tmp/w/skins/AtlasMuseum/resources/images/hmodify.png" />
+          <img src="http://publicartmuseum.net/w/skins/AtlasMuseum/resources/images/hmodify.png" />
           Importer cette notice dans atlasmuseum
         </a>
       </div>
@@ -424,7 +424,7 @@ class Artist {
       ?>
       <div class="import">
         <a href="<?php print ATLASMUSEUM_PATH; ?>Spécial:WikidataArtistExport/<?php print $_GET['title']; ?>">
-          <img src="http://publicartmuseum.net/tmp/w/skins/AtlasMuseum/resources/images/hmodify.png" />Exporter cette notice sur Wikidata
+          <img src="http://publicartmuseum.net/w/skins/AtlasMuseum/resources/images/hmodify.png" />Exporter cette notice sur Wikidata
         </a>
       </div>
       <?php
@@ -456,7 +456,7 @@ class Artist {
           ?>
             <div class="wikidataLink">
               <a href="<?php print WIKIDATA_BASE; ?>wiki/<?php print $q; ?>" target="_blank">
-                <img src="http://publicartmuseum.net/tmp/w/skins/AtlasMuseum/resources/hwikidata.png" />
+                <img src="http://publicartmuseum.net/w/skins/AtlasMuseum/resources/hwikidata.png" />
                 <span>Voir cette notice sur Wikidata</span>
               </a>
             </div>

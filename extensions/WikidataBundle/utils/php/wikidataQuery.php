@@ -54,8 +54,8 @@ class WikidataQuery {
           <button type="submit">Exécuter</button>
         </form>
       </div>
-      <script type="text/javascript" src="http://publicartmuseum.net/tmp/w/Wikidata/js/jquery.min.js"></script>
-      <script type="text/javascript" src="http://publicartmuseum.net/tmp/w/Wikidata/js/jquery-ui.min.js"></script>
+      <script type="text/javascript" src="http://publicartmuseum.net/w/Wikidata/js/jquery.min.js"></script>
+      <script type="text/javascript" src="http://publicartmuseum.net/w/Wikidata/js/jquery-ui.min.js"></script>
     <?php
     if (sizeof($data)>0) {
       ?>
