@@ -61,7 +61,7 @@ class Artwork {
           </a>
           <?php
             if ($image_legend != '')
-              print '<div class="thumbcaption">' . $image_legend . '</div>';
+              print '<div class="thumbcaption" style="text-align: center">' . $image_legend . '</div>';
           ?>
         </div>
       </div>
@@ -275,21 +275,27 @@ class Artwork {
   }
 
   public static function render_other_works($id, $creators, $param) {
+    if (is_null($creators) && !isset($param['artiste']) && $param['artiste'] == '')
+      return;
+
     $currentArticle = preg_replace('/^.*\/wiki\//', '', $_SERVER['REQUEST_URI']);
     $currentArticle = urldecode(str_replace('_', ' ', $currentArticle));
 
     $artists_id = [];
     $artists_names = [];
-    for ($i=0; $i<sizeof($creators); $i++) {
-      array_push($artists_id, $creators[0]->mainsnak->datavalue->value->id);
-      $result = get_artists_names($artists_id);
-      while ($row = $result->fetch_row()) {
-        array_push($artists_names, $row[0]);
+    if (!is_null($creators)) {
+      for ($i=0; $i<sizeof($creators); $i++) {
+        array_push($artists_id, $creators[0]->mainsnak->datavalue->value->id);
+        $result = get_artists_names($artists_id);
+        while ($row = $result->fetch_row()) {
+          array_push($artists_names, $row[0]);
+        }
       }
     }
 
     if (array_key_exists('artiste', $param)) {
       $artists_am = explode (';', $param['artiste']);
+
       foreach ($artists_am as $a) {
         if (preg_match('/^[Qq][0-9]+/', $a))
           array_push($artists_id, $a);
@@ -299,17 +305,22 @@ class Artwork {
 
       $result = get_artists_from_ids($artists_am);
       while ($row = $result->fetch_row()) {
-        array_push($artists_id, $row[1]);
+        if ($row[1] != '')
+          array_push($artists_id, $row[1]);
       }
-      $result = get_artists_names($artists_id);
-      while ($row = $result->fetch_row()) {
-        array_push($artists_names, $row[0]);
+
+      if (sizeof($artists_id) > 0) {
+        $result = get_artists_names($artists_id);
+        while ($row = $result->fetch_row()) {
+          array_push($artists_names, $row[0]);
+        }
       }
     }
 
     $artworks = [];
 
     $data2 = get_artworks_from_artists(array_merge($artists_id, $artists_names));
+
     if (!is_null($data2) && $data2) {
       while ($row = $data2->fetch_row()) {
         if ($row[2] != '') {
@@ -341,39 +352,41 @@ class Artwork {
       }
     }
 
-    $query =
-      "SELECT DISTINCT ?item ?itemLabel ?placeLabel ?countryLabel ?image WHERE {" .
-      "  ?item wdt:P170 ?creator ;" .
-      "        wdt:P136 wd:Q557141 ." .
-      "  VALUES ?creator  { wd:" . implode(' wd:', $artists_id) . " } " .
-      "  OPTIONAL { ?item wdt:P18 ?image }" .
-      "  SERVICE wikibase:label { bd:serviceParam wikibase:language \"fr,en\" . }" .
-      "} ORDER BY ?itemLabel";
+    if (sizeof($artists_id) > 0) {
+      $query =
+        "SELECT DISTINCT ?item ?itemLabel ?placeLabel ?countryLabel ?image WHERE {" .
+        "  ?item wdt:P170 ?creator ;" .
+        "        wdt:P136 wd:Q557141 ." .
+        "  VALUES ?creator  { wd:" . implode(' wd:', $artists_id) . " } " .
+        "  OPTIONAL { ?item wdt:P18 ?image }" .
+        "  SERVICE wikibase:label { bd:serviceParam wikibase:language \"fr,en\" . }" .
+        "} ORDER BY ?itemLabel";
 
-    $data = Api::Sparql($query);
-    $images = '';
+      $data = Api::Sparql($query);
+      $images = '';
 
-    foreach($data->results->bindings as $artwork) {
-      $artwork_id = str_replace(WIKIDATA_ENTITY, '', $artwork->item->value);
-      if ($artwork_id != $id) {
-        $title = $artwork->itemLabel->value;
-        if (isset($artwork->image)) {
-          $image_url = $artwork->image->value;
-          $image_thumb = $image_url;
-        } else {
-          $image_thumb = MISSING_IMAGE_FILE;
-          $image_url = MISSING_IMAGE_LINK;
+      foreach($data->results->bindings as $artwork) {
+        $artwork_id = str_replace(WIKIDATA_ENTITY, '', $artwork->item->value);
+        if ($artwork_id != $id) {
+          $title = $artwork->itemLabel->value;
+          if (isset($artwork->image)) {
+            $image_url = $artwork->image->value;
+            $image_thumb = $image_url;
+          } else {
+            $image_thumb = MISSING_IMAGE_FILE;
+            $image_url = MISSING_IMAGE_LINK;
+          }
+
+          array_push($artworks, [
+            'article' => 'Spécial:Wikidata/' . $artwork_id,
+            'canonicalArticle' => $artwork_id,
+            'title' => $title,
+            'image_url' => $image_url,
+            'image_thumb' => $image_thumb,
+            'wikidata' => $artwork_id,
+            'ok' => true
+          ]);
         }
-
-        array_push($artworks, [
-          'article' => 'Spécial:Wikidata/' . $artwork_id,
-          'canonicalArticle' => $artwork_id,
-          'title' => $title,
-          'image_url' => $image_url,
-          'image_thumb' => $image_thumb,
-          'wikidata' => $artwork_id,
-          'ok' => true
-        ]);
       }
     }
 

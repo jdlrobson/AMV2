@@ -178,7 +178,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
       else
         link = "Spécial:Wikidata/"+id
 
-      var text = "<p><b><a href=\""+link+"\">"+title+"</a></b></p><hr />";
+      var text = "<p><b><a href=\"http://publicartmuseum.net/wiki/"+link+"\">"+title+"</a></b></p><hr />";
 
       /*if (image != "")
         text += "<div class=\"map_infowindow_image\"><a href=\"index.php?action=artwork&q="+id+"&origin="+((type == "Wikidata")?"wikidata":"atlasmuseum")+"\"><img src=\""+image+"\" /></a></div>";*/

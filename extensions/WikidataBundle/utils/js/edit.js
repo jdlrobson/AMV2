@@ -402,7 +402,7 @@ parse_data_for_db = function(data) {
     db_data.longitude = coords[1]
   }
 
-  db_image = (data.image_principale ? data.image_principale : '')
+  db_data.image = (data.image_principale ? data.image_principale : '')
 
   db_data.date = (data.inauguration ? data.inauguration : '')
 

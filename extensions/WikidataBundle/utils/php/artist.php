@@ -134,8 +134,8 @@ class Artist {
   }
 
   public static function convert_artist($artist) {
-
     $article = get_artist($artist);
+
     if ($article != '')
       $artist = $article;
 

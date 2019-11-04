@@ -24,8 +24,17 @@ class RecentChanges {
 	public static function renderRecentChanges( $in, $param = array(), $parser = null, $frame = false ) {
     $attribs = Sanitizer::validateTagAttributes( $param, 'div' );
 
+    // Récupère la collection éventuelle
+    $collection = null;
+    if (isset($param['collection'])) {
+      $collection = $param['collection'];
+      if (strtoupper($collection) == '{{PAGENAME}}') {
+        $collection = $parser->getTitle()->mTextform;
+      }
+    }
+
     require_once(ATLASMUSEUM_UTILS_PATH_PHP . 'recentChanges.php');
 
-    return RecentChangesDisplay::renderRecentChanges($param);
+    return RecentChangesDisplay::renderRecentChanges($param, $collection);
 	}
 }

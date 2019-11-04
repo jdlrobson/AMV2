@@ -23,13 +23,22 @@ class RecentChangesDisplay {
     ), 'atlasmuseum');
   }
 
-  public static function renderRecentChanges($param = array()) {    
+  public static function renderRecentChanges($param = array(), $collection = null) {    
     $attribs = Sanitizer::validateTagAttributes( $param, 'div' );
+
+    $query = '[[Category:Notices d\'œuvre]]|?Image principale|sort=Modification date|limit=4|order=desc';
+    if (!is_null($collection)) {
+      $query = '[[-Contient la notice::' . $collection . ']]|?Image principale|sort=Modification date|limit=4|order=desc';
+      var_dump($query);
+    }
 
     $data = Api::call_api(array(
       'action' => 'ask',
-      'query' => '[[Category:Notices d\'œuvre]]|?Image principale|sort=Modification date|limit=4|order=desc'
+      'query' => $query
     ), 'atlasmuseum');
+
+    if (!is_null($collection))
+      var_dump($data);
 
     if(!isset($data->query) || !isset($data->query->results) || sizeof($data->query->results) == 0)
       return '';

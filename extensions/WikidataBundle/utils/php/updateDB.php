@@ -19,7 +19,7 @@ function query($query) {
  * @return {string} Titre de l'œuvre ; chaîne vide si inexistante
  */
 function get_artwork_from_q($id) {
-  $query = 'SELECT article FROM tmp_library_2 WHERE wikidata = "' . $id . '" LIMIT 1';
+  $query = 'SELECT article FROM tmp_library_2 WHERE wikidata = "' . str_replace("'", "\'", $id) . '" LIMIT 1';
   $data = query($query);
   $row = $data->fetch_assoc();
   if (is_null($row))
@@ -29,8 +29,7 @@ function get_artwork_from_q($id) {
 }
 
 function get_artworks_from_artist($id) {
-  $query = 'SELECT * FROM tmp_library_2 WHERE artist = "' . $id . '"';
-  //var_dump($query);
+  $query = 'SELECT * FROM tmp_library_2 WHERE artist = "' . str_replace("'", "\'", $id) . '"';
   $data = query($query);
   return $data;
 }
@@ -101,7 +100,7 @@ function update_artwork() {
 
     query($query);
 
-    var_dump($query);
+    // var_dump($query);
   
     $result = [
       'result' => 'ok',
@@ -141,7 +140,7 @@ function update_artwork_wikidata() {
 }
 
 function get_artist($id) {
-  $query = "SELECT article FROM tmp_artist WHERE wikidata='$id' LIMIT 1";
+  $query = "SELECT article FROM tmp_artist WHERE wikidata='" . str_replace("'", "\'", $id) . "' LIMIT 1";
   $data = query($query);
   $row = $data->fetch_assoc();
   if (is_null($row))
@@ -151,6 +150,8 @@ function get_artist($id) {
 }
 
 function get_artists_from_ids($labels) {
+  for ($i=0; $i<sizeof($labels); $i++)
+    $labels[$i] = str_replace("'", "\'", $labels);
   $artists = implode("','", $labels);
   $query = "SELECT article,wikidata FROM tmp_artist WHERE article IN ('$artists')";
   $data = query($query);

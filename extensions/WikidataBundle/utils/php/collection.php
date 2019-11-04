@@ -4,6 +4,25 @@ require_once(ATLASMUSEUM_UTILS_PATH_PHP . 'api.php');
 require_once(ATLASMUSEUM_UTILS_PATH_PHP . 'updateDB.php');
 
 class Collection {
+  public static function get_image($image, $width=320) {
+    return Api::call_api(array(
+      'action' => 'query',
+      'prop' => 'imageinfo',
+      'iiprop' => 'url',
+      'iiurlwidth' => $width,
+      'titles' => COMMONS_FILE_PREFIX . $image
+    ), 'Commons');
+  }
+
+  public static function get_image_am($image, $width=320) {
+    return Api::call_api(array(
+      'action' => 'query',
+      'prop' => 'imageinfo',
+      'iiprop' => 'url',
+      'iiurlwidth' => $width,
+      'titles' => ATLASMUSEUM_FILE_PREFIX . $image
+    ), 'atlasmuseum');
+  }
 
   public static function renderCollection($param = array()) {    
     $attribs = Sanitizer::validateTagAttributes( $param, 'div' );
@@ -79,7 +98,6 @@ class Collection {
       $data = [];
 
       foreach ($result->results->bindings as $artwork) {
-        // var_dump($artwork);
         $q = str_replace(WIKIDATA_ENTITY, '', $artwork->q->value);
 
         $data = [
@@ -127,6 +145,47 @@ class Collection {
       $artists_am[$row[1]] = $row[0];
     }
 
+    // 4. Modifications récentes
+    $articleName = [];
+    foreach ($artworks as $artwork) {
+      array_push($articleName, '[[' . $artwork['article'] . '|+depth=0]]');
+    }
+    //$query = '[[Category:Notices d\'œuvre]]|?Image principale|sort=Modification date|limit=4|order=desc';
+    //$query = join($articleName, ' OR ') . '|?Image principale|sort=Modification date|limit=4|order=desc';
+    $currentArticle = preg_replace('/^.*\/wiki\//', '', $_SERVER['REQUEST_URI']);
+    $currentArticle = urldecode(str_replace('_', ' ', $currentArticle));
+    $query = '[[-Contient la notice::' . $currentArticle . ']]|?Image principale|sort=Modification date|limit=4|order=desc';
+    $data = Api::post_api(array(
+      'action' => 'ask',
+      'query' => $query
+    ), 'atlasmuseum');
+
+    $recentChanges = [];
+
+    foreach ($data['query']['results'] as $result) {
+      $artwork = [];
+      $artwork['title'] = $result['fulltext'];
+      $artwork['url'] = $result['fullurl'];
+      $image = MISSING_IMAGE_FILE;
+      $imageUrl = MISSING_IMAGE_THUMB;
+      if (isset($result['printouts'][0][0])) {
+        $image = $result['printouts'][0][0];
+        if (preg_match('/^Commons:/i', $image)) {
+          $imageName = substr($image, 8);
+          $tmp = self::get_image($imageName, 420);
+          foreach($tmp->query->pages as $img)
+            $imageUrl = $img->imageinfo[0]->thumburl;
+        } else {
+          $tmp = self::get_image_am($image, 420);
+          foreach($tmp->query->pages as $img)
+            $imageUrl = $img->imageinfo[0]->thumburl;
+        }
+      }
+      $artwork['image'] = $imageUrl;
+
+      array_push($recentChanges, $artwork);
+    }
+
     ob_start();
 
     ?>
@@ -157,6 +216,28 @@ class Collection {
       <div id="map-popup" class="ol-popup" class="popupOeuvre">
         <a href="#" id="map-popup-closer" class="ol-popup-closer"></a>
         <p id="map-popup-content"></p>
+      </div>
+    </div>
+
+    <div class="homeCtnr dalm">
+      <div class="atmslideshowCtnr">
+        <div class="atmslideshowHead"><h3> <span class="mw-headline" id="Contributions_les_plus_r.C3.A9centes">Contributions les plus récentes</span></h3></div>
+        <ul>
+        <?php
+        foreach($recentChanges as $artwork) {
+          ?><li>
+              <div class="thumb tright">
+                <div class="thumbinner">
+                  <a href="<?php print $artwork['url']; ?>" title="<?php print $artwork['title']; ?>">
+                    <img alt="<?php print $artwork['title']; ?>" src="<?php print $artwork['image']; ?>" style="width:auto;max-width:205px;max-height:134px;">
+                  </a>
+                  <div class="thumbcaption"><?php print $artwork['title']; ?></div>
+                </div>
+              </div>
+            </li><?php
+        }
+        ?>
+        </ul>
       </div>
     </div>
 

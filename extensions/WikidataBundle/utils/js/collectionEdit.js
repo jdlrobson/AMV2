@@ -161,6 +161,8 @@ get_semantic = function(data) {
     }
   }
 
+  text += '{{#arraymap:"' + data['notices'] + '"|;|x|[[Contient la notice::x| ]]|; }}\n';
+
   text += '</div>\n'
 
   return text
