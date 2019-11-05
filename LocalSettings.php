@@ -165,7 +165,8 @@ require_once( "$IP/extensions/SemanticBundle/SemanticBundle.php" );
 //$wgGenerateThumbnailOnParse = true;
 $wgGenerateThumbnailOnParse = true;
 
-$wgJobRunRate = 10000;
+//$wgJobRunRate = 10000;
+$wgJobRunRate = 0;
 
 $wgFavicon = "http://publicartmuseum.net/w/skins/common/images/favicon.ico";
 
@@ -178,3 +179,26 @@ $wgAllowCopyUploads = true;
 $wgCopyUploadsFromSpecialUpload = true;
 
 wfLoadExtension( 'PageForms' );
+
+$wgRawHtml = true;
+
+$wgGroupPermissions['*']['edit'] = false;
+
+wfLoadExtension( 'ConfirmEdit' );
+wfLoadExtensions([ 'ConfirmEdit', 'ConfirmEdit/QuestyCaptcha' ]);
+$wgCaptchaQuestions = [
+  'Tapez en chiffres le nombre trois mille cinq cent quatre-vingt six :' => '3586',
+  'Tapez en chiffres le nombre deux mille quatre cent soixante-quinze :' => '2475',
+  'Tapez en chiffres le nombre neuf mille six cent quarante sept :' => '9647',
+  'Tapez en chiffres le nombre huit mille sept cent trente neuf :' => '8739',
+  'Tapez en chiffres le nombre sept mille trois cent cinquante deux :' => '7352',
+];
+$wgMainCacheType    = CACHE_ANYTHING;
+/*
+$wgCaptchaTriggers['edit']          = true;
+$wgCaptchaTriggers['create']        = true;
+$wgCaptchaTriggers['createtalk']    = true;
+$wgCaptchaTriggers['addurl']        = true;
+*/
+$wgCaptchaTriggers['createaccount'] = true;
+$wgCaptchaTriggers['badlogin']      = true;
