@@ -56,7 +56,7 @@ class GlobalArtworkMap {
   }
 
   public static function get_wikidata_artworks() {
-
+    /*
     $query =
         'SELECT DISTINCT ?q ?qLabel ?coords ?creatorLabel ?image WHERE {' .
         '  ?q wdt:P136/wdt:P279* wd:Q557141 ;' .
@@ -65,6 +65,16 @@ class GlobalArtworkMap {
         '  OPTIONAL { ?q wdt:P18 ?image }' .
         '  SERVICE wikibase:label { bd:serviceParam wikibase:language "fr" . }' .
         '} ORDER BY ?q';
+    */
+    $query =
+        'SELECT DISTINCT ?q ?qLabel ?coords ?creatorLabel ?image WHERE {' .
+        '  ?q wdt:P136/wdt:P279* ?genre ;' .
+        '     wdt:P625 ?coords .' .
+        '  VALUES ?genre { wd:Q557141 wd:Q219423 wd:Q17516 wd:Q326478 wd:Q2740415 }' .
+        '  OPTIONAL { ?q wdt:P170 ?creator }' .
+        '  OPTIONAL { ?q wdt:P18 ?image }' .
+        '  SERVICE wikibase:label { bd:serviceParam wikibase:language "fr" . }' .
+        '}';
 
     $result = Api::Sparql($query);
     $data = [];

@@ -332,6 +332,7 @@ parse_data_for_db = function(data, article='') {
 
 get_semantic = function(data) {
   semantic = {
+    'q': 'Wikidata',
     'nom': 'Nom',
     'abstract': 'Abstract',
     'dateofbirth': 'Date de naissance',

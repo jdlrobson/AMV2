@@ -413,6 +413,7 @@ parse_data_for_db = function(data) {
 
 get_semantic = function(data) {
   semantic = {
+    'q': 'Wikidata',
     'a_influence': 'A influencé',
     'artiste': 'Auteur',
     'commissaires': 'Commissaires',
