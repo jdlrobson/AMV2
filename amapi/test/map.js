@@ -5,7 +5,7 @@ $(document).ready(function() {
   let dataAM = null
   let dataWD = null
 
-  $.getJSON('http://localhost/amapi/index.php?action=amgetmap&origin=atlasmuseum')
+  $.getJSON('http://publicartmuseum.net/w/amapi/index.php?action=amgetmap&origin=atlasmuseum')
     .then(function(result) {
       console.log('AM OK')
       dataAM = result.entities
@@ -14,7 +14,7 @@ $(document).ready(function() {
       }
     })
 
-  $.getJSON('http://localhost/amapi/index.php?action=amgetmap&origin=wikidata')
+  $.getJSON('http://publicartmuseum.net/w/amapi/index.php?action=amgetmap&origin=wikidata')
     .then(function(result) {
       console.log('WD OK')
       dataWD = result.entities
@@ -43,7 +43,6 @@ initMap = function (dataAM, dataWD) {
   artworks_map = dataAM
   createMap(dataAM)
 
-  $('#map-loader').remove()
   $('.map-checkbox').removeAttr("disabled")
 }
 

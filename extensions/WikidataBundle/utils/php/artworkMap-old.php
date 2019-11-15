@@ -110,38 +110,43 @@ class GlobalArtworkMap {
     $attribs = Sanitizer::validateTagAttributes( $param, 'div' );
 
     ob_start();
+
 ?>
-<div id="map">
-  <div id="map-loader">
-    <div id="map-loader-text">
-      Veuillez attendre le chargement de la carte
-    </div>
-    <div id="map-loader-disks">
-      <span></span>
-      <span></span>
-      <span></span>
-      <span></span>
-    </div>
-  </div>
-</div>
-<div id="map-popup" class="ol-popup map-popup">
-  <a href="#" id="map-popup-closer" class="ol-popup-closer map-popup-closer"></a>
-  <div id="map-popup-content" class="map-popup-content"></div>
+<div id="map"></div>
+<div id="map-popup" class="ol-popup" class="popupOeuvre">
+  <a href="#" id="map-popup-closer" class="ol-popup-closer"></a>
+  <p id="map-popup-content"></p>
 </div>
 <div class="mapLgd">
-  <table>
-    <tbody>
+    <table>
       <tr>
-        <td><div class="mapLgdInput"><input type="checkbox" id="checkbox-perenne" class="map-checkbox" onclick="changeMarkers()" checked disabled><label for="checkbox-perenne"><span class="imgWrapper"><img alt="Picto-gris.png" src="http://publicartmuseum.net/w/images/a/a0/Picto-gris.png" width="48" height="48"></span> œuvres pérennes</label></div></td>
-        <td><div class="mapLgdInput"><input type="checkbox" id="checkbox-ephemere" class="map-checkbox" onclick="changeMarkers()" checked disabled><label for="checkbox-ephemere"><span class="imgWrapper"><img alt="Picto-jaune.png" src="http://publicartmuseum.net/w/images/4/49/Picto-jaune.png" width="48" height="48"></span> œuvres éphémères</label></div></td>
-        <td><div class="mapLgdInput"><input type="checkbox" id="checkbox-detruite" class="map-checkbox" onclick="changeMarkers()" checked disabled><label for="checkbox-detruite"><span class="imgWrapper"><img alt="Picto-rouge.png" src="http://publicartmuseum.net/w/images/a/a8/Picto-rouge.png" width="24" height="24"></span> œuvres détruites</label></div></td>
+        <td>
+          <input type="checkbox" id="checkbox-perenne" class="map-checkbox" onclick="changeMarkers()" checked>
+          <label for="checkbox-perenne"><span class="imgWrapper"><img alt="Picto-gris.png" src="/w/images/a/a0/Picto-gris.png" width="48" height="48"></span> œuvres pérennes</label>
+        </td>
+        <td>
+          <input type="checkbox" id="checkbox-ephemere" class="map-checkbox" onclick="changeMarkers()" checked>
+          <label for="checkbox-ephemere"><span class="imgWrapper"><img alt="Picto-jaune.png" src="/w/images/4/49/Picto-jaune.png" width="48" height="48"></span> œuvres éphémères</label>
+        </td>
+        <td>
+          <input type="checkbox" id="checkbox-detruite" class="map-checkbox" onclick="changeMarkers()" checked>
+          <label for="checkbox-detruite"><span class="imgWrapper"><img alt="Picto-rouge.png" src="/w/images/a/a8/Picto-rouge.png" width="24" height="24"></span> œuvres détruites</label>
+        </td>
       </tr>
       <tr>
-        <td><div class="mapLgdInput"><input type="checkbox" id="checkbox-verifier" class="map-checkbox" onclick="changeMarkers()" checked disabled><label for="checkbox-verifier"><span class="imgWrapper"><img alt="Picto-bleu.png" src="http://publicartmuseum.net/w/images/9/90/Picto-bleu.png" width="32" height="32"></span> œuvres à vérifier</label></div></td>
-        <td><div class="mapLgdInput"><input type="checkbox" id="checkbox-non-realisee" class="map-checkbox" onclick="changeMarkers()" checked disabled><label for="checkbox-non-realisee"><span class="imgWrapper"><img alt="Picto-blanc.png" src="http://publicartmuseum.net/w/images/2/2d/Picto-blanc.png" width="32" height="32"></span> œuvres non réalisées</label></div></td>
-        <td><div class="mapLgdInput"><input type="checkbox" id="checkbox-wikidata" class="map-checkbox" onclick="changeMarkers()" checked disabled><label for="checkbox-wikidata"><span class="imgWrapper"><img alt="Picto-Wikidata.png" src="http://publicartmuseum.net/w/images/d/dd/Picto-Wikidata.png" width="48" height="48"></span> Wikidata</label></div></td>
+        <td>
+          <input type="checkbox" id="checkbox-verifier" class="map-checkbox" onclick="changeMarkers()" checked>
+          <label for="checkbox-verifier"><span class="imgWrapper"><img alt="Picto-bleu.png" src="/w/images/9/90/Picto-bleu.png" width="32" height="32"></span> œuvres à vérifier</label>
+        </td>
+        <td>
+          <input type="checkbox" id="checkbox-non-realisee" class="map-checkbox" onclick="changeMarkers()" checked>
+          <label for="checkbox-non-realisee"><span class="imgWrapper"><img alt="Picto-blanc.png" src="/w/images/2/2d/Picto-blanc.png" width="32" height="32"></span> œuvres non réalisées</label>
+        </td>
+        <td>
+          <input type="checkbox" id="checkbox-wikidata" class="map-checkbox" onclick="changeMarkers()" checked>
+          <label for="checkbox-wikidata"><span class="imgWrapper"><img alt="Picto-Wikidata.png" src="/w/images/d/dd/Picto-Wikidata.png" width="48" height="48"></span> Wikidata</label>
+        </td>
       </tr>
-    </tbody>
   </table>
 </div>
 <script type="text/javascript" src="<?php print ATLASMUSEUM_UTILS_FULL_PATH_JS; ?>jquery.min.js"></script>
@@ -152,6 +157,7 @@ class GlobalArtworkMap {
 <link rel="stylesheet" href="<?php print ATLASMUSEUM_UTILS_FULL_PATH_CSS; ?>map.css" type="text/css">
 <?php
 
+    $wd_data = self::get_wikidata_artworks();
     $contents = ob_get_contents();
     ob_end_clean();
 

@@ -1,0 +1,49 @@
+<htm>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <title>Test de dappbar</title>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://openlayers.org/en/v4.6.5/build/ol.js"></script>
+    <script type="text/javascript" src="map.js"></script>
+
+    <link href="https://fonts.googleapis.com/css?family=Roboto|Lato|Poppins|Kalam" rel="stylesheet" />
+    <link rel="stylesheet" href="https://openlayers.org/en/v4.6.5/css/ol.css" type="text/css">
+    <link href="map.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div id="map">
+      <div id="map-loader">
+        <div id="map-loader-text">
+          Veuillez attendre le chargement de la carte
+        </div>
+        <div id="map-loader-disks">
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+    </div>
+    <div id="map-popup" class="ol-popup map-popup">
+      <a href="#" id="map-popup-closer" class="ol-popup-closer map-popup-closer"></a>
+      <div id="map-popup-content" class="map-popup-content"></div>
+    </div>
+    <div class="mapLgd">
+      <table>
+        <tbody>
+          <tr>
+            <td><div class="mapLgdInput"><input type="checkbox" id="checkbox-perenne" class="map-checkbox" onclick="changeMarkers()" checked disabled><label for="checkbox-perenne"><span class="imgWrapper"><img alt="Picto-gris.png" src="http://publicartmuseum.net/w/images/a/a0/Picto-gris.png" width="48" height="48"></span> œuvres pérennes</label></div></td>
+            <td><div class="mapLgdInput"><input type="checkbox" id="checkbox-ephemere" class="map-checkbox" onclick="changeMarkers()" checked disabled><label for="checkbox-ephemere"><span class="imgWrapper"><img alt="Picto-jaune.png" src="http://publicartmuseum.net/w/images/4/49/Picto-jaune.png" width="48" height="48"></span> œuvres éphémères</label></div></td>
+            <td><div class="mapLgdInput"><input type="checkbox" id="checkbox-detruite" class="map-checkbox" onclick="changeMarkers()" checked disabled><label for="checkbox-detruite"><span class="imgWrapper"><img alt="Picto-rouge.png" src="http://publicartmuseum.net/w/images/a/a8/Picto-rouge.png" width="24" height="24"></span> œuvres détruites</label></div></td>
+          </tr>
+          <tr>
+            <td><div class="mapLgdInput"><input type="checkbox" id="checkbox-verifier" class="map-checkbox" onclick="changeMarkers()" checked disabled><label for="checkbox-verifier"><span class="imgWrapper"><img alt="Picto-bleu.png" src="http://publicartmuseum.net/w/images/9/90/Picto-bleu.png" width="32" height="32"></span> œuvres à vérifier</label></div></td>
+            <td><div class="mapLgdInput"><input type="checkbox" id="checkbox-non-realisee" class="map-checkbox" onclick="changeMarkers()" checked disabled><label for="checkbox-non-realisee"><span class="imgWrapper"><img alt="Picto-blanc.png" src="http://publicartmuseum.net/w/images/2/2d/Picto-blanc.png" width="32" height="32"></span> œuvres non réalisées</label></div></td>
+            <td><div class="mapLgdInput"><input type="checkbox" id="checkbox-wikidata" class="map-checkbox" onclick="changeMarkers()" checked disabled><label for="checkbox-wikidata"><span class="imgWrapper"><img alt="Picto-Wikidata.png" src="http://publicartmuseum.net/w/images/d/dd/Picto-Wikidata.png" width="48" height="48"></span> Wikidata</label></div></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </body>
+</htm>
