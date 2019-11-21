@@ -28,7 +28,7 @@ class Artwork {
     $image_url = MISSING_IMAGE;
     $image_legend = '';
 
-    if (isset($param[$param_name])) {
+    if (isset($param[$param_name]) && $param[$param_name] != '') {
       if (preg_match('/^Commons:/i', $param[$param_name])) {
         $image_name = substr($param[$param_name], 8);
         $image_url = COMMONS_PATH . COMMONS_FILE_PREFIX . $image_name;
@@ -378,7 +378,7 @@ class Artwork {
           }
 
           array_push($artworks, [
-            'article' => 'Spécial:Wikidata/' . $artwork_id,
+            'article' => ATLASMUSEUM_PATH . 'Spécial:Wikidata/' . $artwork_id,
             'canonicalArticle' => $artwork_id,
             'title' => $title,
             'image_url' => $image_url,

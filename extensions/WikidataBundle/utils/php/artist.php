@@ -223,7 +223,7 @@ class Artist {
     }
 
     $articleLink = 
-      ($artist["article"] != '' )
+      ($artist["article"] != '')
       ? $artistLink = $artist["article"]
       : $artistLink = 'Spécial:WikidataArtist/' . $name;
     if (!is_null($name) && $name != '' && !preg_match('/^[qQ][0-9]+$/', $name))
@@ -255,6 +255,7 @@ class Artist {
 
   public static function render_artists_for_artwork($artists_wd, $artists_am) {
     $leftovers = [];
+
     foreach (explode(';',$artists_am) as $artist)
       if ($artist != '') {
         $data = self::convert_artist($artist);
@@ -294,10 +295,14 @@ class Artist {
               $image_thumb = $image->imageinfo[0]->thumburl;
           }
 
+          $artist_link = 'Spécial:WikidataEditArtist/' . $artist_id;
+          if (preg_match('/^[qQ][0-9]+$/', $artist_id))
+            $artist_link = 'Spécial:WikidataArtist/' . $artist_id;
+
           ?>
           <h3>
             <span class="mw-headline" id="">
-              <a href="<?php print ATLASMUSEUM_PATH . 'Spécial:WikidataArtist/' . $artist_id; ?>" title=""><?php (isset($artist_labels[$artist_id]) ? print $artist_labels[$artist_id] : print $artist_id); ?></a>
+              <a href="<?php print ATLASMUSEUM_PATH . $artist_link; ?>" title=""><?php (isset($artist_labels[$artist_id]) ? print $artist_labels[$artist_id] : print $artist_id); ?></a>
             </span>
           </h3>
           <p style="text-align:center">
@@ -345,10 +350,14 @@ class Artist {
               $image_thumb = $image->imageinfo[0]->thumburl;
           }
 
+          $artist_link = 'Spécial:WikidataEditArtist/' . $artist_id;
+          if (preg_match('/^[qQ][0-9]+$/', $artist_id))
+            $artist_link = 'Spécial:WikidataArtist/' . $artist_id;
+
           ?>
           <h3>
             <span class="mw-headline" id="">
-              <a href="<?php print ATLASMUSEUM_PATH . 'Spécial:WikidataArtist/' . $artist_id; ?>" title=""><?php (isset($artist_labels[$artist_id]) ? print $artist_labels[$artist_id] : print $artist_id); ?></a>
+              <a href="<?php print ATLASMUSEUM_PATH . $artist_link; ?>" title=""><?php (isset($artist_labels[$artist_id]) ? print $artist_labels[$artist_id] : print $artist_id); ?></a>
             </span>
           </h3>
           <p style="text-align:center">
