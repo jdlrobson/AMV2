@@ -24,6 +24,12 @@ class RecentChanges {
 	public static function renderRecentChanges( $in, $param = array(), $parser = null, $frame = false ) {
     $attribs = Sanitizer::validateTagAttributes( $param, 'div' );
 
+    $limit = 4;
+    // Récupère la limite éventuelle
+    if (isset($param['limit']) && is_numeric($param['limit'])) {
+      $limit = (int)$param['limit'];
+    }
+
     // Récupère la collection éventuelle
     $collection = null;
     if (isset($param['collection'])) {
@@ -35,6 +41,6 @@ class RecentChanges {
 
     require_once(ATLASMUSEUM_UTILS_PATH_PHP . 'recentChanges.php');
 
-    return RecentChangesDisplay::renderRecentChanges($param, $collection);
+    return RecentChangesDisplay::renderRecentChanges($param, $collection, $limit);
 	}
 }

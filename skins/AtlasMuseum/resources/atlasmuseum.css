@@ -493,7 +493,6 @@ div#mw-head-base a {
 }
 
 div#bodyContent {
-
     line-height: 1.42em;
     padding-left: 43px;
     padding-right: 43px;
@@ -503,10 +502,8 @@ div#bodyContent {
 }
 
 body.page-Accueil div#bodyContent{
-
     padding-left: 0px;
     padding-right: 0px;
- 
 }
 
 h2 {
