@@ -265,7 +265,7 @@ publish = function() {
     delete data['image_principale_origin']
   }
 
-  console.log(data)
+  // console.log(data)
 
   var text = '<ArtworkPage\n';
 
@@ -292,13 +292,13 @@ publish = function() {
 
   text += '[[Catégorie:Notices d\'œuvre]]'
 
-  console.log(text)
+  // console.log(text)
 
   //console.log($('#real_edit_form').serializeArray());
 
   //-- Données DB
   db_data = parse_data_for_db(data)
-  console.log(db_data)
+  // console.log(db_data)
 
   //-- Envoi des données
   document.getElementById('wpTextbox1').value = text;
@@ -319,9 +319,9 @@ publish = function() {
     for (let p in params)
      ret.push(encodeURIComponent(p) + '=' + encodeURIComponent(params[p]));
     const url = 'http://publicartmuseum.net/w/extensions/WikidataBundle/utils/php/updateDB.php?' + ret.join('&')
-    console.log(url)
+    // console.log(url)
     $.get(url, function(res) {
-      console.log(res)
+      // console.log(res)
       document.getElementById('editform').action = '/w/index.php?title=' + encodeURIComponent(article) + '&action=submit';
       document.getElementById("editform").submit();
     })
@@ -342,9 +342,9 @@ publish = function() {
     for (let p in params)
       ret.push(encodeURIComponent(p) + '=' + encodeURIComponent(params[p]));
     const url = 'http://publicartmuseum.net/w/extensions/WikidataBundle/utils/php/updateDB.php?' + ret.join('&')
-    console.log(url)
+    // console.log(url)
     $.get(url, function(res) {
-      console.log(res)
+      // console.log(res)
       document.getElementById('editform').action = '/w/index.php?title=' + encodeURIComponent(db_data.article) + '&action=submit';
       document.getElementById("editform").submit();
     })
@@ -472,6 +472,18 @@ get_semantic = function(data) {
           text += '[[' + semantic[key] + '::' + s[i] + ']]\n'
       }
     }
+  }
+
+  if (data['image_principale']) {
+    text += '[[:Fichier:' + data['image_principale'] + ']]\n'
+  }
+  if (data['image_galerie_construction']) {
+    for (var i=0; i<data['image_galerie_construction'].length; i++)
+      text += '[[:Fichier:' + data['image_galerie_construction'][i].label + ']]\n'
+  }
+  if (data['image_galerie_autre']) {
+    for (var i=0; i<data['image_galerie_autre'].length; i++)
+      text += '[[:Fichier:' + data['image_galerie_autre'][i].label + ']]\n'
   }
 
   text += '</div>\n'
