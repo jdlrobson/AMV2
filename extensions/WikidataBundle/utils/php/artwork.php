@@ -692,8 +692,8 @@ class Artwork {
   }
 
   public static function get_coordinates($claims, $property, $param, $param_name) {
-    $lat = -100;
-    $lng = -500;
+    $lat = 0;
+    $lng = 0;
 
     if (isset($param[$param_name])) {
       $tmp = explode(',', $param[$param_name]);
@@ -709,7 +709,7 @@ class Artwork {
   }
 
   public static function renderArtwork($param = array(), $wikidata=true) {    
-    $attribs = Sanitizer::validateTagAttributes( $param, 'div' );
+    //$attribs = Sanitizer::validateTagAttributes( $param, 'div' );
 
     if (!is_null($param['q'])) {
       $q = $param['q'];
