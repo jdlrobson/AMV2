@@ -23,7 +23,7 @@ class SpecialWikidataEditCollection extends SpecialPage {
     $request = $this->getRequest();
 
     // Récupère le titre ou l'id éventuellement passé en paramètre
-    $id = preg_replace('/^.*\//', '', $request->getText('title'));
+    $id = preg_replace('/^.*Spécial:WikidataEditCollection\//', '', $request->getText('title'));
 
     if ($id != $request->getText('title')) {      
       $id = str_replace('_', ' ', $id);

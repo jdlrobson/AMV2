@@ -4,23 +4,9 @@ var clusterSource;
 $(document).ready(function() {
   let data = null
 
-  var li = document.getElementById('ca-edit')
-  if (li) {
-    var ul = li.parentElement,
-        newLi = document.createElement("li"),
-        page = window.location.href.replace(/^.*index\.php\?title=/, '').replace(/^.*\/wiki\//, '');
-
-    newLi.setAttribute('id', 'ca-form_edit')
-    newLi.classList.add('collapsible')
-    newLi.classList.add('selected')
-
-    newLi.innerHTML = '<span><a href="http://publicartmuseum.net/wiki/Spécial:WikidataEditCollection/'+page+'">Modifier avec formulaire</a></span></li>';
-
-    ul.insertBefore(newLi, li)
-  }
-
-  $.getJSON('http://publicartmuseum.net/w/amapi/index.php?action=amgetcollection&collection=' + page)
+  $.getJSON('http://publicartmuseum.net/w/amapi/index.php?action=amgetcollection&collection=Le_Partage_des_eaux_%28France%29')
     .then(function(result) {
+      console.log('AM OK')
       data = result.entities
       initMap(data)
     })
@@ -46,11 +32,11 @@ createMap = function(artworksData, divId = 'map') {
   let detruiteCheckbox = false
   let verifierCheckbox = false
   let nonRealiseeCheckbox = false
-console.log(artworksData)
+
   for (let key in artworksData) {
     features.push(new ol.Feature({
       geometry: new ol.geom.Point(ol.proj.transform([artworksData[key].lon, artworksData[key].lat], "EPSG:4326", "EPSG:3857")),
-      title: (artworksData[key].title !== null ? artworksData[key].title : 'Titre inconnu'),
+      title: artworksData[key].title,
       artist: artworksData[key].artists,
       id: artworksData[key].wikidata,
       nature: artworksData[key].nature,
@@ -294,22 +280,21 @@ createList = function(artworksData, tableId = 'collectionTable') {
   let even = true
 
   for (let key in artworksData) {
+    console.log(artworksData[key])
+
     let text = '<tr class="row-' + (even ? 'even' : 'odd') + '">'
     even = !even
 
     text += '<td class="Titre-de-l\'œuvre smwtype_txt">'
     text += '<a href="' + artworksData[key].article + '">'
-    text += artworksData[key].title !== null ? artworksData[key].title : 'Titre inconnu'
+    text += artworksData[key].title
     text += '</a>'
     text += '</td>'
 
     text += '<td class="Artiste smwtype_wpg">'
     const artists = []
     for (let keyArtist in artworksData[key].artists) {
-      if (artworksData[key].artists[keyArtist].name !== null)
-        artists.push('<a href="' + artworksData[key].artists[keyArtist].url + '">' + artworksData[key].artists[keyArtist].name + '</a>')
-      else
-        artists.push('Auteur inconnu')
+      artists.push('<a href="' + artworksData[key].artists[keyArtist].url + '">' + artworksData[key].artists[keyArtist].name + '</a>')
     }
     text += artists.join(', ')
     text += '</td>'

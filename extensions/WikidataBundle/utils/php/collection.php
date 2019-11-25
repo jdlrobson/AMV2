@@ -188,10 +188,6 @@ class Collection {
 
     ob_start();
 
-    ?>
-    <script type="text/javascript" src="<?php print ATLASMUSEUM_UTILS_FULL_PATH_JS; ?>collection.js"></script>
-    <?php
-
     if ($param['description']) {
       ?>
         <div class="description">
@@ -210,12 +206,38 @@ class Collection {
 
     ?>
     <div class="mapCtnr dalm">
+
       <div id="map" style="height:400px">
-        <div id="mapData" data-artworks="<?php print htmlspecialchars(json_encode($artworks), ENT_QUOTES, 'UTF-8'); ?>" />
+        <div id="map-loader">
+          <div id="map-loader-text">
+            Veuillez attendre le chargement de la carte
+          </div>
+          <div id="map-loader-disks">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        </div>
       </div>
-      <div id="map-popup" class="ol-popup" class="popupOeuvre">
-        <a href="#" id="map-popup-closer" class="ol-popup-closer"></a>
-        <p id="map-popup-content"></p>
+      <div id="map-popup" class="ol-popup map-popup">
+        <a href="#" id="map-popup-closer" class="ol-popup-closer map-popup-closer"></a>
+        <div id="map-popup-content" class="map-popup-content"></div>
+      </div>
+      <div class="mapLgd">
+        <table>
+          <tbody>
+            <tr>
+              <td><div class="mapLgdInput"><input type="checkbox" id="checkbox-perenne" class="map-checkbox" onclick="changeMarkers()" checked disabled><label for="checkbox-perenne"><span class="imgWrapper"><img alt="Picto-gris.png" src="http://publicartmuseum.net/w/images/a/a0/Picto-gris.png" width="48" height="48"></span> œuvres pérennes</label></div></td>
+              <td><div class="mapLgdInput"><input type="checkbox" id="checkbox-ephemere" class="map-checkbox" onclick="changeMarkers()" checked disabled><label for="checkbox-ephemere"><span class="imgWrapper"><img alt="Picto-jaune.png" src="http://publicartmuseum.net/w/images/4/49/Picto-jaune.png" width="48" height="48"></span> œuvres éphémères</label></div></td>
+              <td><div class="mapLgdInput"><input type="checkbox" id="checkbox-detruite" class="map-checkbox" onclick="changeMarkers()" checked disabled><label for="checkbox-detruite"><span class="imgWrapper"><img alt="Picto-rouge.png" src="http://publicartmuseum.net/w/images/a/a8/Picto-rouge.png" width="24" height="24"></span> œuvres détruites</label></div></td>
+            </tr>
+            <tr>
+              <td><div class="mapLgdInput"><input type="checkbox" id="checkbox-verifier" class="map-checkbox" onclick="changeMarkers()" checked disabled><label for="checkbox-verifier"><span class="imgWrapper"><img alt="Picto-bleu.png" src="http://publicartmuseum.net/w/images/9/90/Picto-bleu.png" width="32" height="32"></span> œuvres à vérifier</label></div></td>
+              <td><div class="mapLgdInput"><input type="checkbox" id="checkbox-non-realisee" class="map-checkbox" onclick="changeMarkers()" checked disabled><label for="checkbox-non-realisee"><span class="imgWrapper"><img alt="Picto-blanc.png" src="http://publicartmuseum.net/w/images/2/2d/Picto-blanc.png" width="32" height="32"></span> œuvres non réalisées</label></div></td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
 
@@ -243,7 +265,7 @@ class Collection {
 
     <div class="homeCtnr dalm">
       <h3><span class="mw-headline" id="Les_.C5.93uvres_de_la_collection">Les œuvres de la collection</span></h3>
-      <table class="sortable wikitable smwtable jquery-tablesorter" width="100%">
+      <table id="collectionTable" class="sortable wikitable smwtable jquery-tablesorter" width="100%">
         <thead>
           <tr>
             <th class="Titre-de-l'œuvre headerSort" tabindex="0" role="columnheader button" title="Tri croissant"><a href="Attribut:Titre" title="Attribut:Titre">Titre de l'œuvre</a></th>
@@ -252,45 +274,6 @@ class Collection {
           </tr>
         </thead>
         <tbody>
-          <?php
-            $odd = true;
-            foreach ($artworks as $artwork) {
-              $article = $artwork['article'];
-              $title = $artwork['title'];
-              $date = $artwork['date'];
-              $artists = [];
-              foreach ($artwork['artists'] as $artist) {
-                if ($artist['origin'] == 'wikidata') {
-                  if (array_key_exists($artist['title'], $artists_am)) {
-                    $new_title = $artists_am[$artist['title']];
-                    array_push($artists, '<a href="' . ATLASMUSEUM_PATH . $new_title . '" title="' . $new_title . '">' . $new_title . '</a>');
-                  }
-                  else
-                    array_push($artists, '<a href="' . ATLASMUSEUM_PATH . 'Spécial:WikidataArtist/' . $artist['title'] . '" title="' . $artist['title'] . '">' . $artist['title'] . '</a>');
-                } else {
-                  array_push($artists, '<a href="' . ATLASMUSEUM_PATH . $artist['title'] . '" title="' . $artist['title'] . '">' . $artist['title'] . '</a>');
-                }
-              }
-              ?>
-                <tr class="row-<?php print $odd ? 'odd' : 'even'; ?>">
-                  <td class="Titre-de-l'œuvre smwtype_txt">
-                    <a href="<?php print ATLASMUSEUM_PATH . $article; ?>" title="<?php print $article; ?>">
-                      <?php print $title; ?>
-                    </a>
-                  </td>
-                  <td class="Artiste smwtype_wpg">
-                    <a href="Philippe_Cazal" title="Philippe Cazal">
-                      <?php print implode(', ', $artists); ?>
-                    </a>
-                  </td>
-                  <td data-sort-value="2453371.5" class="Date smwtype_dat">
-                    <?php print $date; ?>
-                  </td>
-                </tr>
-              <?php
-              $odd = !$odd;
-            }
-          ?>
         </tbody>
       </table>
     </div>
@@ -308,7 +291,7 @@ class Collection {
     <script type="text/javascript" src="<?php print ATLASMUSEUM_UTILS_FULL_PATH_JS; ?>jquery.min.js"></script>
     <script type="text/javascript" src="<?php print ATLASMUSEUM_UTILS_FULL_PATH_JS; ?>jquery-ui.min.js"></script>
     <script src="<?php print OPEN_LAYER_JS; ?>"></script>
-    <script type="text/javascript" src="<?php print ATLASMUSEUM_UTILS_FULL_PATH_JS; ?>mapCollection.js"></script>
+    <script type="text/javascript" src="<?php print ATLASMUSEUM_UTILS_FULL_PATH_JS; ?>collection.js"></script>
     <link rel="stylesheet" href="<?php print OPEN_LAYER_CSS; ?>" type="text/css">
     <link rel="stylesheet" href="<?php print ATLASMUSEUM_UTILS_FULL_PATH_CSS; ?>map.css" type="text/css">
     <?php

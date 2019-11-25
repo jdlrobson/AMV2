@@ -55,6 +55,23 @@ if (!class_exists('Router')) {
               $response->setError($validation['error']['code'], $validation['error']['info'], $validation['error']['status']);
             }
             break;
+          
+          case 'amgetcollection':
+            // Collection
+            require_once ('generators/collection.php');
+            $validation = Collection::validateQuery();
+            if ($validation['success']) {
+              $data = [];
+              $collection = str_replace('_', ' ', utf8_decode(urldecode(getRequestParameter('collection'))));
+              if (!is_null($collection))
+                $data = Collection::getCollection($collection);
+              $response->setValue('entities', $data);
+              $response->setSuccess(true);
+              $response->setStatusCode(200);
+            } else {
+              $response->setError($validation['error']['code'], $validation['error']['info'], $validation['error']['status']);
+            }
+            break;
 
           default:
             // Action inconnue -> erreur
