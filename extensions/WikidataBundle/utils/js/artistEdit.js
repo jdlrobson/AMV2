@@ -1,8 +1,8 @@
 add_line = function(id, property, key, mandatory, wikidataId="", wikidataLabel="") {
-  var td = document.getElementById(id),
-      divs = document.querySelectorAll('#' + id + ' .inputSpan'),
+  var td = document.getElementById(id + '_cell'),
+      divs = document.querySelectorAll('#' + id + '_cell' + ' .inputSpan'),
       newLine = document.createElement("div"),
-      add = document.querySelectorAll('#' + id + '> .add_button')[0]
+      add = document.querySelectorAll('#' + id + '_cell' + '> .add_button')[0]
 
   if (divs.length>0)
     n = parseInt(divs[divs.length-1].id.replace(id+'_wrapper_', ''))+1
@@ -246,7 +246,7 @@ publish = function() {
     delete data['thumbnail_origin']
   }
 
-  console.log(data)
+  // console.log(data)
 
   var text = '<ArtistPage\n';
 
@@ -272,13 +272,13 @@ publish = function() {
 
   text += '[[Catégorie:Artistes]]'
 
-  console.log(text)
+  // console.log(text)
 
   //console.log($('#real_edit_form').serializeArray());
 
   //-- Données DB
   db_data = parse_data_for_db(data, article)
-  console.log(db_data)
+  // console.log(db_data)
 
   //-- Envoi des données
   document.getElementById('wpTextbox1').value = text;
@@ -292,9 +292,9 @@ publish = function() {
     for (let p in params)
      ret.push(encodeURIComponent(p) + '=' + encodeURIComponent(params[p]));
     const url = 'http://publicartmuseum.net/w/extensions/WikidataBundle/utils/php/updateDB.php?' + ret.join('&')
-    console.log(url)
+    // console.log(url)
     $.get(url, function(res) {
-      console.log(res)
+      // console.log(res)
       document.getElementById('editform').action = '/w/index.php?title=' + article + '&action=submit';
       document.getElementById("editform").submit();
     })
@@ -308,9 +308,9 @@ publish = function() {
     for (let p in params)
      ret.push(encodeURIComponent(p) + '=' + encodeURIComponent(params[p]));
     const url = 'http://publicartmuseum.net/w/extensions/WikidataBundle/utils/php/updateDB.php?' + ret.join('&')
-    console.log(url)
+    // console.log(url)
     $.get(url, function(res) {
-      console.log(res)
+      // console.log(res)
       document.getElementById('editform').action = '/w/index.php?title=' + db_data.article + '&action=submit';
       document.getElementById("editform").submit();
     })

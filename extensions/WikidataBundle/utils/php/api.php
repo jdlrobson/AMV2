@@ -14,6 +14,9 @@ class Api {
     curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
     $url = WIKIDATA_API;
     switch ($target) {
+      case 'am':
+        $url = AM_API;
+        break;
       case 'atlasmuseum':
         $url = ATLASMUSEUM_API;
         break;

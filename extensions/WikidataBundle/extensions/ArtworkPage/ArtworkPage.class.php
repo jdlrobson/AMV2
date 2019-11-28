@@ -22,13 +22,14 @@ class ArtworkPage {
 	 * @return string
 	 */
 	public static function renderArtworkPage( $in, $param = array(), $parser = null, $frame = false ) {
-    $attribs = Sanitizer::validateTagAttributes( $param, 'div' );
-
     if (!isset($param['full_name'])) {
       $fullName = preg_replace('/^.*\/wiki\//', '', $_SERVER['REQUEST_URI']);
       $fullName = urldecode(str_replace('_', ' ', $fullName));
       $param['full_name'] = $fullName;
     }
+
+    write_log_separator();
+    write_log('renderArtworkPage - page: ' . $param['full_name']);
 
     require_once(ATLASMUSEUM_UTILS_PATH_PHP . 'artwork.php');
 

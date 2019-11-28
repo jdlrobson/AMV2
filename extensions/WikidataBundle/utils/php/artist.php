@@ -335,24 +335,25 @@ class Artist {
           $data = self::convert_artist($row['article']);
           self::render_artists_for_artwork_am($row['article'], $data);
         } else {
-          $artist_data = self::get_props($artist_id);
-          $artist_ids = self::get_ids($artist_data);
-          array_push($artist_ids, $artist_id);
-          $artist_labels = self::get_labels($artist_ids);
-
-          $image_thumb = MISSING_IMAGE_FILE;
-          $image_url = MISSING_IMAGE_LINK;
-
-          if (isset($artist_data->entities->{$artist_id}->claims->P18)) {
-            $image_url = 'https://commons.wikimedia.org/wiki/File:' . $artist_data->entities->{$artist_id}->claims->P18[0]->mainsnak->datavalue->value;
-            $tmp = self::get_image_commons($artist_data->entities->{$artist_id}->claims->P18[0]->mainsnak->datavalue->value);
-            foreach($tmp->query->pages as $image)
-              $image_thumb = $image->imageinfo[0]->thumburl;
-          }
 
           $artist_link = 'Spécial:WikidataEditArtist/' . $artist_id;
-          if (preg_match('/^[qQ][0-9]+$/', $artist_id))
-            $artist_link = 'Spécial:WikidataArtist/' . $artist_id;
+          $artist_labels = [];
+          $image_thumb = MISSING_IMAGE_FILE;
+          $image_url = MISSING_IMAGE_LINK;
+          
+          if (preg_match('/^[qQ][0-9]+$/', $artist_id)) {
+            $artist_data = self::get_props($artist_id);
+            $artist_ids = self::get_ids($artist_data);
+            array_push($artist_ids, $artist_id);
+            $artist_labels = self::get_labels($artist_ids);
+
+            if (isset($artist_data->entities->{$artist_id}->claims->P18)) {
+              $image_url = 'https://commons.wikimedia.org/wiki/File:' . $artist_data->entities->{$artist_id}->claims->P18[0]->mainsnak->datavalue->value;
+              $tmp = self::get_image_commons($artist_data->entities->{$artist_id}->claims->P18[0]->mainsnak->datavalue->value);
+              foreach($tmp->query->pages as $image)
+                $image_thumb = $image->imageinfo[0]->thumburl;
+            }
+          }
 
           ?>
           <h3>
@@ -367,11 +368,13 @@ class Artist {
           </p>
           <table class="wikitable">
             <?php
-              self::render_claim_wd_from_artwork($artist_data->entities->{$artist_id}->claims, 'P19', $artist_labels, 'Lieu de naissance');
-              self::render_claim_wd_from_artwork($artist_data->entities->{$artist_id}->claims, 'P569', $artist_labels, 'Date de naissance');
-              self::render_claim_wd_from_artwork($artist_data->entities->{$artist_id}->claims, 'P20', $artist_labels, 'Lieu de décès');
-              self::render_claim_wd_from_artwork($artist_data->entities->{$artist_id}->claims, 'P570', $artist_labels, 'Date de décès');
-              self::render_claim_wd_from_artwork($artist_data->entities->{$artist_id}->claims, 'P27', $artist_labels, 'Pays de nationalité');
+              if (preg_match('/^[qQ][0-9]+$/', $artist_id)) {
+                self::render_claim_wd_from_artwork($artist_data->entities->{$artist_id}->claims, 'P19', $artist_labels, 'Lieu de naissance');
+                self::render_claim_wd_from_artwork($artist_data->entities->{$artist_id}->claims, 'P569', $artist_labels, 'Date de naissance');
+                self::render_claim_wd_from_artwork($artist_data->entities->{$artist_id}->claims, 'P20', $artist_labels, 'Lieu de décès');
+                self::render_claim_wd_from_artwork($artist_data->entities->{$artist_id}->claims, 'P570', $artist_labels, 'Date de décès');
+                self::render_claim_wd_from_artwork($artist_data->entities->{$artist_id}->claims, 'P27', $artist_labels, 'Pays de nationalité');
+              }
             ?>
           </table>
           <?php

@@ -4,10 +4,11 @@ var clusterSource;
 $(document).ready(function() {
   let data = null
 
-  $.getJSON('http://publicartmuseum.net/w/amapi/index.php?action=amgetcollection&collection=Le_Partage_des_eaux_%28France%29')
+  $.getJSON('http://publicartmuseum.net/w/amapi/index.php?action=amgetcollection&collection=Aéroports_/_Ville-Monde')
     .then(function(result) {
       console.log('AM OK')
       data = result.entities
+      console.log(data)
       initMap(data)
     })
 })

@@ -16,6 +16,27 @@ function define_value($path_name, $value) {
     return false;
 }
 
+function write_log_separator() {
+  if (AM_DEBUG)
+    file_put_contents(LOG_FILE, "----------------------------------\n", FILE_APPEND);
+}
+
+function write_log($string = "") {
+  if (AM_DEBUG) {
+    $time = date('m/d/Y h:i:s a', time());
+    if ($string != "")
+      $string = " - " . $string;
+    $newLine = "\n";
+
+    file_put_contents(LOG_FILE, $time .  $string . $newLine, FILE_APPEND);
+  }
+}
+
+/**
+ * Debug
+ */
+define_value('AM_DEBUG', false);
+
 /**
  * Main paths
  */
@@ -63,6 +84,8 @@ define_value('MISSING_IMAGE_THUMB', BASE_MAIN . 'images/thumb/5/5f/Image-manquan
 define_value('MISSING_IMAGE_FILE', BASE_MAIN . 'images/5/5f/Image-manquante.jpg');
 define_value('MISSING_IMAGE_LINK', ATLASMUSEUM_PATH . ATLASMUSEUM_FILE_PREFIX . 'Image-manquante.jpg');
 
+define_value('LOG_FILE', 'am_log.txt');
+
 /**
  * Utils
  */
@@ -93,3 +116,4 @@ define_value('WIKIDATA_API', WIKIDATA_BASE . 'w/api.php');
 define_value('ATLASMUSEUM_API', ATLASMUSEUM_MAIN_PATH_2 . 'api.php');
 define_value('COMMONS_API', COMMONS_BASE_PATH . 'api.php');
 define_value('WIKIDATA_SPARQL', 'https://query.wikidata.org/bigdata/namespace/wdq/sparql?');
+define_value('AM_API', ATLASMUSEUM_MAIN_PATH_2 . 'amapi/index.php');

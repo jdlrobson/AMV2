@@ -24,3 +24,5 @@ wfLoadExtension(WIKIDATA_BUNDLE_EXTENSIONS_PATH . 'WikidataEditCollection'); // 
 wfLoadExtension(WIKIDATA_BUNDLE_EXTENSIONS_PATH . 'WikidataExport'); // Export d'une œuvre
 wfLoadExtension(WIKIDATA_BUNDLE_EXTENSIONS_PATH . 'WikidataArtistExport'); // Export d'un artiste
 wfLoadExtension(WIKIDATA_BUNDLE_EXTENSIONS_PATH . 'WikidataQuery'); // Page de requête
+
+wfLoadExtension(WIKIDATA_BUNDLE_EXTENSIONS_PATH . 'CatchAll'); // Test

@@ -46,26 +46,28 @@ createMap = function(artworksData, divId = 'map') {
   let detruiteCheckbox = false
   let verifierCheckbox = false
   let nonRealiseeCheckbox = false
-console.log(artworksData)
+
   for (let key in artworksData) {
-    features.push(new ol.Feature({
-      geometry: new ol.geom.Point(ol.proj.transform([artworksData[key].lon, artworksData[key].lat], "EPSG:4326", "EPSG:3857")),
-      title: (artworksData[key].title !== null ? artworksData[key].title : 'Titre inconnu'),
-      artist: artworksData[key].artists,
-      id: artworksData[key].wikidata,
-      nature: artworksData[key].nature,
-      article: artworksData[key].article,
-    }))
-    if (!perenneCheckbox && artworksData[key].nature === 'pérenne')
-      perenneCheckbox = true
-    if (!ephemereCheckbox && artworksData[key].nature === 'éphémère')
-      ephemereCheckbox = true
-    if (!detruiteCheckbox && artworksData[key].nature === 'détruite')
-      detruiteCheckbox = true
-    if (!verifierCheckbox && artworksData[key].nature === 'à vérifier')
-      verifierCheckbox = true
-    if (!nonRealiseeCheckbox && artworksData[key].nature === 'non réalisée')
-      nonRealiseeCheckbox = true
+    if (artworksData[key].lat !== 0 || artworksData[key].lon !== 0) {
+      features.push(new ol.Feature({
+        geometry: new ol.geom.Point(ol.proj.transform([artworksData[key].lon, artworksData[key].lat], "EPSG:4326", "EPSG:3857")),
+        title: (artworksData[key].title !== null ? artworksData[key].title : 'Titre inconnu'),
+        artist: artworksData[key].artists,
+        id: artworksData[key].wikidata,
+        nature: artworksData[key].nature,
+        article: artworksData[key].article,
+      }))
+      if (!perenneCheckbox && artworksData[key].nature === 'pérenne')
+        perenneCheckbox = true
+      if (!ephemereCheckbox && artworksData[key].nature === 'éphémère')
+        ephemereCheckbox = true
+      if (!detruiteCheckbox && artworksData[key].nature === 'détruite')
+        detruiteCheckbox = true
+      if (!verifierCheckbox && artworksData[key].nature === 'à vérifier')
+        verifierCheckbox = true
+      if (!nonRealiseeCheckbox && artworksData[key].nature === 'non réalisée')
+        nonRealiseeCheckbox = true
+    }
   }
 
   const extent = features[0].getGeometry().getExtent().slice(0)

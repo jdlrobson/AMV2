@@ -65,7 +65,8 @@
      * @return {string} La valeur de la réponse
      */
     public function getResponseJSON() {
-      return json_encode($this->response, JSON_FORCE_OBJECT);
+      // return json_encode($this->response, JSON_FORCE_OBJECT);
+      return json_encode($this->response);
     }
 
     /**

@@ -62,7 +62,7 @@ if (!class_exists('Collection')) {
           'query' => $queryString . '|offset=' . $offset
         ];
         $tmpData = API::callApi($parameters, 'atlasmuseum');
-        
+
         if (!is_null($tmpData)) {
           // Doit-on continuer la query avec un offset ?
           if (property_exists($tmpData, 'query-continue-offset')) {
@@ -116,10 +116,9 @@ if (!class_exists('Collection')) {
         '?Auteur' => 'artist',
         '?Coordonnées' => 'coordinates',
         '?Nature' => 'nature',
-        '?Date d\'inauguration' => 'date',
-        '?Type d\'art' => 'type'
+        '?Date d\'inauguration' => 'date'
       ];
-
+      
       $queryString = '[[-Contient la notice::' . $collection . ']]';
 
       return self::query($queryString, $queryParameters);

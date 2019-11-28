@@ -5,7 +5,7 @@
  * API
  *****************************************************************************/
 
- if (!class_exists('Api')) {
+if (!class_exists('Api')) {
 
 class Api {
   /**
@@ -35,7 +35,7 @@ class Api {
         $url = WIKIDATA_API;
         break;
     }
-    $url = sprintf("%s?%s", $url, http_build_query($data));
+    $url = sprintf("%s?%s", $url, http_build_query($data, null, '&', PHP_QUERY_RFC3986));
 
     $url = str_replace('%5Cn', '%0A', $url);
     curl_setopt($curl, CURLOPT_URL, $url);
@@ -154,6 +154,57 @@ class Api {
     $result = preg_replace('/<\/div>$/', '', $result);
 
     return $result;
+  }
+
+  /**
+   * Récupère les labels d'un ensemble d'ids sur Wikidata
+   */
+  public static function getLabels($ids) {
+    $labels = [];
+    // Subdivise le tableau des items à traiter en sous-tableaux de max 50 entrées
+    // afin de ne pas dépasser la limite de l'api Wikidata
+    $split_ids = array_chunk($ids, 50);
+
+    for ($i=0; $i<sizeof($split_ids); $i++) {
+      $labels_data = Api::callApi(array(
+        'action' => 'wbgetentities',
+        'props' => 'labels',
+        'ids' => join($split_ids[$i], '|')
+      ));
+
+      if (isset($labels_data->entities)) {
+        foreach($labels_data->entities as $id=>$value) {
+          if (isset($value->labels->fr)) {
+            $labels[$id] = $value->labels->fr->value;
+          } else
+          if (isset($value->labels->en)) {
+            $labels[$id] = $value->labels->en->value;
+          }
+        }
+      }
+    }
+
+    return $labels;
+  }
+
+  public static function getImageWD($image, $width=320) {
+    return Api::callApi(array(
+      'action' => 'query',
+      'prop' => 'imageinfo',
+      'iiprop' => 'url',
+      'iiurlwidth' => $width,
+      'titles' => 'File:'.$image
+    ), 'Commons');
+  }
+
+  public static function getImageAM($image, $width=320) {
+    return Api::callApi(array(
+      'action' => 'query',
+      'prop' => 'imageinfo',
+      'iiprop' => 'url',
+      'iiurlwidth' => $width,
+      'titles' => 'File:'.$image
+    ), 'atlasmuseum');
   }
 
 }

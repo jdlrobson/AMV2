@@ -6,6 +6,7 @@ require_once(ATLASMUSEUM_UTILS_PATH_PHP . 'artworkGetData.php');
 class Artwork {
 
   public static function render_title($labels, $property, $param, $param_name, $th_title) {
+    write_log('render_title: start');
     $title = '';
 
     if (isset($param[$param_name]))
@@ -20,10 +21,11 @@ class Artwork {
     }
 
     print '<tr><th>' . $th_title . '</th><td>' . $title . '</td></tr>';
+    write_log('render_title: end');
   }
 
   public static function render_image($claims, $property, $param, $param_name) {
-
+    write_log('render_image: start');
     $image_thumb = MISSING_IMAGE_FILE;
     $image_url = MISSING_IMAGE;
     $image_legend = '';
@@ -67,9 +69,11 @@ class Artwork {
       </div>
     </div>
     <?php
+    write_log('render_image: end');
   }
 
   public static function render_map($lat, $lng) {
+    write_log('render_map: ' . $property);
     if ($lat > -100 && $lng>-500) {
       ?>
       <div class="topImgCtnr floatright">
@@ -117,9 +121,11 @@ class Artwork {
       </div>
       <?php
     }
+    write_log('render_map: end');
   }
 
   public static function render_claim_am($param, $name, $title, $two_lines = false) {
+    write_log('render_claim_am: ' . $name);
     if (isset($param[$name])) {
       if ($two_lines) {
         print '<tr><td colspan="2"><b>' . $title . '</b><br />' . API::convert_to_wiki_text($param[$name]) . '</td></tr>';
@@ -127,10 +133,11 @@ class Artwork {
         print '<tr><th>' . $title . '</th><td>' . API::convert_to_wiki_text($param[$name]) . '</td></tr>';
       }
     }
+    write_log('render_claim_am: end');
   }
 
   public static function render_claim($claims, $property, $labels, $title, $title_plural='') {
-
+    write_log('render_claim: ' . $property);
     if (isset($claims->{$property})) {
       $data = [];
 
@@ -159,10 +166,11 @@ class Artwork {
           join($data, ', ') .
           '</td></tr>';
     }
+    write_log('render_claim: end');
   }
 
   public static function render_claim2($claims, $property, $labels, $param, $name, $title, $title_plural, $two_lines = false) {
-
+    write_log('render_claim2: ' . $property);
     $data = [];
 
     if (isset($claims->{$property})) {
@@ -205,10 +213,11 @@ class Artwork {
         print '<tr><th>' . (sizeof($data)>1 ? $title_plural : $title) . '</th><td>' . join($data, ', ') . '</td></tr>';
       }
     }
-
+    write_log('render_claim2: end');
   }
 
   public static function render_claim_coords($lat, $lng, $title) {
+    write_log('render_claim_coords');
     if ($lat>-100 && $lng>-500) {
 
       if ($lat >= 0)
@@ -236,14 +245,18 @@ class Artwork {
       print '<tr><th>' . $title . '</th><td>' . $lat_deg . '° ' . $lat_min . '\' ' . $lat_sec . '" ' . $NS . '<br />' . 
                                                 $lng_deg . '° ' . $lng_min . '\' ' . $lng_sec . '" ' . $EW . '</td></tr>';
     }
+    write_log('render_claim_coords: end');
   }
 
   public static function render_artists($artists_wd, $artists_am) {
+    write_log('render_artists: start');
     require_once(ATLASMUSEUM_UTILS_PATH_PHP . 'artist.php');
     Artist::render_artists_for_artwork($artists_wd, $artists_am);
+    write_log('render_artists: end');
   }
 
   public static function render_galerie($param, $name, $title) {
+    write_log('render_galerie: start');
     if (isset($param[$name]) && $param[$name] != '') {
       ?>
       <div class="atmslideshowCtnr">
@@ -272,9 +285,11 @@ class Artwork {
       </div>
       <?php
     }
+    write_log('render_galerie: end');
   }
 
   public static function render_other_works($id, $creators, $param) {
+    write_log('render_other_works: start');
     if (is_null($creators) && !isset($param['artiste']) && $param['artiste'] == '')
       return;
 
@@ -431,9 +446,11 @@ class Artwork {
         <div class="atmslideshowHead" onclick="toggleFold(this)"><h3>' . $title . '</h3></div>
         <ul class="atmslideshowContent" style="display:none;">' . $images . '</ul>
       </div>';
+    write_log('render_other_works: end');
   }
 
   public static function render_near_sites($id, $lat, $lng) {
+    write_log('render_near_sites: start');
          $query = "SELECT ?place ?placeLabel ?location ?image ?distance WHERE {".
           "  bind(strdt(\"Point(".$lng." ".$lat.")\", geo:wktLiteral) as ?placeLoc)".
           "  SERVICE wikibase:around {".
@@ -473,6 +490,7 @@ class Artwork {
           <ul class="atmslideshowContent" style="display:none;">' . $images . '</ul>
         </div>';
     }
+    write_log('render_near_sites: end');
   }
 
   public static function distanceInKmBetweenEarthCoordinates($lat1, $lon1, $lat2, $lon2) {
@@ -491,6 +509,7 @@ class Artwork {
   }
   
   public static function render_near_artworks($id, $lat, $lng) {
+    write_log('render_near_artworks: start');
       $currentArticle = preg_replace('/^.*\/wiki\//', '', $_SERVER['REQUEST_URI']);
       $currentArticle = urldecode(str_replace('_', ' ', $currentArticle));
       $artworks = [];
@@ -621,16 +640,20 @@ class Artwork {
           <ul class="atmslideshowContent" style="display:none;">' . $images . '</ul>
         </div>';
     }
+    write_log('render_near_artworks: end');
   }
 
   public static function parse_page_am($page) {
+    write_log('parse_page_am: start');
     return Api::call_api(array(
       'action' => 'parse',
       'page' => $page
     ), 'atlasmuseum');
+    write_log('parse_page_am: end');
   }
 
   public static function get_image($image, $width=320) {
+    write_log('get_image: ' . $image);
     return Api::call_api(array(
       'action' => 'query',
       'prop' => 'imageinfo',
@@ -638,9 +661,11 @@ class Artwork {
       'iiurlwidth' => $width,
       'titles' => 'File:'.$image
     ), 'Commons');
+    write_log('get_image: end');
   }
 
   public static function get_image_am($image, $width=320) {
+    write_log('get_image_am: ' . $image);
     return Api::call_api(array(
       'action' => 'query',
       'prop' => 'imageinfo',
@@ -648,17 +673,20 @@ class Artwork {
       'iiurlwidth' => $width,
       'titles' => 'File:'.$image
     ), 'atlasmuseum');
+    write_log('get_image_am: end');
   }
 
   public static function get_props($id) {
+    write_log('get_props: ' . $id);
     return Api::call_api(array(
       'action' => 'wbgetentities',
       'ids' => $id
     ));
+    write_log('get_props: end');
   }
 
   public static function get_labels($ids) {
-
+    write_log('get_labels: ' . json_encode($ids));
     $labels = [];
     $split_ids = array_chunk($ids, 50);
 
@@ -676,10 +704,13 @@ class Artwork {
       }
     }
 
+    write_log('get_labels: end');
+
     return $labels;
   }
 
   public static function get_ids($data) {
+    write_log('get_ids: start');
     $ids = [];
 
     foreach ($data->entities as $q)
@@ -687,11 +718,12 @@ class Artwork {
         foreach ($value as $claim)
           if ($claim->mainsnak->datatype == 'wikibase-item')
             array_push($ids, $claim->mainsnak->datavalue->value->id);
-
+    write_log('get_ids: end');
     return $ids;
   }
 
   public static function get_coordinates($claims, $property, $param, $param_name) {
+    write_log('get_coordinates: start');
     $lat = 0;
     $lng = 0;
 
@@ -704,12 +736,14 @@ class Artwork {
       $lat = $claims->{$property}[0]->mainsnak->datavalue->value->latitude;
       $lng = $claims->{$property}[0]->mainsnak->datavalue->value->longitude;
     }
-
+    write_log('get_coordinates: end');
     return [$lat, $lng];
   }
 
   public static function renderArtwork($param = array(), $wikidata=true) {    
     //$attribs = Sanitizer::validateTagAttributes( $param, 'div' );
+
+    write_log('renderArtwork - ' . json_encode($param));
 
     if (!is_null($param['q'])) {
       $q = $param['q'];
@@ -728,10 +762,13 @@ class Artwork {
     }
 
     $ids_am = ArtworkGetData::get_ids2($param);
+    write_log('renderArtwork - ids_am: ' . json_encode($ids_am));
     $ids = array_merge($ids, $ids_am);
     $labels = ArtworkGetData::get_labels($ids);
+    write_log('renderArtwork - labels: ' . json_encode($labels));
 
     list($lat, $lng) = self::get_coordinates($claims, 'P625', $param, 'site_coordonnees');
+    write_log('renderArtwork - coordinates: ' . $lat . ', ' . $lng);
 
     ob_start();
 
@@ -901,6 +938,8 @@ class Artwork {
 
     $contents = ob_get_contents();
     ob_end_clean();
+
+    write_log('renderArtwork - end: ' . json_encode($param));
 
     return preg_replace("/\r|\n/", "", $contents);
 

@@ -48,3 +48,73 @@ div.pageArtiste table.wikitable tr th, div.pageArtiste table.wikitable tr td {
   border-bottom: 1px solid #E0E0E0;
   padding: 4px 6px;
 }
+
+#mainImage {
+  width:422px;
+  min-height: 250px;
+}
+
+.thumbinner:not(.loading),
+#mainImage:not(.loading) {
+  background-color: white;
+}
+
+.thumbinner.loading,
+#mainImage.loading {
+  background-color: #f0f0f0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#mainImage img {
+  width: auto;
+  max-width: 420px;
+  max-height: 250px;
+}
+
+#map {
+  height: 250px;
+}
+
+/**
+ * Loader
+ */
+
+.loader {
+  width: 100%;
+  text-align: center;
+}
+
+.loader span {
+  display: inline-block;
+  height: 10px;
+  width: 10px;
+  border-radius: 50%;
+  background-color: #FBE023;
+}
+
+.loader-big span {
+  height: 20px;
+  width: 20px;
+}
+
+.loader span:not(:first-child) { margin-left: 10px; }
+
+.loader span:nth-child(1) { animation: move 1s ease-in-out 0s infinite alternate; }
+.loader span:nth-child(2) { animation: move 1s ease-in-out 0.5s infinite alternate; }
+.loader span:nth-child(3) { animation: move 1s ease-in-out 1s infinite alternate; }
+.loader span:nth-child(4) { animation: move 1s ease-in-out 1.5s infinite alternate; }
+
+@keyframes move {
+	from { transform: translateY(0px); }
+	to { transform: translateY(-10px); }
+}
+
+.loader-artist {
+  margin-top: 10px;
+}
+
+#atlas_loader {
+  margin-top: 20px;
+}
