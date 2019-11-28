@@ -102,6 +102,24 @@ if (!class_exists('Router')) {
       }
     }
 
+    protected static function getImage($response) {
+      require_once ('generators/image.php');
+      $validation = Image::validateQuery();
+      if ($validation['success']) {
+        $data = Image::getImage($validation['payload']['image'], $validation['payload']['origin'], $validation['payload']['width'], $validation['payload']['legend']);
+
+        if (sizeof($data) > 0) {
+          $response->setValue('entities', $data);
+          $response->setSuccess(true);
+          $response->setStatusCode(200);
+        } else {
+          $response->setError('no_data', 'No data found for image: ' . $validation['payload']['image'], 200);
+        }
+      } else {
+        $response->setError($validation['error']['code'], $validation['error']['info'], $validation['error']['status']);
+      }
+    }
+
     /**
      * Retourne la réponse en fonction de la route
      *
@@ -139,6 +157,11 @@ if (!class_exists('Router')) {
           case 'amgetartist':
             // Artist
             self::getArtist($response);
+            break;
+
+          case 'amgetimage':
+            // Image
+            self::getImage($response);
             break;
 
           default:
