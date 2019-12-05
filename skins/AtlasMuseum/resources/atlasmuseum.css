@@ -581,7 +581,6 @@ table.formtable th {
     border: 1px solid #efefef;
     margin: 0;
     padding: 34px;
-    width: 100%;
 }
 .formtable td {
     vertical-align: top;
