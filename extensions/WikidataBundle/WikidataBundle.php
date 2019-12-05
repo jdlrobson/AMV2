@@ -25,4 +25,6 @@ wfLoadExtension(WIKIDATA_BUNDLE_EXTENSIONS_PATH . 'WikidataExport'); // Export d
 wfLoadExtension(WIKIDATA_BUNDLE_EXTENSIONS_PATH . 'WikidataArtistExport'); // Export d'un artiste
 wfLoadExtension(WIKIDATA_BUNDLE_EXTENSIONS_PATH . 'WikidataQuery'); // Page de requête
 
-wfLoadExtension(WIKIDATA_BUNDLE_EXTENSIONS_PATH . 'CatchAll'); // Test
+// wfLoadExtension(WIKIDATA_BUNDLE_EXTENSIONS_PATH . 'CatchAll'); // Test
+wfLoadExtension(WIKIDATA_BUNDLE_EXTENSIONS_PATH . 'ArtworkPage2'); // Test
+wfLoadExtension(WIKIDATA_BUNDLE_EXTENSIONS_PATH . 'EditArtwork'); // Test

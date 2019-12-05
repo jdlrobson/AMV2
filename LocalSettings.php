@@ -165,10 +165,17 @@ require_once( "$IP/extensions/SemanticBundle/SemanticBundle.php" );
 //$wgGenerateThumbnailOnParse = true;
 $wgGenerateThumbnailOnParse = true;
 
+/*
+$smwgQMaxInlineLimit = 500;
+$wgJobRunRate = 1;
+$wgRunJobsAsync = true;
+*/
+
+/*
 $smwgQMaxInlineLimit = 10000;
-//$wgJobRunRate = 10000;
 $wgJobRunRate = 0.01;
-//$wgRunJobsAsync = false;
+$wgRunJobsAsync = false;
+*/
 
 $wgFavicon = "http://publicartmuseum.net/w/skins/common/images/favicon.ico";
 

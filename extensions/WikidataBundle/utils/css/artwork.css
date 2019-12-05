@@ -118,3 +118,17 @@ div.pageArtiste table.wikitable tr th, div.pageArtiste table.wikitable tr td {
 #atlas_loader {
   margin-top: 20px;
 }
+
+.atmslideshowContent img {
+  width: auto;
+  max-width: 192px;
+  max-height: 140px;
+}
+
+.loader-gallery {
+  height: 122px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f0f0f0;
+}

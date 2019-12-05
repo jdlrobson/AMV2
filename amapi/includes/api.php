@@ -171,11 +171,24 @@ class Api {
     $split_ids = array_chunk($ids, 50);
 
     for ($i=0; $i<sizeof($split_ids); $i++) {
-      $labels_data = Api::callApi(array(
-        'action' => 'wbgetentities',
-        'props' => 'labels',
-        'ids' => join($split_ids[$i], '|')
-      ));
+      
+      $iterate = false;
+      do {
+        $labels_data = Api::callApi(array(
+          'action' => 'wbgetentities',
+          'props' => 'labels',
+          'ids' => join($split_ids[$i], '|')
+        ));
+
+        // Si l'un des éléments n'existe pas sur WD, l'api retourne une erreur :
+        // il faut l'enlever et recommencer la requête
+        if (!is_null($labels_data->error) && $labels_data->error->code === 'no-such-entity') {
+          $errorId = $labels_data->error->id;
+          array_splice($split_ids[$i], array_search($errorId, $split_ids[$i]), 1);
+          $iterate = true;
+        } else
+          $iterate = false;
+      } while($iterate);
 
       if (isset($labels_data->entities)) {
         foreach($labels_data->entities as $id=>$value) {
@@ -210,6 +223,45 @@ class Api {
       'iiurlwidth' => $width,
       'titles' => 'File:'.$image
     ), 'atlasmuseum');
+  }
+
+  public static function ask($queryString, $queryParameters) {
+    $offset = 0;
+    $limit = 5000;
+    $results = [];
+
+    $queryParameters['limit'] = $limit;
+
+    foreach ($queryParameters as $key => $value) {
+      $queryString .= '|' . $key . '=' . $value;
+    }
+
+    $continue = false;
+    do {
+      // Requête à l'API
+      $parameters = [
+        'action' => 'ask',
+        'query' => $queryString . '|offset=' . $offset
+      ];
+      $tmpData = self::callApi($parameters, 'atlasmuseum');
+
+      if (!is_null($tmpData)) {
+        // Doit-on continuer la query avec un offset ?
+        if (property_exists($tmpData, 'query-continue-offset')) {
+          $continue = true;
+          $offset += $limit;
+        } else
+          $continue = false;
+
+        // Notices
+        if (property_exists($tmpData, 'query') && property_exists($tmpData->query, 'results'))
+          $results = array_merge($results, $tmpData->query->results);
+      } else {
+        $continue = false;
+      }
+    } while ($continue && $offset < 4000);
+
+    return $results;
   }
 
 }

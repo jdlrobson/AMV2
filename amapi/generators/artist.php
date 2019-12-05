@@ -10,7 +10,6 @@ if (!class_exists('Artist')) {
   require_once('includes/api.php');
 
   class Artist {
-
     /**
      * Valide les paramètres
      *

@@ -39,7 +39,7 @@ class Testing {
   protected static function renderMainImage($image) {
     print '<div class="topImgCtnr"><div class="thumb tright"><div id="mainImage" class="thumbinner loading">';
     if (!is_null($image)) {
-      print '<div class="image-loader" data-origin="' . $image->value[0]->origin . '" data-value="' . $image->value[0]->value . '" data-width="420"><div class="loader loader-big"><span></span><span></span><span></span><span></span></div></div>';
+      print '<div class="image-loader" data-origin="' . $image->value[0]->origin . '" data-value="' . $image->value[0]->value . '" data-width="420" data-legend="true"><div class="loader loader-big"><span></span><span></span><span></span><span></span></div></div>';
     } else {
       print '<a href="' . MISSING_IMAGE_LINK . '" class="image"><img alt="" src="' . MISSING_IMAGE_FILE . '" class="thumbimage" srcset="" /></a>';
     }
@@ -192,6 +192,45 @@ class Testing {
     }
   }
 
+  protected static function renderOtherArtworks($article, $artists) {
+    if ($artists) {
+      $ids = [];
+      for ($i = 0; $i < sizeof($artists->value); $i++) {
+        array_push($ids, str_replace('"', '&quot;', $artists->value[$i]->article));
+      }
+      $article = str_replace('"', '&quot;', $article);
+      print '<div id="autres_oeuvres" data-exclude="' . $article . '" data-artists="' . implode('|', $ids) . '"></div>';
+    }
+  }
+
+  protected static function renderCloseSites($wikidata, $coordinates) {
+    if (!is_null($coordinates)) {
+      $lat = $coordinates->value[0]->lat;
+      $lon = $coordinates->value[0]->lon;
+      if ($lat < -90 || $lat > 90 || $lon < -180 || $lon > 180) {
+        // Si les coordonnées tombent en dehors de la carte, on les initialise à 0
+        $lat = 0;
+        $lon = 0;
+      }
+      $exclude = (is_null($wikidata) ? '' : $wikidata->value[0]);
+      print '<div id="sites_proches" data-exclude="' . $exclude . '" data-latitude="' . $lat . '" data-longitude="' . $lon . '"></div>';
+    }
+  }
+
+  protected static function renderCloseArtworks($article, $coordinates) {
+    if (!is_null($coordinates)) {
+      $lat = $coordinates->value[0]->lat;
+      $lon = $coordinates->value[0]->lon;
+      if ($lat < -90 || $lat > 90 || $lon < -180 || $lon > 180) {
+        // Si les coordonnées tombent en dehors de la carte, on les initialise à 0
+        $lat = 0;
+        $lon = 0;
+      }
+      $article = str_replace('"', '&quot;', $article);
+      print '<div id="oeuvres_proches" data-exclude="' . $article . '" data-latitude="' . $lat . '" data-longitude="' . $lon . '"></div>';
+    }
+  }
+
   /**
    * Écriture d'une œuvre
    */
@@ -228,7 +267,7 @@ class Testing {
 
     self::renderLine('Titre', 'Titre', $entity->data->titre);
     self::renderLine('Sous-titre', 'Sous-titres', $entity->data->sous_titre);
-    self::renderLine('Description', 'Descriptions', $entity->data->description);
+    self::renderLine('Description', 'Descriptions', $entity->data->description, true);
     self::renderLine('Date', 'Dates', $entity->data->inauguration);
     self::renderLine('Date de restauration', 'Dates de restauration', $entity->data->restauration);
     self::renderLine('Date de fin', 'Dates de fin', $entity->data->fin);
@@ -323,16 +362,16 @@ class Testing {
     print '<div class="clearfix"></div>';
 
     self::renderSource($entity->data->source);
-    self::renderWikidataLink($entity->data->q);
+    self::renderWikidataLink($entity->data->wikidata);
 
     // Bloc 'Atlas
     print '<div class="atlasCtnr">';
     print '<h2> <span class="mw-headline" id="ATLAS"> ATLAS </span></h2>';
     self::renderGalerie('Construction / installation / Montage', $entity->data->image_galerie_construction);
     self::renderGalerie('Autres prises de vues', $entity->data->image_galerie_autre);
-    print '<div id="autres_oeuvres"></div>';
-    print '<div id="sites_proches"></div>';
-    print '<div id="oeuvres_proches"></div>';
+    self::renderOtherArtworks($entity->article, $entity->data->artiste);
+    self::renderCloseSites($entity->data->wikidata, $entity->data->site_coordonnees);
+    self::renderCloseArtworks($entity->article, $entity->data->site_coordonnees);
     print '<div id="atlas_loader" class="loader"><span></span><span></span><span></span><span></span></div>';
     print '</div>';
 
@@ -375,7 +414,6 @@ class Testing {
     }
 
     return preg_replace("/\r|\n/", "", $contents);
-
   }
 
 }

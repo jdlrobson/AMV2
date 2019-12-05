@@ -120,6 +120,60 @@ if (!class_exists('Router')) {
       }
     }
 
+    protected static function getCloseArtworks($response) {
+      require_once ('generators/closeArtworks.php');
+      $validation = CloseArtworks::validateQuery();
+      if ($validation['success']) {
+        $data = CloseArtworks::getCloseArtworks($validation['payload']);
+
+        if (sizeof($data) > 0) {
+          $response->setValue('entities', $data);
+          $response->setSuccess(true);
+          $response->setStatusCode(200);
+        } else {
+          $response->setError('no_data', 'No artworks found for coordinates: ' . $validation['payload']['latitude'] . ', ' . $validation['payload']['longitude'], 200);
+        }
+      } else {
+        $response->setError($validation['error']['code'], $validation['error']['info'], $validation['error']['status']);
+      }
+    }
+
+    protected static function getCloseSites($response) {
+      require_once ('generators/closeSites.php');
+      $validation = CloseSites::validateQuery();
+      if ($validation['success']) {
+        $data = CloseSites::getCloseSites($validation['payload']);
+
+        if (sizeof($data) > 0) {
+          $response->setValue('entities', $data);
+          $response->setSuccess(true);
+          $response->setStatusCode(200);
+        } else {
+          $response->setError('no_data', 'No sites found for coordinates: ' . $validation['payload']['latitude'] . ', ' . $validation['payload']['longitude'], 200);
+        }
+      } else {
+        $response->setError($validation['error']['code'], $validation['error']['info'], $validation['error']['status']);
+      }
+    }
+
+    protected static function getArtworksByArtists($response) {
+      require_once ('generators/artworksByArtists.php');
+      $validation = ArtworksByArtists::validateQuery();
+      if ($validation['success']) {
+        $data = ArtworksByArtists::getArtworksByArtists($validation['payload']);
+
+        if (sizeof($data) > 0) {
+          $response->setValue('entities', $data);
+          $response->setSuccess(true);
+          $response->setStatusCode(200);
+        } else {
+          $response->setError('no_data', 'No artwork found', 200);
+        }
+      } else {
+        $response->setError($validation['error']['code'], $validation['error']['info'], $validation['error']['status']);
+      }
+    }
+
     /**
      * Retourne la réponse en fonction de la route
      *
@@ -162,6 +216,21 @@ if (!class_exists('Router')) {
           case 'amgetimage':
             // Image
             self::getImage($response);
+            break;
+          
+          case 'amgetcloseartworks':
+            // Œuvres proches
+            self::getCloseArtworks($response);
+            break;
+          
+          case 'amgetclosesites':
+            // Sites proches
+            self::getCloseSites($response);
+            break;
+          
+          case 'amgetartworksbyartists':
+            // Œuvres d'un ou plusieurs artistes
+            self::getArtworksByArtists($response);
             break;
 
           default:

@@ -206,11 +206,11 @@ if (!class_exists('Artwork')) {
       $data = [];
       $lineIndex = 0;
 
-      while(strpos(strtolower($content[$lineIndex]), '<artworkpage') !== false && $lineIndex++ < sizeof($content));
+      while(strpos(strtolower($content[$lineIndex]), '<artworkpage') !== false && strpos(strtolower($content[$lineIndex]), '<catchall') !== false && $lineIndex++ < sizeof($content));
 
       while($lineIndex < sizeof($content) && strpos($content[$lineIndex], '/>') === false) {
-        $key = strtolower(preg_replace('/^([^=]+)=.*$/', '$1', $content[$lineIndex]));
-        $value = preg_replace('/^[^=]+=\"(.*)\"$/', '$1', $content[$lineIndex]);
+        $key = strtolower(preg_replace('/^[\s]*\|[\s]*([^=]+)[\s]*=.*$/', '$1', $content[$lineIndex]));
+        $value = preg_replace('/^[^=]+=[\s]*(.*)$/', '$1', $content[$lineIndex]);
         $value = str_replace('&quot;', '"', $value);
         $value = str_replace('\n', '<br />', $value);
 
@@ -264,7 +264,7 @@ if (!class_exists('Artwork')) {
       $data = [];
 
       // Identifiant Wikidata
-      $data['q'] = self::processText($entity->id);
+      $data['wikidata'] = self::processText($entity->id);
 
       // Titre de l'œuvre : label français ou anglais
       if (!is_null($entity->labels)) {
@@ -278,7 +278,7 @@ if (!class_exists('Artwork')) {
       }
 
       // Nature : pérenne
-      $data['nature'] = self::processText('Pérenne');
+      $data['nature'] = self::processText('pérenne');
 
       // Claims
       if (!is_null($entity->claims)) {
@@ -364,6 +364,7 @@ if (!class_exists('Artwork')) {
 
       return [
         'article' => $article,
+        'title' => $article,
         'origin' => 'wikidata',
         'data' => $data
       ];
@@ -393,6 +394,7 @@ if (!class_exists('Artwork')) {
 
       return [
         'article' => $article,
+        'title' => $article,
         'origin' => 'atlasmuseum',
         'data' => $data
       ];
@@ -436,6 +438,8 @@ if (!class_exists('Artwork')) {
     protected static function convertItems($artworks) {
       // Parse l'objet en entrée afin d'en récupérer tous les ids Wikidata à traiter
       $ids = [];
+      if ($artworks['origin'] === 'wikidata')
+        array_push($ids, $artworks['article']);
       foreach ($artworks['data'] as $element) {
         if ($element['type'] === 'item') {
           for ($i = 0; $i < sizeof($element['value']); $i++) {
@@ -452,6 +456,10 @@ if (!class_exists('Artwork')) {
 
         if (sizeof($labels) > 0) {
           // Re-parse l'objet en entrée afin de mettre à jour les labels
+          if ($artworks['origin'] === 'wikidata') {
+            if (array_key_exists($artworks['article'], $labels))
+              $artworks['title'] = $labels[$artworks['article']];
+          }
           foreach ($artworks['data'] as $key => $element) {
             if ($element['type'] === 'item') {
               for ($i = 0; $i < sizeof($element['value']); $i++) {

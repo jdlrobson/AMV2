@@ -21,7 +21,7 @@ if (!class_exists('Image')) {
         return [
           'success' => 0,
           'error' => [
-            'code' => 'no_article',
+            'code' => 'no_image',
             'info' => 'No value provided for parameter "image".',
             'status' => 400
           ]
