@@ -8,7 +8,24 @@ class Artwork {
    */
   protected static function renderHeader($entity) {
     if ($entity->origin === 'wikidata') {
+      // Mise à jour du titre de la page avec le titre de l'œuvre, si elle existe
+      if (!is_null($entity) && !is_null($entity->data) && !is_null($entity->data->titre)) {
+        $artworkTitle = $entity->data->titre->value[0];
+        ?>
+          <script>document.getElementById('firstHeading').getElementsByTagName('span')[0].textContent = "<?php print $artworkTitle; ?>"</script>
+        <?php
+      }
+
+      // Affichage "Importer cette œuvre..."
+      ?>
+      <div class="import">
+        <a href="<?php print ATLASMUSEUM_PATH; ?>Spécial:EditArtwork/<?php print $entity->article; ?>">
+          <img src="http://publicartmuseum.net/w/skins/AtlasMuseum/resources/images/hmodify.png" />Importer cette œuvre dans atlasmuseum
+        </a>
+      </div>
+      <?php
     } else {
+      // Affichage "Exporter cette œuvre..."
       ?>
       <div class="import">
         <a href="<?php print ATLASMUSEUM_PATH; ?>Spécial:WikidataExport/<?php print $entity->article; ?>">
@@ -404,11 +421,14 @@ class Artwork {
   /**
    * Rendu d'une œuvre
    */
-  public static function renderArtwork($param = array()) {
+  public static function renderArtwork($article) {
+    if (is_null($article))
+      return '';
+
     // Récupération des données de l'œuvre
     $parameters = [
       'action' => 'amgetartwork',
-      'article' => $param['full_name']
+      'article' => $article
     ];
     $data = API::call_api($parameters, 'am');
 
