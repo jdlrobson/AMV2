@@ -60,7 +60,8 @@ if (!class_exists('ArtworksByArtists')) {
       $results = API::ask($queryString, $queryParameters);
 
       for ($i = 0; $i < sizeof($results) ; $i++) {
-        array_push($ids, $results[$i]->printouts[0]->{'0'});
+        if (!is_null($results[$i]->printouts[0]->{'0'}))
+          array_push($ids, $results[$i]->printouts[0]->{'0'});
       }
 
       return array_unique($ids);

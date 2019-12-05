@@ -37,7 +37,10 @@ class Testing {
    * Écriture de l'image principale
    */
   protected static function renderMainImage($image) {
-    print '<div class="topImgCtnr"><div class="thumb tright"><div id="mainImage" class="thumbinner loading">';
+    print '<div class="topImgCtnr"><div class="thumb tright"><div id="mainImage" class="thumbinner';
+    if(!is_null($image))
+      print ' loading';
+    print '">';
     if (!is_null($image)) {
       print '<div class="image-loader" data-origin="' . $image->value[0]->origin . '" data-value="' . $image->value[0]->value . '" data-width="420" data-legend="true"><div class="loader loader-big"><span></span><span></span><span></span><span></span></div></div>';
     } else {

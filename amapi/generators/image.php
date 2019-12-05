@@ -90,7 +90,7 @@ if (!class_exists('Image')) {
         foreach ($result->query->pages as $page) {
           $data['file'] = 'Fichier' . $image;
           $data['url'] = $page->imageinfo[0]->descriptionurl;
-          $data['thumbnail'] = $page->imageinfo[0]->url;
+          $data['thumbnail'] = (!is_null($page->imageinfo[0]->thumburl) ? $page->imageinfo[0]->thumburl : $page->imageinfo[0]->url);
         }
 
         if ($legend) {
