@@ -195,6 +195,8 @@ if (!class_exists('ArtworksByArtists')) {
       // Tableau des ids Wikidata déjà présents sur atlasmuseum
       $ids = [];
 
+      // Supprimer les éventuels espaces insécables
+      $exclude = str_replace("\xc2\xa0", ' ', $exclude);
       for ($i = 0; $i < sizeof($artworksAM); $i++) {
         if (is_null($exclude) || $exclude === '' || $artworksAM[$i]['article'] !== $exclude)
           array_push($artworks, $artworksAM[$i]);
