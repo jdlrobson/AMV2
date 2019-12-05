@@ -34,7 +34,7 @@ addLine = function(id, property, key, mandatory, wikidataId="", wikidataLabel=""
 
   newLine.setAttribute('id', id+'_wrapper_'+n)
 
-  newLine.innerHTML = '<input id="'+id+'_'+n+'" class="createboxInput'+(mandatory ? ' mandatoryField' : '')+'" size="60" value="' + wikidataLabel + '" name="Edit['+key+']['+n+']"><input type="hidden" id="'+id+'_id_'+n+'" name="Edit['+key+'][id]['+n+']" value="' + wikidataId + '"></input> <span class="edit_item_button" title="Supprimer cette ligne" onclick="remove_line(\''+id+'_wrapper_'+n+'\')">[&nbsp;x&nbsp;]</span>';
+  newLine.innerHTML = '<input id="'+id+'_'+n+'" class="createboxInput'+(mandatory ? ' mandatoryField' : '')+'" size="60" value="' + wikidataLabel + '" name="Edit['+key+']['+n+']"><input type="hidden" id="'+id+'_id_'+n+'" name="Edit['+key+'][id]['+n+']" value="' + wikidataId + '"></input> <span class="edit_item_button" title="Supprimer cette ligne" onclick="removeLine(\''+id+'_wrapper_'+n+'\')">[&nbsp;x&nbsp;]</span>';
   
   td.insertBefore(newLine, add)
   autocomplete(document.getElementById(id+'_'+n))
