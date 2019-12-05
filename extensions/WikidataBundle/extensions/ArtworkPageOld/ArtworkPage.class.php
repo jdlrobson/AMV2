@@ -28,8 +28,11 @@ class ArtworkPage {
       $param['full_name'] = $fullName;
     }
 
-    require_once(ATLASMUSEUM_UTILS_PATH_PHP . 'artwork.php');
+    write_log_separator();
+    write_log('renderArtworkPage - page: ' . $param['full_name']);
 
-    return Artwork::renderArtwork($param);
+    require_once(ATLASMUSEUM_UTILS_PATH_PHP . 'artwork_old.php');
+
+    return ArtworkOld::renderArtwork($param, false);
 	}
 }

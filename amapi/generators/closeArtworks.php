@@ -151,11 +151,22 @@ if (!class_exists('CloseArtworks')) {
           'origin' => 'atlasmuseum'
         ];
         // Image
-        if (!is_null($results[$i]->printouts[0]->{'0'}))
-          $artwork['image'] = [
-            'origin' => 'atlasmuseum',
-            'file' => $results[$i]->printouts[0]->{'0'}
-          ];
+        if (!is_null($results[$i]->printouts[0]->{'0'})) {
+          $fileName = $results[$i]->printouts[0]->{'0'};
+          if (strtolower(substr($fileName, 0, 8)) === 'commons:') {
+            // L'image provient de Commons
+            $artwork['image'] = [
+              'origin' => 'commons',
+              'file' => substr($fileName, 8)
+            ];
+          } else {
+            // L'image provient d'atlasmuseum
+            $artwork['image'] = [
+              'origin' => 'atlasmuseum',
+              'file' => $fileName
+            ];
+          }
+        }
         // Titre
         if (!is_null($results[$i]->printouts[1]->{'0'}))
           $artwork['titre'] = $results[$i]->printouts[1]->{'0'};
@@ -197,35 +208,41 @@ if (!class_exists('CloseArtworks')) {
 
       $data = Api::sparql($query);
 
+      $ids = []; // Tableau des ids déjà récupérées ; permet d'éliminer les doublons (entité avec plusieurs images, par exemple)
+
       for ($i = 0; $i < sizeof($data->results->bindings); $i++) {
-        $artwork = [
-          'origin' => 'wikidata',
-          'wikidata' => str_replace('http://www.wikidata.org/entity/', '', $data->results->bindings[$i]->artwork->value),
-          'distance' => floatval($data->results->bindings[$i]->distance->value)
-        ];
-        $artwork['article'] = $artwork['wikidata'];
-
-        // Image
-        if (!is_null($data->results->bindings[$i]->image)) {
-          $image = $data->results->bindings[$i]->image->value;
-          $artwork['image'] = [
-            'origin' => 'commons',
-            'file' => $image
+        $id = str_replace('http://www.wikidata.org/entity/', '', $data->results->bindings[$i]->artwork->value);
+        if (!in_array($id, $ids)) {
+          array_push($ids, $id);
+          $artwork = [
+            'origin' => 'wikidata',
+            'wikidata' => $id,
+            'distance' => floatval($data->results->bindings[$i]->distance->value)
           ];
-        }
-        // Titre
-        if (!is_null($data->results->bindings[$i]->artworkLabel))
-          $artwork['titre'] = $data->results->bindings[$i]->artworkLabel->value;
-        else
-          $artwork['titre'] = $artwork['wikidata'];
-        // Coordonnées
-        $coords = explode(' ', str_replace('Point(', '', str_replace(')', '', $data->results->bindings[$i]->location->value)));
-        $artwork['coordonnees'] = [
-          'latitude' => $coords[1],
-          'longitude' => $coords[0]
-        ];
+          $artwork['article'] = $artwork['wikidata'];
 
-        array_push($artworks, $artwork);
+          // Image
+          if (!is_null($data->results->bindings[$i]->image)) {
+            $image = $data->results->bindings[$i]->image->value;
+            $artwork['image'] = [
+              'origin' => 'commons',
+              'file' => urldecode(str_replace('http://commons.wikimedia.org/wiki/Special:FilePath/', '', $image))
+            ];
+          }
+          // Titre
+          if (!is_null($data->results->bindings[$i]->artworkLabel))
+            $artwork['titre'] = $data->results->bindings[$i]->artworkLabel->value;
+          else
+            $artwork['titre'] = $artwork['wikidata'];
+          // Coordonnées
+          $coords = explode(' ', str_replace('Point(', '', str_replace(')', '', $data->results->bindings[$i]->location->value)));
+          $artwork['coordonnees'] = [
+            'latitude' => $coords[1],
+            'longitude' => $coords[0]
+          ];
+
+          array_push($artworks, $artwork);
+        }
       }
 
       return $artworks;
@@ -235,11 +252,16 @@ if (!class_exists('CloseArtworks')) {
       // Tableau de retour
       $artworks = [];
 
+      // Tableau des articles/ids à exclure
+      $excludeArray = [];
+      if (!is_null($exclude))
+        $excludeArray = explode('|', $exclude);
+
       // Tableau des ids Wikidata déjà présents sur atlasmuseum
       $ids = [];
 
       for ($i = 0; $i < sizeof($artworksAM); $i++) {
-        if (is_null($exclude) || $exclude === '' || $artworksAM[$i]['article'] !== $exclude)
+        if (!in_array($artworksAM[$i]['article'], $excludeArray))
           array_push($artworks, $artworksAM[$i]);
 
         if (!is_null($artworksAM[$i]['wikidata']))
@@ -248,7 +270,7 @@ if (!class_exists('CloseArtworks')) {
 
       // Regarde si chaque œuvre de Wikidata n'existe pas déjà sur atlasmuseum
       for ($i = 0; $i < sizeof($artworksWD); $i++) {
-        if (!in_array($artworksWD[$i]['wikidata'], $ids) && (is_null($exclude) || $exclude === '' || $artworkWD[$i]['article'] != $exclude))
+        if (!in_array($artworksWD[$i]['wikidata'], $ids) && !in_array($artworksWD[$i]['article'], $excludeArray))
           array_push($artworks, $artworksWD[$i]);
       }
 

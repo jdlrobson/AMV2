@@ -1,948 +1,426 @@
 <?php
 
 require_once(ATLASMUSEUM_UTILS_PATH_PHP . 'api.php');
-require_once(ATLASMUSEUM_UTILS_PATH_PHP . 'artworkGetData.php');
 
 class Artwork {
-
-  public static function render_title($labels, $property, $param, $param_name, $th_title) {
-    write_log('render_title: start');
-    $title = '';
-
-    if (isset($param[$param_name]))
-      $title = $param[$param_name];
-    else {
-      foreach ($property as $language) {
-        if (isset($labels->{$language}) && isset($labels->{$language}->value)) {
-          $title = $labels->{$language}->value;
-          break;
-        }
-      }
-    }
-
-    print '<tr><th>' . $th_title . '</th><td>' . $title . '</td></tr>';
-    write_log('render_title: end');
-  }
-
-  public static function render_image($claims, $property, $param, $param_name) {
-    write_log('render_image: start');
-    $image_thumb = MISSING_IMAGE_FILE;
-    $image_url = MISSING_IMAGE;
-    $image_legend = '';
-
-    if (isset($param[$param_name]) && $param[$param_name] != '') {
-      if (preg_match('/^Commons:/i', $param[$param_name])) {
-        $image_name = substr($param[$param_name], 8);
-        $image_url = COMMONS_PATH . COMMONS_FILE_PREFIX . $image_name;
-        $tmp = self::get_image($image_name, 420);
-        foreach($tmp->query->pages as $image)
-          $image_thumb = $image->imageinfo[0]->thumburl;
-      } else {
-        $image_url = ATLASMUSEUM_PATH . ATLASMUSEUM_FILE_PREFIX . $param[$param_name];
-        $tmp = self::get_image_am($param[$param_name], 420);
-        if (isset($tmp->query->pages))
-          foreach($tmp->query->pages as $image)
-            $image_thumb = $image->imageinfo[0]->thumburl;
-        $tmp = self::parse_page_am('Fichier:'.$param[$param_name]);
-        $image_legend = $tmp->parse->text->{'*'};
-      }
-    } else
-    if (isset($claims->{$property})) {
-      $image_url = COMMONS_PATH . COMMONS_FILE_PREFIX . $claims->{$property}[0]->mainsnak->datavalue->value;
-      $tmp = self::get_image($claims->{$property}[0]->mainsnak->datavalue->value, 420);
-      foreach($tmp->query->pages as $image)
-        $image_thumb = $image->imageinfo[0]->thumburl;
-    }
-
-    ?>
-    <div class="topImgCtnr">
-      <div class="thumb tright">
-        <div class="thumbinner" style="width:422px;background-color: white;">
-          <a href="<?php print $image_url; ?>" class="image">
-            <img alt="" src="<?php print $image_thumb; ?>" style="width:auto;max-width:420px;max-height:250px" class="thumbimage" srcset="" />
-          </a>
-          <?php
-            if ($image_legend != '')
-              print '<div class="thumbcaption" style="text-align: center">' . $image_legend . '</div>';
-          ?>
-        </div>
-      </div>
-    </div>
-    <?php
-    write_log('render_image: end');
-  }
-
-  public static function render_map($lat, $lng) {
-    write_log('render_map: ' . $property);
-    if ($lat > -100 && $lng>-500) {
-      ?>
-      <div class="topImgCtnr floatright">
-        <div id="map" style="height:250px"></div>
-      </div>
-      <script>
-        document.addEventListener("DOMContentLoaded", function(event) {
-          marker = new ol.Feature({
-            geometry: new ol.geom.Point(ol.proj.transform([<?php print $lng.','.$lat; ?>], "EPSG:4326", "EPSG:3857"))
-          });
-          var extent = marker.getGeometry().getExtent().slice(0);
-          var raster = new ol.layer.Tile({
-            source: new ol.source.OSM()
-          });
-          var vectorSource = new ol.source.Vector({
-            features: [marker]
-          });
-          var iconStyle = new ol.style.Style({
-            image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
-              anchor: [0.5, 46],
-              anchorXUnits: 'fraction',
-              anchorYUnits: 'pixels',
-              opacity: 0.75,
-              src: '<?php print BASE_MAIN; ?>images/a/a0/Picto-gris.png'
-            }))
-          });
-          var vectorLayer = new ol.layer.Vector({
-            source: vectorSource,
-            style: iconStyle
-          });
-          map = new ol.Map({
-            layers: [raster, vectorLayer],
-            target: "map"
-          });
-          map.getView().fit(extent);
-          map.getView().setZoom(15);
-        });
-      </script>
-      <?php
+  /**
+   * En-tête (titre de l'œuvre si provenant de Wikidata, bouton d'import / export)
+   */
+  protected static function renderHeader($entity) {
+    if ($entity->origin === 'wikidata') {
     } else {
       ?>
-      <div class="topImgCtnr floatright">
-        <div id="open_layer_1" style="width: 420px; height: 268px; background-color: #cccccc; overflow: hidden;" class="maps-map maps-openlayers">
-        </div>
+      <div class="import">
+        <a href="<?php print ATLASMUSEUM_PATH; ?>Spécial:WikidataExport/<?php print $entity->article; ?>">
+          <img src="http://publicartmuseum.net/w/skins/AtlasMuseum/resources/images/hmodify.png" />Exporter cette œuvre sur Wikidata
+        </a>
       </div>
       <?php
     }
-    write_log('render_map: end');
   }
 
-  public static function render_claim_am($param, $name, $title, $two_lines = false) {
-    write_log('render_claim_am: ' . $name);
-    if (isset($param[$name])) {
-      if ($two_lines) {
-        print '<tr><td colspan="2"><b>' . $title . '</b><br />' . API::convert_to_wiki_text($param[$name]) . '</td></tr>';
-      } else {
-        print '<tr><th>' . $title . '</th><td>' . API::convert_to_wiki_text($param[$name]) . '</td></tr>';
-      }
+  /**
+   * Pied de page (inclusion des fichiers .js et .css)
+   */
+  protected static function renderFooter() {
+    ?>
+      <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+      <script type="text/javascript" src="<?php print ATLASMUSEUM_UTILS_FULL_PATH_JS; ?>jquery-ui.min.js"></script>
+      <script type="text/javascript" src="<?php print OPEN_LAYER_JS; ?>"></script>
+      <script type="text/javascript" src="<?php print ATLASMUSEUM_UTILS_FULL_PATH_JS; ?>artwork.js"></script>
+      <link rel="stylesheet" href="<?php print OPEN_LAYER_CSS; ?>" type="text/css">
+      <link rel="stylesheet" href="<?php print ATLASMUSEUM_UTILS_FULL_PATH_CSS; ?>artwork.css">
+    <?php
+  }
+
+  /**
+   * Écriture de l'image principale
+   */
+  protected static function renderMainImage($image) {
+    print '<div class="topImgCtnr"><div class="thumb tright"><div id="mainImage" class="thumbinner';
+    if(!is_null($image))
+      print ' loading';
+    print '">';
+    if (!is_null($image)) {
+      print '<div class="image-loader" data-origin="' . $image->value[0]->origin . '" data-value="' . $image->value[0]->value . '" data-width="420" data-legend="true"><div class="loader loader-big"><span></span><span></span><span></span><span></span></div></div>';
+    } else {
+      print '<a href="' . MISSING_IMAGE_LINK . '" class="image"><img alt="" src="' . MISSING_IMAGE_FILE . '" class="thumbimage" srcset="" /></a>';
     }
-    write_log('render_claim_am: end');
+          
+    print '</div></div></div>';
   }
 
-  public static function render_claim($claims, $property, $labels, $title, $title_plural='') {
-    write_log('render_claim: ' . $property);
-    if (isset($claims->{$property})) {
-      $data = [];
+  /**
+   * Écriture de la carte
+   */
+  protected static function renderCoordinates($coordinates) {
+    if (!is_null($coordinates)) {
+      $lat = $coordinates->value[0]->lat;
+      $lon = $coordinates->value[0]->lon;
+      if ($lat < -90 || $lat > 90 || $lon < -180 || $lon > 180) {
+        // Si les coordonnées tombent en dehors de la carte, on les initialise à 0
+        $lat = 0;
+        $lon = 0;
+      }
+      ?>
+      <div class="topImgCtnr floatright">
+        <div id="map" data-lat="<?php print $lat; ?>" data-lon="<?php print $lon; ?>"></div>
+      </div>
+      <?php
+    } else {
 
-      foreach ($claims->{$property} as $value) {
-        switch ($value->mainsnak->datatype) {
-          case 'time':
-            $date = $value->mainsnak->datavalue->value->time;
-            $date = preg_replace('/-.*$/', '', $date);
-            $date = preg_replace('/\+/', '', $date);
-            array_push($data, $date);
-            break;
-          case 'wikibase-item':
-            $id = $value->mainsnak->datavalue->value->id;
-            if (isset($labels[$id]))
-              array_push($data, $labels[$id]);
-            else
-              array_push($data, $id);
-            break;
+    }
+  }
+
+  /**
+   * Notice augmentée
+   */
+  protected static function renderEnhancedDescription($text) {
+    if (!is_null($text)) {
+      ?>
+        <div class="noticePlus noticePlusExpanded">
+          <h2 onclick="toggleNoticePlus(this)"> <span class="mw-headline" id="Notice.2B"> Notice+ </span></h2>
+          <div>
+            <?php print API::convert_to_wiki_text($text->value[0]); ?>
+          </div>
+        </div>
+      <?php
+    }
+  }
+
+  /**
+   * Ligne standard
+   */
+  protected static function renderLine($titleSingular, $titlePlural, $data, $twoLines = false) {
+    if (!is_null($data)) {
+      $text = [];
+      for ($i=0; $i < sizeof($data->value) ; $i++) {
+        if ($data->type === 'text' || $data->type === 'date')
+          array_push($text, $data->value[$i]);
+        else
+        if ($data->type === 'item')
+          array_push($text, $data->value[$i]->label);
+        else
+        if ($data->type === 'coordinates') {
+          $lat = $data->value[$i]->lat;
+          $lon = $data->value[$i]->lon;
+          $ns = ($lat >= 0 ? 'N' : 'S');
+          $ew = ($lon >= 0 ? 'E' : 'O');
+          $lat = abs($lat);
+          $lon = abs($lon);
+
+          $coords .= floor($lat) . '° ';
+          $lat = ($lat - floor($lat)) * 60;
+          $coords .= ($lat < 10 ? '0' : '') . floor($lat) . '′ ';
+          $lat = ($lat - floor($lat)) * 60;
+          $coords .= ($lat < 10 ? '0' : '') . round($lat) . '″ ' . $ns . '<br />';
+
+          $coords .= floor($lon) . '° ';
+          $lat = ($lon - floor($lon)) * 60;
+          $coords .= ($lon < 10 ? '0' : '') . floor($lon) . '′ ';
+          $lat = ($lon - floor($lat)) * 60;
+          $coords .= ($lon < 10 ? '0' : '') . round($lon) . '″ ' . $ew;
+
+          array_push($text, $coords);
         }
       }
 
-      if (sizeof($data)>0)
-        print '<tr><th>' . 
-          ($title_plural != '' ? (sizeof($data)<=1 ? $title : $title_plural) : $title) . 
-          '</th><td>' .
-          join($data, ', ') .
-          '</td></tr>';
+      print '<tr>';
+      print ($twoLines ? '<td colspan="2"><b>' : '<th>');
+      print (sizeof($text) > 1 ? $titleSingular : $titleSingular);
+      print ($twoLines ? '</b><br />' : '</th><td>');
+      print implode(', ', $text);
+      print '</td></tr>';
     }
-    write_log('render_claim: end');
   }
 
-  public static function render_claim2($claims, $property, $labels, $param, $name, $title, $title_plural, $two_lines = false) {
-    write_log('render_claim2: ' . $property);
-    $data = [];
+  protected static function renderArtists($artists) {
+    if (!is_null($artists)) {
+      for ($i = 0; $i < sizeof($artists->value); $i++) {
+        $name = $artists->value[$i]->label;
+        $origin = $artists->value[$i]->origin;
+        $article = $artists->value[$i]->article;
+        $link = ($origin === 'wikidata' ? 'Spécial:WikidataArtist/' . $article : $article);
 
-    if (isset($claims->{$property})) {
-      foreach ($claims->{$property} as $value) {
-        switch ($value->mainsnak->datatype) {
-          case 'time':
-            $date = $value->mainsnak->datavalue->value->time;
-            $date = preg_replace('/-.*$/', '', $date);
-            $date = preg_replace('/\+/', '', $date);
-            array_push($data, $date);
-            break;
-          case 'wikibase-item':
-            $id = $value->mainsnak->datavalue->value->id;
-            if (isset($labels[$id]))
-              array_push($data, $labels[$id]);
-            else
-              array_push($data, $id);
-            break;
-        }
+        print '<div class="artist" data-origin="' . $origin . '" data-article="' . $article . '">';
+        print '<h3><span class="mw-headline">';
+        print '<a href="' . ATLASMUSEUM_PATH . $link . '" title="">' . $name . '</a>';
+        print '</span></h3><div class="loader loader-artist"><span></span><span></span><span></span><span></span></div></div>';
       }
     }
-
-    if (isset($param[$name])) {
-      foreach(explode(';', $param[$name]) as $p)
-        if (!in_array($p, $data)) {
-          if (isset($labels[$p]))
-            array_push($data, $labels[$p]);
-          else
-            array_push($data, $p);
-        }
-    }
-
-    sort($data);
-    $data = array_unique($data);
-
-    if (sizeof($data)>0) {
-      if ($two_lines) {
-        print '<tr><td colspan="2"><b>' . (sizeof($data)>1 ? $title_plural : $title) . '</b><br />' . join($data, ', ') . '</td></tr>';
-      } else {
-        print '<tr><th>' . (sizeof($data)>1 ? $title_plural : $title) . '</th><td>' . join($data, ', ') . '</td></tr>';
-      }
-    }
-    write_log('render_claim2: end');
   }
 
-  public static function render_claim_coords($lat, $lng, $title) {
-    write_log('render_claim_coords');
-    if ($lat>-100 && $lng>-500) {
-
-      if ($lat >= 0)
-        $NS = 'N';
-      else {
-        $NS = 'S';
-        $lat = -$lat;
-      }
-
-      if ($lng >= 0)
-        $EW = 'E';
-      else {
-        $EW = 'O';
-        $lng = -$lng;
-      }
-
-      $lat_deg = floor($lat);
-      $lat_min = floor(($lat-$lat_deg)*60);
-      $lat_sec = round(($lat-$lat_deg-$lat_min/60)*3600);
-
-      $lng_deg = floor($lng);
-      $lng_min = floor(($lng-$lng_deg)*60);
-      $lng_sec = round(($lng-$lng_deg-$lng_min/60)*3600);
-
-      print '<tr><th>' . $title . '</th><td>' . $lat_deg . '° ' . $lat_min . '\' ' . $lat_sec . '" ' . $NS . '<br />' . 
-                                                $lng_deg . '° ' . $lng_min . '\' ' . $lng_sec . '" ' . $EW . '</td></tr>';
+  protected static function renderSource($source) {
+    if (!is_null($source)) {
+      print '<div class="mapCtnr"><b>Sources :</b><br />';
+      for ($i=0; $i < sizeof($source->value) ; $i++)
+        print API::convert_to_wiki_text($source->value[$i]);
+      print '</div>';
     }
-    write_log('render_claim_coords: end');
   }
 
-  public static function render_artists($artists_wd, $artists_am) {
-    write_log('render_artists: start');
-    require_once(ATLASMUSEUM_UTILS_PATH_PHP . 'artist.php');
-    Artist::render_artists_for_artwork($artists_wd, $artists_am);
-    write_log('render_artists: end');
+  protected static function renderWikidataLink($q) {
+    if (!is_null($q)) {
+      print '<div class="wikidataLink"><a href="https://www.wikidata.org/wiki/' . $q->value[0] . '" target="_blank"><img src="http://publicartmuseum.net/w/skins/AtlasMuseum/resources/hwikidata.png" /><span>Voir cette œuvre sur Wikidata</span></a></div>';
+    }
   }
 
-  public static function render_galerie($param, $name, $title) {
-    write_log('render_galerie: start');
-    if (isset($param[$name]) && $param[$name] != '') {
+  protected static function renderGalerie($title, $gallery) {
+    if (!is_null($gallery)) {
       ?>
       <div class="atmslideshowCtnr">
         <div class="atmslideshowHead" onclick="toggleFold(this)"><h3><?php print $title; ?></h3></div>
         <ul class="atmslideshowContent" style="display:none;">
         <?php
-          foreach(explode(';', $param[$name]) as $image) {
-            $image_url = 'http://publicartmuseum.net/wiki/Fichier:' . $image;
-            $tmp = self::get_image_am($image, 192);
-            foreach($tmp->query->pages as $image)
-              $image_thumb = $image->imageinfo[0]->thumburl;
-            ?>
-            <li>
+          for($i = 0; $i < sizeof($gallery->value); $i++) {
+            ?><li>
               <div class="thumb tright">
-                <div class="thumbinner">
-                  <a href="<?php print $image_url; ?>" class="image">
-                    <img alt="" src="<?php print $image_thumb; ?>" width="192" height="140" srcset="">
-                  </a>
+                <div class="thumbinner loading">
+                  <div class="image-loader" data-origin="<?php print $gallery->value[$i]->origin; ?>" data-value="<?php print $gallery->value[$i]->value; ?>">
+                    <div class="loader">
+                      <span></span>
+                      <span></span>
+                      <span></span>
+                      <span></span>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </li>
-            <?php
+            </li><?php
           }
         ?>
         </ul>
       </div>
       <?php
     }
-    write_log('render_galerie: end');
   }
 
-  public static function render_other_works($id, $creators, $param) {
-    write_log('render_other_works: start');
-    if (is_null($creators) && !isset($param['artiste']) && $param['artiste'] == '')
-      return;
-
-    $currentArticle = preg_replace('/^.*\/wiki\//', '', $_SERVER['REQUEST_URI']);
-    $currentArticle = urldecode(str_replace('_', ' ', $currentArticle));
-
-    $artists_id = [];
-    $artists_names = [];
-    if (!is_null($creators)) {
-      for ($i=0; $i<sizeof($creators); $i++) {
-        array_push($artists_id, $creators[0]->mainsnak->datavalue->value->id);
-        $result = get_artists_names($artists_id);
-        while ($row = $result->fetch_row()) {
-          array_push($artists_names, $row[0]);
-        }
-      }
-    }
-
-    if (array_key_exists('artiste', $param)) {
-      $artists_am = explode (';', $param['artiste']);
-
-      foreach ($artists_am as $a) {
-        if (preg_match('/^[Qq][0-9]+/', $a))
-          array_push($artists_id, $a);
-        else
-          array_push($artists_names, $a);
-      }
-
-      $result = get_artists_from_ids($artists_am);
-      while ($row = $result->fetch_row()) {
-        if ($row[1] != '')
-          array_push($artists_id, $row[1]);
-      }
-
-      if (sizeof($artists_id) > 0) {
-        $result = get_artists_names($artists_id);
-        while ($row = $result->fetch_row()) {
-          array_push($artists_names, $row[0]);
-        }
-      }
-    }
-
-    $artworks = [];
-
-    $data2 = get_artworks_from_artists(array_merge($artists_id, $artists_names));
-
-    if (!is_null($data2) && $data2) {
-      while ($row = $data2->fetch_row()) {
-        if ($row[2] != '') {
-          $tmp = Artist::get_image_am($row[2], 420);
-          if (isset($tmp->query->pages))
-            foreach($tmp->query->pages as $image)
-              $image_thumb = $image->imageinfo[0]->thumburl;
-          $image_url = ATLASMUSEUM_PATH . ATLASMUSEUM_FILE_PREFIX . $row[2];
-          if (is_null($image_thumb)) {
-            $image_thumb = MISSING_IMAGE_FILE;
-            $image_url = MISSING_IMAGE_LINK;
-          }
-        } else {
-          $image_thumb = MISSING_IMAGE_FILE;
-          $image_url = MISSING_IMAGE_LINK;
-        }
-
-        //if ($row[0] != $currentArticle)
-          array_push($artworks, [
-            'article' => ATLASMUSEUM_PATH . $row[0],
-            'canonicalArticle' => $row[0],
-            'title' => $row[1],
-            'image_url' => $image_url,
-            'image_thumb' => $image_thumb,
-            'wikidata' => $row[3],
-            'ok' => true
-          ]);
-
-      }
-    }
-
-    if (sizeof($artists_id) > 0) {
-      $query =
-        "SELECT DISTINCT ?item ?itemLabel ?placeLabel ?countryLabel ?image WHERE {" .
-        "  ?item wdt:P170 ?creator ;" .
-        "        wdt:P136 wd:Q557141 ." .
-        "  VALUES ?creator  { wd:" . implode(' wd:', $artists_id) . " } " .
-        "  OPTIONAL { ?item wdt:P18 ?image }" .
-        "  SERVICE wikibase:label { bd:serviceParam wikibase:language \"fr,en\" . }" .
-        "} ORDER BY ?itemLabel";
-
-      $data = Api::Sparql($query);
-      $images = '';
-
-      foreach($data->results->bindings as $artwork) {
-        $artwork_id = str_replace(WIKIDATA_ENTITY, '', $artwork->item->value);
-        if ($artwork_id != $id) {
-          $title = $artwork->itemLabel->value;
-          if (isset($artwork->image)) {
-            $image_url = $artwork->image->value;
-            $image_thumb = $image_url;
-          } else {
-            $image_thumb = MISSING_IMAGE_FILE;
-            $image_url = MISSING_IMAGE_LINK;
-          }
-
-          array_push($artworks, [
-            'article' => ATLASMUSEUM_PATH . 'Spécial:Wikidata/' . $artwork_id,
-            'canonicalArticle' => $artwork_id,
-            'title' => $title,
-            'image_url' => $image_url,
-            'image_thumb' => $image_thumb,
-            'wikidata' => $artwork_id,
-            'ok' => true
-          ]);
-        }
-      }
-    }
-
-    for ($i=0; $i<sizeof($artworks)-1; $i++) {
-      for ($j=$i+1; $j<sizeof($artworks); $j++) {
-        if ($artworks[$i]['wikidata'] != '' && $artworks[$i]['wikidata'] == $artworks[$j]['wikidata']) {
-          if ($artworks[$i]['image_url'] == MISSING_IMAGE_LINK) {
-            $artworks[$i]['image_url'] = $artworks[$j]['image_url'];
-            $artworks[$i]['image_thumb'] = $artworks[$j]['image_thumb'];
-          }
-          $artworks[$j]['ok'] = false;
-        }
-      }
-    }
-
-    usort($artworks, function ($item1, $item2) {
-      return strcmp($item1["label"], $item2["label"]);
-    });
-
-    $n = 0;
-    foreach($artworks as $artwork) {
-      if ($artwork['ok'] && $artwork['canonicalArticle'] != $currentArticle) {
-        $images .= '<li><div class="thumb tright"><div class="thumbinner"><a href="' . $artwork['article'] . '" class="image"><img alt="" src="' . $artwork['image_thumb'] . '" style="width:auto;max-width:192px;max-height:140px" srcset=""><br />' . $artwork['title'] . '</a></div></div></li>';
-        $n++;
-      }
-    }
-
-    if ($n == 0)
-      return '';
-    
-    if ($n == 1)
-      $title = 'Autre œuvre ';
-    else
-      $title = 'Autres œuvres ';
-
-    if (sizeof($creators) > 1)
-      $title .= 'des artistes dans l\'espace public';
-    else
-      $title .= 'de l\'artiste dans l\'espace public';
-
-    print '<div class="atmslideshowCtnr">
-        <div class="atmslideshowHead" onclick="toggleFold(this)"><h3>' . $title . '</h3></div>
-        <ul class="atmslideshowContent" style="display:none;">' . $images . '</ul>
-      </div>';
-    write_log('render_other_works: end');
-  }
-
-  public static function render_near_sites($id, $lat, $lng) {
-    write_log('render_near_sites: start');
-         $query = "SELECT ?place ?placeLabel ?location ?image ?distance WHERE {".
-          "  bind(strdt(\"Point(".$lng." ".$lat.")\", geo:wktLiteral) as ?placeLoc)".
-          "  SERVICE wikibase:around {".
-          "    ?place wdt:P625 ?location .".
-          "    bd:serviceParam wikibase:center ?placeLoc .".
-          "    bd:serviceParam wikibase:radius \"2\" .".
-          "  } .".
-          "  BIND (geof:distance(?placeLoc, ?location) AS ?distance)".
-          "  OPTIONAL { ?place wdt:P18 ?image } " .
-          "  FILTER EXISTS { ?place wdt:P18 ?image } .".
-          "  SERVICE wikibase:label { bd:serviceParam wikibase:language \"fr,en\" . } ".
-          "} ORDER BY ?distance LIMIT 16";
-
-    $data = Api::Sparql($query);
-    $images = '';
-    $n = 0;
-    foreach($data->results->bindings as $place) {
-      $place_id = str_replace('http://www.wikidata.org/entity/', '', $place->place->value);
-      if ($place_id != $id) {
-        $title = $place->placeLabel->value;
-        if (isset($place->image)) {
-          $image_url = $place->image->value;
-          $image_thumb = $image_url;
-        } else {
-          $image_thumb = MISSING_IMAGE_FILE;
-          $image_url = MISSING_IMAGE_LINK;
-        }
-        $images .= '<li><div class="thumb tright"><div class="thumbinner"><a href="https://www.wikidata.org/wiki/' . $place_id . '" class="image"><img alt="" src="' . $image_thumb . '" style="width:auto;max-width:192px;max-height:140px;" srcset=""><br />' . $title . '</a></div></div></li>';
-        $n++;
-      }
-      if ($n == 4)
-        break;
-    }
-    if ($images != '') {
-      print '<div class="atmslideshowCtnr">
-          <div class="atmslideshowHead" onclick="toggleFold(this)"><h3>Sites proches</h3></div>
-          <ul class="atmslideshowContent" style="display:none;">' . $images . '</ul>
-        </div>';
-    }
-    write_log('render_near_sites: end');
-  }
-
-  public static function distanceInKmBetweenEarthCoordinates($lat1, $lon1, $lat2, $lon2) {
-    $earthRadiusKm = 6371;
-  
-    $dLat = deg2rad($lat2-$lat1);
-    $dLon = deg2rad($lon2-$lon1);
-  
-    $lat1 = deg2rad($lat1);
-    $lat2 = deg2rad($lat2);
-  
-    $a = sin($dLat/2) * sin($dLat/2) +
-      sin($dLon/2) * sin($dLon/2) * cos($lat1) * cos($lat2); 
-    $c = 2 * atan2(sqrt($a), sqrt(1-$a)); 
-    return $earthRadiusKm * $c;
-  }
-  
-  public static function render_near_artworks($id, $lat, $lng) {
-    write_log('render_near_artworks: start');
-      $currentArticle = preg_replace('/^.*\/wiki\//', '', $_SERVER['REQUEST_URI']);
-      $currentArticle = urldecode(str_replace('_', ' ', $currentArticle));
-      $artworks = [];
-
-      // Œuvres WD
-
-      $query = "SELECT DISTINCT ?artwork ?artworkLabel ?location ?image ?distance WHERE {".
-      "  bind(strdt(\"Point(".$lng." ".$lat.")\", geo:wktLiteral) as ?artworkLoc)".
-      "  SERVICE wikibase:around {".
-      "    ?artwork wdt:P625 ?location .".
-      "    bd:serviceParam wikibase:center ?artworkLoc .".
-      "    bd:serviceParam wikibase:radius \"10\" .".
-      "  } .".
-      "  BIND (geof:distance(?artworkLoc, ?location) AS ?distance)".
-      "  OPTIONAL { ?artwork wdt:P18 ?image . }".
-      "  FILTER EXISTS { ?artwork wdt:P136 wd:Q557141 } .".
-      "  SERVICE wikibase:label { bd:serviceParam wikibase:language \"fr,en\" . } ".
-      "} ORDER BY ?distance LIMIT 16";
-
-    $data = Api::Sparql($query);
-    $images = '';
-    $n = 0;
-
-    foreach($data->results->bindings as $artwork) {
-      $artwork_id = str_replace('http://www.wikidata.org/entity/', '', $artwork->artwork->value);
-      if ($artwork_id != $id) {
-        $title = $artwork->artworkLabel->value;
-        if (isset($artwork->image)) {
-          $image_url = $artwork->image->value;
-          $image_thumb = $image_url;
-        } else {
-          $image_thumb = MISSING_IMAGE_FILE;
-          $image_url = MISSING_IMAGE_LINK;
-        }
-        array_push($artworks, [
-          'id' => $artwork_id,
-          'link' => ATLASMUSEUM_PATH . 'Spécial:Wikidata/' . $artwork_id,
-          'image' => $image_thumb,
-          'title' => $title,
-          'distance' => floatval($artwork->distance->value)
-        ]);
-        $images .= '<li><div class="thumb tright"><div class="thumbinner"><a href="' . ATLASMUSEUM_PATH . 'Spécial:Wikidata/' . $artwork_id . '" class="image"><img alt="" src="' . $image_thumb . '" style="width:auto;max-width:192px;max-height:140px;" srcset=""><br />' . $title . '</a></div></div></li>';
-        $n++;
-      }
-      if ($n == 16)
-        break;
-    }
-
-    // Œuvres AM
-    if ($lat<0)
-      $txt_lat = '+' . abs($lat);
-    else
-      $txt_lat = '-' . abs($lat);
-    if ($lng<0)
-      $txt_lng = '+' . abs($lng);
-    else
-      $txt_lng = '-' . abs($lng);
-
-    $query = 'SELECT *, latitude, longitude, sqrt((latitude' . $txt_lat . ')*(latitude' . $txt_lat . ')+(longitude' . $txt_lng . ')*(longitude' . $txt_lng . ')) AS distance FROM tmp_library_2 WHERE ABS(latitude' . $txt_lat . ')<0.15 AND ABS(longitude' . $txt_lng . ')<0.1 ORDER BY distance LIMIT 16';
-    $data = query($query);
-    while ($row = $data->fetch_row()) {
-      if (strtolower($row[1]) != strtolower($currentArticle)) {
-        $found = false;
-        if ($row[9] != '') {
-          if ($row[9] != $id) {
-            for ($i = 0; $i < sizeof($artworks); $i++) {
-              if ($artworks[$i]['id'] == $row[9]) {
-                // var_dump($row);
-                // exit;
-                if ($row[7] != '') {
-                  $image_url = ATLASMUSEUM_PATH . ATLASMUSEUM_FILE_PREFIX . $row[7];
-                  $tmp = self::get_image_am($row[7], 420);
-                  if (isset($tmp->query->pages))
-                    foreach($tmp->query->pages as $image)
-                      $image_thumb = $image->imageinfo[0]->thumburl;
-                  // var_dump($image_url);
-                  // var_dump($image_thumb);
-                } else {
-                  $image_url = MISSING_IMAGE_LINK;
-                  $image_thumb = MISSING_IMAGE_FILE;
-                }
-                $artworks[$i]['link'] = ATLASMUSEUM_PATH . $row[1];
-                $artworks[$i]['image'] = $image_thumb;
-                $artworks[$i]['title'] = $row[2];
-                $artworks[$i]['distance'] = self::distanceInKmBetweenEarthCoordinates($row[5], $row[6], $lat, $lng);
-                $found = true;
-                break;
-              }
-            }
-          }
-        }
-        if (!$found) {
-          //var_dump($row);
-          if ($row[7] != '') {
-            $image_url = ATLASMUSEUM_PATH . ATLASMUSEUM_FILE_PREFIX . $row[7];
-            $tmp = self::get_image_am($row[7], 420);
-            if (isset($tmp->query->pages))
-              foreach($tmp->query->pages as $image)
-                $image_thumb = $image->imageinfo[0]->thumburl;
-          } else {
-            $image_url = MISSING_IMAGE_LINK;
-            $image_thumb = MISSING_IMAGE_FILE;
-          }
-          array_push($artworks, [
-            'id' => '',
-            'link' => ATLASMUSEUM_PATH . str_replace('?', '%3F', $row[1]),
-            'image' => $image_thumb,
-            'title' => $row[2],
-            'distance' => self::distanceInKmBetweenEarthCoordinates($row[5], $row[6], $lat, $lng)
-          ]);
-        }
-      }
-    }
-
-    usort($artworks, function($a, $b) {
-      return $a['distance'] - $b['distance'];
-    });
-
-    $images = '';
-    for ($i = 0; $i < sizeof($artworks) && $i < 12; $i++) {
-      // var_dump($artworks[$i]);
-      $images .= '<li><div class="thumb tright"><div class="thumbinner"><a href="' . $artworks[$i]['link'] . '" class="image"><img alt="" src="' . $artworks[$i]['image'] . '" style="width:auto;max-width:192px;max-height:140px;" srcset=""><br />' . $artworks[$i]['title'] . '</a></div></div></li>';
-    }
-
-    if ($images != '') {
-      print '<div class="atmslideshowCtnr">
-          <div class="atmslideshowHead" onclick="toggleFold(this)"><h3>Œuvres proches</h3></div>
-          <ul class="atmslideshowContent" style="display:none;">' . $images . '</ul>
-        </div>';
-    }
-    write_log('render_near_artworks: end');
-  }
-
-  public static function parse_page_am($page) {
-    write_log('parse_page_am: start');
-    return Api::call_api(array(
-      'action' => 'parse',
-      'page' => $page
-    ), 'atlasmuseum');
-    write_log('parse_page_am: end');
-  }
-
-  public static function get_image($image, $width=320) {
-    write_log('get_image: ' . $image);
-    return Api::call_api(array(
-      'action' => 'query',
-      'prop' => 'imageinfo',
-      'iiprop' => 'url',
-      'iiurlwidth' => $width,
-      'titles' => 'File:'.$image
-    ), 'Commons');
-    write_log('get_image: end');
-  }
-
-  public static function get_image_am($image, $width=320) {
-    write_log('get_image_am: ' . $image);
-    return Api::call_api(array(
-      'action' => 'query',
-      'prop' => 'imageinfo',
-      'iiprop' => 'url',
-      'iiurlwidth' => $width,
-      'titles' => 'File:'.$image
-    ), 'atlasmuseum');
-    write_log('get_image_am: end');
-  }
-
-  public static function get_props($id) {
-    write_log('get_props: ' . $id);
-    return Api::call_api(array(
-      'action' => 'wbgetentities',
-      'ids' => $id
-    ));
-    write_log('get_props: end');
-  }
-
-  public static function get_labels($ids) {
-    write_log('get_labels: ' . json_encode($ids));
-    $labels = [];
-    $split_ids = array_chunk($ids, 50);
-
-    for ($i=0; $i<sizeof($split_ids); $i++) {
-      $labels_data = Api::call_api(array(
-        'action' => 'wbgetentities',
-        'props' => 'labels',
-        'ids' => join($split_ids[$i], '|')
-      ));
-
-      foreach($labels_data->entities as $id=>$value) {
-        if (isset($value->labels->fr)) {
-          $labels[$id] = $value->labels->fr->value;
-        }
-      }
-    }
-
-    write_log('get_labels: end');
-
-    return $labels;
-  }
-
-  public static function get_ids($data) {
-    write_log('get_ids: start');
-    $ids = [];
-
-    foreach ($data->entities as $q)
-      foreach ($q->claims as $property=>$value)
-        foreach ($value as $claim)
-          if ($claim->mainsnak->datatype == 'wikibase-item')
-            array_push($ids, $claim->mainsnak->datavalue->value->id);
-    write_log('get_ids: end');
-    return $ids;
-  }
-
-  public static function get_coordinates($claims, $property, $param, $param_name) {
-    write_log('get_coordinates: start');
-    $lat = 0;
-    $lng = 0;
-
-    if (isset($param[$param_name])) {
-      $tmp = explode(',', $param[$param_name]);
-      $lat = floatval($tmp[0]);
-      $lng = floatval($tmp[1]);
-    } else
-    if (isset($claims->{$property})) {
-      $lat = $claims->{$property}[0]->mainsnak->datavalue->value->latitude;
-      $lng = $claims->{$property}[0]->mainsnak->datavalue->value->longitude;
-    }
-    write_log('get_coordinates: end');
-    return [$lat, $lng];
-  }
-
-  public static function renderArtwork($param = array(), $wikidata=true) {    
-    //$attribs = Sanitizer::validateTagAttributes( $param, 'div' );
-
-    write_log('renderArtwork - ' . json_encode($param));
-
-    if (!is_null($param['q'])) {
-      $q = $param['q'];
-
-      $data = ArtworkGetData::get_props($q);
-      $ids = ArtworkGetData::get_ids($data);
-      array_push($ids, $q);
-
-      $claims = $data->entities->{$q}->claims;
-    } else {
-      $q = '';
-      $data = [];
+  protected static function renderOtherArtworks($article, $wikidata, $artists) {
+    if ($artists) {
       $ids = [];
-      $labels = [];
-      $claims = null;
-    }
-
-    $ids_am = ArtworkGetData::get_ids2($param);
-    write_log('renderArtwork - ids_am: ' . json_encode($ids_am));
-    $ids = array_merge($ids, $ids_am);
-    $labels = ArtworkGetData::get_labels($ids);
-    write_log('renderArtwork - labels: ' . json_encode($labels));
-
-    list($lat, $lng) = self::get_coordinates($claims, 'P625', $param, 'site_coordonnees');
-    write_log('renderArtwork - coordinates: ' . $lat . ', ' . $lng);
-
-    ob_start();
-
-    if ($wikidata) {
-      if (array_key_exists($q, $labels)) {
-        $artworkTitle = $labels[$q];
-        ?>
-          <script>document.getElementById('firstHeading').getElementsByTagName('span')[0].textContent = "<?php print $artworkTitle; ?>"</script>
-        <?php
+      for ($i = 0; $i < sizeof($artists->value); $i++) {
+        array_push($ids, str_replace('"', '&quot;', $artists->value[$i]->article));
       }
-      ?>
-      <div class="import">
-        <a href="<?php print ATLASMUSEUM_PATH; ?>Spécial:WikidataEdit/<?php print $q; ?>">
-          <img src="http://publicartmuseum.net/w/skins/AtlasMuseum/resources/images/hmodify.png" />
-          Importer cette œuvre dans atlasmuseum
-        </a>
-      </div>
-      <?php
-    } else {
-      ?>
-      <div class="import">
-        <a href="<?php print ATLASMUSEUM_PATH; ?>Spécial:WikidataExport/<?php print $_GET['title']; ?>">
-          <img src="http://publicartmuseum.net/w/skins/AtlasMuseum/resources/images/hmodify.png" />Exporter cette œuvre sur Wikidata
-        </a>
-      </div>
-      <?php
+      $article = str_replace('"', '&quot;', $article);
+      if (!is_null($wikidata))
+        $article .= '|' . $wikidata->value[0];
+      print '<div id="autres_oeuvres" data-exclude="' . $article . '" data-artists="' . implode('|', $ids) . '"></div>';
     }
-    ?>
-    <script type="text/javascript" src="<?php print ATLASMUSEUM_UTILS_FULL_PATH_JS; ?>artwork.js"></script>
-    <div class="dalm">
-      <div class="topCtnr">
-        <?php
-          self::render_image($data->entities->{$q}->claims, 'P18', $param, 'image_principale');
-          self::render_map($lat, $lng);
-        ?>
-      </div>
-      <?php
-        if (isset($param['notice_augmentee'])) {
-          ?>
-            <div class="noticePlus noticePlusExpanded">
-              <h2 onclick="toggleNoticePlus(this)"> <span class="mw-headline" id="Notice.2B"> Notice+ </span></h2>
-              <div>
-                <?php print API::convert_to_wiki_text(str_replace("&quot;", "\"", str_replace("\\n", "<br />", $param['notice_augmentee']))); ?>
-              </div>
-            </div>
-          <?php
-        }
-      ?>
-      <div class="ibCtnr">
-        <div class="ibOeuvre">
-          <h2 <?php if (isset($param['notice_augmentee'])) print 'onclick="toggleNoticePlusHeader(this)"'; ?>> <span class="mw-headline" id=".C5.92uvre"> Œuvre </span></h2>
-          <table class="wikitable" style="table">
-            <?php
-              self::render_title($data->entities->{$q}->labels, ['fr', 'en'], $param, 'titre', 'Titre', false);
-              self::render_claim_am($param, 'sous_titre', 'Sous-titre', true);
-              self::render_claim_am($param, 'description', 'Description', true);
-              self::render_claim2($data->entities->{$q}->claims, 'P571', $labels, $param, 'inauguration', 'Date', 'Date');
-              self::render_claim_am($param, 'restauration', 'Date de restauration', false);
-              self::render_claim_am($param, 'fin', 'Date de fin', false);
-              self::render_claim_am($param, 'precision_date', 'Précision sur les dates', false);
-              self::render_claim_am($param, 'nature', 'Nature', false);
-              self::render_claim_am($param, 'programme', 'Procédure', false);
-              self::render_claim_am($param, 'numero_inventaire', 'Numéro d\'inventaire', false);
-              self::render_claim_am($param, 'contexte_production', 'Contexte de production', true);
-              self::render_claim_am($param, 'conservation', 'État de conservation', false);
-              self::render_claim_am($param, 'precision_etat_conservation', 'Précision sur l\'état de conservation', false);
-              self::render_claim_am($param, 'autre_precision_etat_conservation', 'Autres précisions sur l\'état de conservation', false);
-              self::render_claim_am($param, 'periode_art', 'Période', false);
-              self::render_claim2($data->entities->{$q}->claims, 'P135', $labels, $param, 'mouvement_artistes', 'Mouvement', 'Mouvements');
-              self::render_claim_am($param, 'precision_mouvement_artistes', 'Précision sur le mouvement', false);
-              self::render_claim2($data->entities->{$q}->claims, 'P31', $labels, $param, 'type_art', 'Domaine', 'Domaines');
-              self::render_claim_am($param, 'precision_type_art', 'Précision sur le domaine', false);
-              self::render_claim2($data->entities->{$q}->claims, 'P462', $labels, $param, 'couleur', 'Couleur', 'Couleurs');
-              self::render_claim_am($param, 'precision_couleur', 'Précision sur les couleurs', false);
-              self::render_claim2($data->entities->{$q}->claims, 'P186', $labels, $param, 'materiaux', 'Matériau', 'Matériaux');
-              self::render_claim_am($param, 'precision_materiaux', 'Précision sur les matériaux', false);
-              self::render_claim_am($param, 'techniques', 'Techniques', false);
-              self::render_claim_am($param, 'hauteur', 'Hauteur (m)', false);
-              self::render_claim_am($param, 'longueur', 'Profondeur (m)', false);
-              self::render_claim_am($param, 'largeur', 'Largeur (m)', false);
-              self::render_claim_am($param, 'diametre', 'Largeur (m)', false);
-              self::render_claim_am($param, 'surface', 'Surface (m²)', false);
-              self::render_claim_am($param, 'precision_dimensions', 'Précision sur les dimensions', false);
-              self::render_claim_am($param, 'symbole', 'Références', false);
-              self::render_claim2($data->entities->{$q}->claims, 'P921', $labels, $param, 'forme', 'Sujet représenté', 'Sujets représentés');
-              self::render_claim_am($param, 'mot_cle', 'Mots clés', false);
-              self::render_claim_am($param, 'influences', 'Influences', false);
-              self::render_claim_am($param, 'a_influence', 'A influencé', false);
-              self::render_claim2($data->entities->{$q}->claims, 'P88', $labels, $param, 'commanditaires', 'Commanditaire', 'Commanditaires');
-              self::render_claim2($data->entities->{$q}->claims, 'P1640', $labels, $param, 'commissaires', 'Commissaire', 'Commissaires');
-              self::render_claim_am($param, 'partenaires_publics', 'Partenaires publics', false);
-              self::render_claim_am($param, 'partenaires_prives', 'Partenaires privés', false);
-              self::render_claim_am($param, 'collaborateurs', 'Collaborateurs', false);
-              self::render_claim_am($param, 'maitrise_oeuvre', 'Maîtrise d\'œuvre', false);
-              self::render_claim_am($param, 'maitrise_oeuvre_deleguee', 'Maîtrise d\'œuvre déléguée', false);
-              self::render_claim_am($param, 'maitrise_ouvrage', 'Maîtrise d\'ouvrage', false);
-              self::render_claim_am($param, 'maitrise_ouvrage_deleguee', 'Maîtrise d\'ouvrage déléguée', false);
-              self::render_claim_am($param, 'proprietaire', 'Propriétaire', false);
-            ?>
-          </table>
-        </div>
-        <div class="ibSite">
-          <h2 <?php if (isset($param['notice_augmentee'])) print 'onclick="toggleNoticePlusHeader(this)"'; ?>> <span class="mw-headline" id="Site"> Site </span></h2>
-          <table class="wikitable" style="table">
-            <?php
-              self::render_claim2($data->entities->{$q}->claims, 'P276', $labels, $param, 'site_nom', 'Lieu', 'Lieux');
-              self::render_claim_am($param, 'site_lieu_dit', 'Lieu-dit', false);
-              self::render_claim_am($param, 'site_adresse', 'Adresse', false);
-              self::render_claim_am($param, 'site_code_postal', 'Code postal', false);
-              self::render_claim2($data->entities->{$q}->claims, 'P131', $labels, $param, 'site_ville', 'Ville', 'Villes');
-              self::render_claim_am($param, 'site_departement', 'Département', false);
-              self::render_claim_am($param, 'site_region', 'Région', false);
-              self::render_claim2($data->entities->{$q}->claims, 'P17', $labels, $param, 'site_pays', 'Pays', 'Pays');
-              self::render_claim_am($param, 'site_details', 'Détails sur le site', true);
-              self::render_claim_am($param, 'site_acces', 'Accès', false);
-              self::render_claim_am($param, 'site_visibilite', 'Visibilité', false);
-              self::render_claim2($data->entities->{$q}->claims, 'P2846', $labels, $param, 'site_pmr', 'PMR', 'PMR');
-              self::render_claim_am($param, 'site_urls', 'URLs', false);
-              self::render_claim_am($param, 'site_pois', 'Points d\'intérêt', false);
-              self::render_claim_coords($lat, $lng, 'Latitude/Longitude');
-            ?>
-          </table>
-        </div>
-        <div class="ibArtiste">
-          <h2 <?php if (isset($param['notice_augmentee'])) print 'onclick="toggleNoticePlusHeader(this)"'; ?>> <span class="mw-headline" id="Artiste"> Artiste<?php (sizeof($data->entities->{$q}->claims->P170)>1 ? 's' : '') ?> </span></h2>
-          <?php
-            self::render_artists($data->entities->{$q}->claims->P170, $param['artiste']);
-          ?>
-        </div>
-        <div class="clearfix"></div>
-      </div>
-      <?php
-        if (isset($param['source'])) {
-        ?>
-          <div class="mapCtnr">
-            <b>Sources :</b><br />
-            <?php print API::convert_to_wiki_text($param['source']); ?>
-          </div>
-        <?php
-        }
-        if ($q != '') {
-          ?>
-            <div class="wikidataLink">
-              <a href="https://www.wikidata.org/wiki/<?php print $q; ?>" target="_blank">
-                <img src="http://publicartmuseum.net/w/skins/AtlasMuseum/resources/hwikidata.png" />
-                <span>Voir cette œuvre sur Wikidata</span>
-              </a>
-            </div>
-          <?php
-        }
-      ?>
-      <div class="atlasCtnr">
-        <h2> <span class="mw-headline" id="ATLAS"> ATLAS </span></h2>
-        <?php
-          self::render_galerie($param, 'image_galerie_construction', 'Construction / installation / Montage');
-          self::render_galerie($param, 'image_galerie_autre', 'Autres prises de vues');
-          self::render_other_works($q, $data->entities->{$q}->claims->P170, $param);
-          self::render_near_sites($q, $lat, $lng);
-          self::render_near_artworks($q, $lat, $lng);
-        ?>
-      </div>
-    </div>
-    <script src="<?php print OPEN_LAYER_JS; ?>"></script>
-    <link rel="stylesheet" href="<?php print OPEN_LAYER_CSS; ?>" type="text/css">
-    <link rel="stylesheet" href="<?php print ATLASMUSEUM_UTILS_FULL_PATH_CSS; ?>artwork.css">
-    <?php
+  }
+
+  protected static function renderCloseSites($wikidata, $coordinates) {
+    if (!is_null($coordinates)) {
+      $lat = $coordinates->value[0]->lat;
+      $lon = $coordinates->value[0]->lon;
+      if ($lat < -90 || $lat > 90 || $lon < -180 || $lon > 180) {
+        // Si les coordonnées tombent en dehors de la carte, on les initialise à 0
+        $lat = 0;
+        $lon = 0;
+      }
+      $exclude = (is_null($wikidata) ? '' : $wikidata->value[0]);
+      print '<div id="sites_proches" data-exclude="' . $exclude . '" data-latitude="' . $lat . '" data-longitude="' . $lon . '"></div>';
+    }
+  }
+
+  protected static function renderCloseArtworks($article, $wikidata, $coordinates) {
+    if (!is_null($coordinates)) {
+      $lat = $coordinates->value[0]->lat;
+      $lon = $coordinates->value[0]->lon;
+      if ($lat < -90 || $lat > 90 || $lon < -180 || $lon > 180) {
+        // Si les coordonnées tombent en dehors de la carte, on les initialise à 0
+        $lat = 0;
+        $lon = 0;
+      }
+      $article = str_replace('"', '&quot;', $article);
+      if (!is_null($wikidata))
+        $article .= '|' . $wikidata->value[0];
+      print '<div id="oeuvres_proches" data-exclude="' . $article . '" data-latitude="' . $lat . '" data-longitude="' . $lon . '"></div>';
+    }
+  }
+
+  /**
+   * Écriture d'une œuvre
+   */
+  protected static function renderEntity($entity) {
+    ob_start();
+    
+    // En-tête
+    self::renderHeader($entity);
+
+    // Ouverture du bloc œuvre principal
+    print '<div class="dalm">';
+
+    // Ouverture de bloc image + carte
+    print '<div class="topCtnr">';
+    // Image principale
+    self::renderMainImage($entity->data->image_principale);
+    // Carte
+    self::renderCoordinates($entity->data->site_coordonnees);
+    // Fermeture du bloc image + carte
+    print '</div>';
+
+    // Notice augmentée
+    self::renderEnhancedDescription($entity->data->notice_augmentee);
+
+    // Ouverture du bloc contenu principal
+    print '<div class="ibCtnr">';
+
+    // Ouverture du bloc "Œuvre"
+    print '<div class="ibOeuvre">';
+    print '<h2';
+    if (!is_null($entity->data->notice_augmentee)) print ' onclick="toggleNoticePlusHeader(this)"';
+    print '><span class="mw-headline" id=".C5.92uvre"> Œuvre </span></h2>';
+    print '<table class="wikitable" style="table">';
+
+    self::renderLine('Titre', 'Titre', $entity->data->titre);
+    self::renderLine('Sous-titre', 'Sous-titres', $entity->data->sous_titre);
+    self::renderLine('Description', 'Descriptions', $entity->data->description, true);
+    self::renderLine('Date', 'Dates', $entity->data->inauguration);
+    self::renderLine('Date de restauration', 'Dates de restauration', $entity->data->restauration);
+    self::renderLine('Date de fin', 'Dates de fin', $entity->data->fin);
+    self::renderLine('Précision sur les dates', 'Précisions sur les dates', $entity->data->precision_date);
+    self::renderLine('Nature', 'Natures', $entity->data->nature);
+    self::renderLine('Programme', 'Programmes', $entity->data->programme);
+    self::renderLine('Numéro d\'inventaire', 'Numéros d\'inventaire', $entity->data->numero_inventaire);
+    self::renderLine('Contexte de production', 'Contextes de production', $entity->data->contexte_production, true);
+    self::renderLine('État de conservation', 'États de conservation', $entity->data->conservation);
+    self::renderLine('Précision sur l\'état de conservation', 'Précisions sur l\'état de conservation', $entity->data->precision_etat_conservation);
+    self::renderLine('Autres précisions sur l\'état de conservation', 'Autres précisions sur l\'état de conservation', $entity->data->autre_precision_etat_conservation);
+    self::renderLine('Mouvement', 'Mouvements', $entity->data->mouvement_artistes);
+    self::renderLine('Précision sur le mouvement', 'Précisions sur le mouvement', $entity->data->precision_mouvement_artistes);
+    self::renderLine('Domaine', 'Domaines', $entity->data->type_art);
+    self::renderLine('Précision sur le domaine', 'Précisions sur le domaine', $entity->data->precision_type_art);
+    self::renderLine('Couleur', 'Couleurs', $entity->data->couleur);
+    self::renderLine('Précision sur les couleurs', 'Précisions sur les couleurs', $entity->data->precision_couleur);
+    self::renderLine('Matériau', 'Matériaux', $entity->data->materiaux);
+    self::renderLine('Précision sur les matériaux', 'Précisions sur les matériaux', $entity->data->precision_materiaux);
+    self::renderLine('Hauteur (m)', 'Hauteur (m)', $entity->data->hauteur);
+    self::renderLine('Profondeur (m)', 'Profondeur (m)', $entity->data->longueur);
+    self::renderLine('Largeur (m)', 'Largeur (m)', $entity->data->largeur);
+    self::renderLine('Diamètre (m)', 'Diamètre (m)', $entity->data->diametre);
+    self::renderLine('Surface (m²)', 'Surface (m²)', $entity->data->surface);
+    self::renderLine('Précision sur les dimensions', 'Précisions sur les dimensions', $entity->data->precision_dimensions);
+    self::renderLine('Référence', 'Références', $entity->data->symbole);
+    self::renderLine('Sujet représenté', 'Sujets représentés', $entity->data->forme);
+    self::renderLine('Mots clés', 'Mots clés', $entity->data->mot_cle);
+    self::renderLine('Influences', 'Influences', $entity->data->influences);
+    self::renderLine('À influencé', 'À influencé', $entity->data->a_influence);
+    self::renderLine('Commanditaire', 'Commanditaires', $entity->data->commanditaires);
+    self::renderLine('Commissaire', 'Commissaires', $entity->data->commissaires);
+    self::renderLine('Partenaires publics', 'Partenaires publics', $entity->data->partenaires_publics);
+    self::renderLine('Partenaires privés', 'Partenaires privés', $entity->data->partenaires_prives);
+    self::renderLine('Collaborateurs', 'Collaborateurs', $entity->data->collaborateurs);
+    self::renderLine('Maîtrise d\'œuvre', 'Maîtrise d\'œuvre', $entity->data->maitrise_oeuvre);
+    self::renderLine('Maîtrise d\'œuvre déléguée', 'Maîtrise d\'œuvre déléguée', $entity->data->maitrise_oeuvre_deleguee);
+    self::renderLine('Maîtrise d\'ouvrage', 'Maîtrise d\'ouvrage', $entity->data->maitrise_ouvrage);
+    self::renderLine('Maîtrise d\'ouvrage déléguée', 'Maîtrise d\'ouvrage déléguée', $entity->data->maitrise_ouvrage_deleguee);
+    self::renderLine('Propriétaire', 'Propriétaire', $entity->data->proprietaire);
+
+    // Fermeture du bloc "Œuvre"
+    print '</table>';
+    print '</div>';
+
+    // Ouverture du bloc "Site"
+    print '<div class="ibSite">';
+    print '<h2';
+    if (!is_null($entity->data->notice_augmentee)) print ' onclick="toggleNoticePlusHeader(this)"';
+    print '><span class="mw-headline" id="Site"> Site </span></h2>';
+    print '<table class="wikitable" style="table">';
+
+    self::renderLine('Lieu', 'Lieux', $entity->data->site_nom);
+    self::renderLine('Lieu-dit', 'Lieux-dits', $entity->data->site_lieu_dit);
+    self::renderLine('Adresse', 'Adresses', $entity->data->site_adresse);
+    self::renderLine('Code postal', 'Codes postaux', $entity->data->site_code_postal);
+    self::renderLine('Ville', 'Villes', $entity->data->site_ville);
+    self::renderLine('Département', 'Départements', $entity->data->site_departement);
+    self::renderLine('Région', 'Région', $entity->data->site_region);
+    self::renderLine('Pays', 'Pays', $entity->data->site_pays);
+    self::renderLine('Détails sur le site', 'Détails sur le site', $entity->data->site_details, true);
+    self::renderLine('Accès', 'Accès', $entity->data->site_acces);
+    self::renderLine('Visibilité', 'Visibilité', $entity->data->site_visibilite);
+    self::renderLine('PMR', 'PMR', $entity->data->site_pmr);
+    self::renderLine('URLs', 'URLs', $entity->data->site_urls);
+    self::renderLine('Points d\'intérêt', 'Points d\'intérêt', $entity->data->site_pois);
+    self::renderLine('Latitude/Longitude', 'Latitude/Longitude', $entity->data->site_coordonnees);
+
+    // Fermeture du bloc "Site"
+    print '</table>';
+    print '</div>';
+
+    // Ouverture du bloc "Artiste"
+    print '<div class="ibArtiste">';
+    print '<h2';
+    if (!is_null($entity->data->notice_augmentee)) print ' onclick="toggleNoticePlusHeader(this)"';
+    print '><span class="mw-headline" id="Artiste">Artiste';
+    if (!is_null($entity->data->artiste) && sizeof($entity->data->artiste->value) > 1)
+      print 's';
+    print '</span></h2>';
+    print '<table class="wikitable" style="table">';
+
+    self::renderArtists($entity->data->artiste);
+
+    // Fermeture du bloc "Site"
+    print '</table>';
+    print '</div>';
+
+    // Fermeture du bloc contenu principal
+    print '</div>';
+
+    print '<div class="clearfix"></div>';
+
+    self::renderSource($entity->data->source);
+    self::renderWikidataLink($entity->data->wikidata);
+
+    // Bloc 'Atlas
+    print '<div class="atlasCtnr">';
+    print '<h2> <span class="mw-headline" id="ATLAS"> ATLAS </span></h2>';
+    self::renderGalerie('Construction / installation / Montage', $entity->data->image_galerie_construction);
+    self::renderGalerie('Autres prises de vues', $entity->data->image_galerie_autre);
+    self::renderOtherArtworks($entity->article, $entity->data->wikidata, $entity->data->artiste);
+    self::renderCloseSites($entity->data->wikidata, $entity->data->site_coordonnees);
+    self::renderCloseArtworks($entity->article, $entity->data->wikidata, $entity->data->site_coordonnees);
+    print '<div id="atlas_loader" class="loader"><span></span><span></span><span></span><span></span></div>';
+    print '</div>';
+
+    // Fermeture du bloc œuvre principal
+    print '</div>';
+
+    // Pied de page
+    self::renderFooter();
 
     $contents = ob_get_contents();
     ob_end_clean();
 
-    write_log('renderArtwork - end: ' . json_encode($param));
+    return $contents;
+  }
+
+  /**
+   * Écriture si erreur
+   */
+  protected static function renderError() {
+    return '<div>KO</div>';
+  }
+
+  /**
+   * Rendu d'une œuvre
+   */
+  public static function renderArtwork($param = array()) {
+    // Récupération des données de l'œuvre
+    $parameters = [
+      'action' => 'amgetartwork',
+      'article' => $param['full_name']
+    ];
+    $data = API::call_api($parameters, 'am');
+
+    if ($data->success === 1) {
+      // Œuvre ok
+      $contents = self::renderEntity($data->entities);
+    } else {
+      // Problème de données
+      $contents = self::renderError();
+    }
 
     return preg_replace("/\r|\n/", "", $contents);
-
   }
 
 }

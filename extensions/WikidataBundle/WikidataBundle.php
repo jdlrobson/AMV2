@@ -12,7 +12,7 @@ require_once('WikidataPaths.php');
 
 
 wfLoadExtension(WIKIDATA_BUNDLE_EXTENSIONS_PATH . 'ArtworkMap'); // Carte des œuvres
-wfLoadExtension(WIKIDATA_BUNDLE_EXTENSIONS_PATH . 'ArtworkPage'); // Page d'œuvre
+// wfLoadExtension(WIKIDATA_BUNDLE_EXTENSIONS_PATH . 'ArtworkPage'); // Page d'œuvre
 wfLoadExtension(WIKIDATA_BUNDLE_EXTENSIONS_PATH . 'ArtistPage'); // Page d'artiste
 wfLoadExtension(WIKIDATA_BUNDLE_EXTENSIONS_PATH . 'CollectionPage'); // Page d'une collection
 wfLoadExtension(WIKIDATA_BUNDLE_EXTENSIONS_PATH . 'RecentChanges'); // Modifications récentes
@@ -26,5 +26,5 @@ wfLoadExtension(WIKIDATA_BUNDLE_EXTENSIONS_PATH . 'WikidataArtistExport'); // Ex
 wfLoadExtension(WIKIDATA_BUNDLE_EXTENSIONS_PATH . 'WikidataQuery'); // Page de requête
 
 // wfLoadExtension(WIKIDATA_BUNDLE_EXTENSIONS_PATH . 'CatchAll'); // Test
-wfLoadExtension(WIKIDATA_BUNDLE_EXTENSIONS_PATH . 'ArtworkPage2'); // Test
+wfLoadExtension(WIKIDATA_BUNDLE_EXTENSIONS_PATH . 'ArtworkPage'); // Page d'œuvre
 wfLoadExtension(WIKIDATA_BUNDLE_EXTENSIONS_PATH . 'EditArtwork'); // Test

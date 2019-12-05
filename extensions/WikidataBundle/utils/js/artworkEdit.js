@@ -276,7 +276,7 @@ publish = function() {
     document.getElementById("editform").submit();
   } else {
     article = createArticleName(data)
-    document.getElementById('editform').action = '/w/index.php?title=' + encodeURIComponent(db_data.article) + '&action=submit';
+    document.getElementById('editform').action = '/w/index.php?title=' + encodeURIComponent(article) + '&action=submit';
     document.getElementById("editform").submit();
   }
 }
@@ -285,7 +285,6 @@ createArticleName = function(data) {
   const artist = []
   for (let i in data.artiste)
     artist.push(data.artiste[i].label)
-  db_data.artist = artist.join(';')
 
   article = ''
   article_title = data.titre != '' ? data.titre : 'Titre inconnu'

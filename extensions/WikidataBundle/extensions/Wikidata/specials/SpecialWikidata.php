@@ -22,12 +22,12 @@ class SpecialWikidata extends SpecialPage {
     $id = preg_replace('/^.*\//', '', $request->getText('title'));
 
     if (preg_match('/^Q[0-9]+$/', $id)) {
-      require_once(ATLASMUSEUM_UTILS_PATH_PHP . 'artwork.php');
+      require_once(ATLASMUSEUM_UTILS_PATH_PHP . 'artwork_old.php');
 
       $out = $this->getOutput();
 
       $out->setPageTitle($id);
-      $out->addHTML(Artwork::renderArtwork(['q' => $id]));
+      $out->addHTML(ArtworkOld::renderArtwork(['q' => $id]));
       $out->addHTML('<script>
         document.addEventListener("DOMContentLoaded", function(event) { 
           var body = document.getElementsByTagName("body")[0];
