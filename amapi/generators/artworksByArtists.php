@@ -255,7 +255,6 @@ if (!class_exists('ArtworksByArtists')) {
       $equivalentsAtlasmuseum = self::convertArtistsWikidata($idsWikidata);
 
       $artists = array_unique(array_merge($payload['artists'], $idsWikidata, $equivalentsAtlasmuseum));
-
       $artworksAM = self::getArtworksByArtistsAM($artists);
       $artworksWD = self::getArtworksByArtistsWD($idsWikidata);
       $artworks = self::mergeArtworks($artworksAM, $artworksWD, $payload['exclude']);

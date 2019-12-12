@@ -1,0 +1,22 @@
+{
+	"name": "ArtistPage2",
+	"author": [
+		"atlasmuseum"
+	],
+	"license-name": "CC0-1.0",
+	"url": "",
+	"descriptionmsg": "artistPage2-desc",
+	"type": "parserhook",
+	"Hooks": {
+		"ParserFirstCallInit": [
+			"ArtistPage2::init"
+		]
+	},
+	"AutoloadClasses": {
+		"ArtistPage2": "ArtistPage2.class.php"
+	},
+	"ParserTestFiles": [
+		"artistPage2ParserTests.txt"
+	],
+	"manifest_version": 1
+}

@@ -4,11 +4,12 @@ var clusterSource;
 $(document).ready(function() {
   let data = null
 
-  var li = document.getElementById('ca-edit')
+  let li = document.getElementById('ca-edit')
+  let page = window.location.href.replace(/^.*index\.php\?title=/, '').replace(/^.*\/wiki\//, '')
+
   if (li) {
-    var ul = li.parentElement,
-        newLi = document.createElement("li"),
-        page = window.location.href.replace(/^.*index\.php\?title=/, '').replace(/^.*\/wiki\//, '');
+    let ul = li.parentElement,
+        newLi = document.createElement("li")
 
     newLi.setAttribute('id', 'ca-form_edit')
     newLi.classList.add('collapsible')

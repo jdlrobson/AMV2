@@ -1,16 +1,16 @@
 {
-	"name": "EditArtwork",
+	"name": "EditArtist",
 	"version": "1.0.0",
 	"author": [
 		"atlasmuseum"
 	],
 	"url": "",
-	"descriptionmsg": "EditArtwork-desc",
+	"descriptionmsg": "EditArtist-desc",
 	"license-name": "MIT",
 	"type": "other",
 	"AutoloadClasses": {
-		"EditArtworkHooks": "EditArtwork.hooks.php",
-		"SpecialEditArtwork": "SpecialEditArtwork.php"
+		"EditArtistHooks": "EditArtist.hooks.php",
+		"SpecialEditArtist": "SpecialEditArtist.php"
 	},
 	"config": {
 	},
@@ -18,17 +18,17 @@
 	},
 	"Hooks": {
 		"NameOfHook": [
-			"EditArtworkHooks::onNameOfHook"
+			"EditArtistHooks::onNameOfHook"
 		]
 	},
 	"ResourceModules": {
 	},
 	"ResourceFileModulePaths": {
 		"localBasePath": "",
-		"remoteExtPath": "EditArtwork"
+		"remoteExtPath": "EditArtist"
 	},
 	"SpecialPages": {
-		"EditArtwork": "SpecialEditArtwork"
+		"EditArtist": "SpecialEditArtist"
 	},
 	"manifest_version": 1
 }

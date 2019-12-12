@@ -120,7 +120,7 @@ function loadArtists() {
     const article = $(artistDiv).data('article')
     if (article) {
       const params = {
-        action: 'amgetartist',
+        action: 'amgetartist2',
         article,
         redirect: 'true',
       }

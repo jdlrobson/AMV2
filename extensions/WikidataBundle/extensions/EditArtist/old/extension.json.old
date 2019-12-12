@@ -1,0 +1,52 @@
+{
+	"name": "EditArtwork",
+	"version": "0.0.0",
+	"author": [
+		"Your Name"
+	],
+	"url": "https://www.mediawiki.org/wiki/Extension:EditArtwork",
+	"descriptionmsg": "EditArtwork-desc",
+	"license-name": "MIT",
+	"type": "other",
+	"AutoloadClasses": {
+		"EditArtworkHooks": "EditArtwork.hooks.php",
+		"SpecialEditArtwork": "specials/SpecialEditArtwork.php"
+	},
+	"config": {
+		"EditArtworkEnableFoo": true
+	},
+	"ExtensionMessagesFiles": {
+		"EditArtworkAlias": "EditArtwork.i18n.alias.php"
+	},
+	"Hooks": {
+		"NameOfHook": [
+			"EditArtworkHooks::onNameOfHook"
+		]
+	},
+	"MessagesDirs": {
+		"EditArtwork": [
+			"i18n"
+		]
+	},
+	"ResourceModules": {
+		"ext.EditArtwork.foo": {
+			"scripts": [
+				"modules/ext.EditArtwork.js",
+				"modules/ext.EditArtwork.foo.js"
+			],
+			"styles": [
+				"modules/ext.EditArtwork.foo.css"
+			],
+			"messages": [],
+			"dependencies": []
+		}
+	},
+	"ResourceFileModulePaths": {
+		"localBasePath": "",
+		"remoteExtPath": "EditArtwork"
+	},
+	"SpecialPages": {
+		"EditArtwork": "SpecialEditArtwork"
+	},
+	"manifest_version": 1
+}

@@ -206,8 +206,6 @@ if (!class_exists('Artwork')) {
       $data = [];
       $lineIndex = 0;
 
-      while(strpos(strtolower($content[$lineIndex]), '<artworkpage') !== false && strpos(strtolower($content[$lineIndex]), '<catchall') !== false && $lineIndex++ < sizeof($content));
-
       while($lineIndex < sizeof($content) && strpos($content[$lineIndex], '/>') === false) {
         $key = strtolower(preg_replace('/^[\s]*\|[\s]*([^=]+)[\s]*=.*$/', '$1', $content[$lineIndex]));
         $value = preg_replace('/^[^=]+=[\s]*(.*)$/', '$1', $content[$lineIndex]);

@@ -102,6 +102,23 @@ if (!class_exists('Router')) {
       }
     }
 
+    protected static function getArtist2($response) {
+      require_once ('generators/artist2.php');
+      $validation = Artist2::validateQuery();
+      if ($validation['success']) {
+        $data = Artist2::getArtist($validation['payload']);
+        if (sizeof($data) > 0) {
+          $response->setValue('entities', $data);
+          $response->setSuccess(true);
+          $response->setStatusCode(200);
+        } else {
+          $response->setError('no_data', 'No data found for artist: ' . $validation['payload']['article'], 200);
+        }
+      } else {
+        $response->setError($validation['error']['code'], $validation['error']['info'], $validation['error']['status']);
+      }
+    }
+
     protected static function getImage($response) {
       require_once ('generators/image.php');
       $validation = Image::validateQuery();
@@ -211,6 +228,11 @@ if (!class_exists('Router')) {
           case 'amgetartist':
             // Artist
             self::getArtist($response);
+            break;
+          
+          case 'amgetartist2':
+            // Artist
+            self::getArtist2($response);
             break;
 
           case 'amgetimage':

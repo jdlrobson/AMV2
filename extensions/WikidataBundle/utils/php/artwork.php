@@ -303,6 +303,7 @@ class Artwork {
     self::renderLine('État de conservation', 'États de conservation', $entity->data->conservation);
     self::renderLine('Précision sur l\'état de conservation', 'Précisions sur l\'état de conservation', $entity->data->precision_etat_conservation);
     self::renderLine('Autres précisions sur l\'état de conservation', 'Autres précisions sur l\'état de conservation', $entity->data->autre_precision_etat_conservation);
+    self::renderLine('Période', 'Période', $entity->data->periode_art);
     self::renderLine('Mouvement', 'Mouvements', $entity->data->mouvement_artistes);
     self::renderLine('Précision sur le mouvement', 'Précisions sur le mouvement', $entity->data->precision_mouvement_artistes);
     self::renderLine('Domaine', 'Domaines', $entity->data->type_art);
@@ -311,6 +312,7 @@ class Artwork {
     self::renderLine('Précision sur les couleurs', 'Précisions sur les couleurs', $entity->data->precision_couleur);
     self::renderLine('Matériau', 'Matériaux', $entity->data->materiaux);
     self::renderLine('Précision sur les matériaux', 'Précisions sur les matériaux', $entity->data->precision_materiaux);
+    self::renderLine('Techniques', 'Techniques', $entity->data->techniques);
     self::renderLine('Hauteur (m)', 'Hauteur (m)', $entity->data->hauteur);
     self::renderLine('Profondeur (m)', 'Profondeur (m)', $entity->data->longueur);
     self::renderLine('Largeur (m)', 'Largeur (m)', $entity->data->largeur);
@@ -414,8 +416,14 @@ class Artwork {
   /**
    * Écriture si erreur
    */
-  protected static function renderError() {
-    return '<div>KO</div>';
+  protected static function renderError($article) {
+
+    $link = 'http://publicartmuseum.net/w/index.php?title=' . urlencode($article) . '&action=purge';
+
+    $text = '<div style="margin-bottom: 20px;">Erreur lors de la récupération des données...</div>';
+    $text .= '<div><button onclick="window.location.href=\'' . $link . '\';">Recharger la page</button></div>';
+
+    return $text;
   }
 
   /**
@@ -437,7 +445,7 @@ class Artwork {
       $contents = self::renderEntity($data->entities);
     } else {
       // Problème de données
-      $contents = self::renderError();
+      $contents = self::renderError($article);
     }
 
     return preg_replace("/\r|\n/", "", $contents);

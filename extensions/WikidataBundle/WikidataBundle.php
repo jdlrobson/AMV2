@@ -27,4 +27,6 @@ wfLoadExtension(WIKIDATA_BUNDLE_EXTENSIONS_PATH . 'WikidataQuery'); // Page de r
 
 // wfLoadExtension(WIKIDATA_BUNDLE_EXTENSIONS_PATH . 'CatchAll'); // Test
 wfLoadExtension(WIKIDATA_BUNDLE_EXTENSIONS_PATH . 'ArtworkPage'); // Page d'œuvre
-wfLoadExtension(WIKIDATA_BUNDLE_EXTENSIONS_PATH . 'EditArtwork'); // Test
+wfLoadExtension(WIKIDATA_BUNDLE_EXTENSIONS_PATH . 'EditArtwork'); // Édition d'une œuvre
+wfLoadExtension(WIKIDATA_BUNDLE_EXTENSIONS_PATH . 'ArtistPage2'); // Page d'artiste
+wfLoadExtension(WIKIDATA_BUNDLE_EXTENSIONS_PATH . 'EditArtist'); // Édition d'une œuvre

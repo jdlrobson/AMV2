@@ -571,11 +571,7 @@ class ArtworkEditTest {
   /**
    * Affiche le formulaire d'édition d'une œuvre
    */
-  public static function renderEntityEdit($entity) {
-    $creation = false;
-    $wikidata = false;
-    // var_dump($entity);
-    
+  public static function renderEntityEdit($entity) {    
     ob_start();
 
     // En-tête
@@ -618,7 +614,7 @@ class ArtworkEditTest {
    * Rendu si erreur
    */
   protected static function renderError() {
-    return '<div>KO</div>';
+    return '<div>Problème lors de la récupération des données... Veuillez recharger la page.</div>';
   }
 
   /**
