@@ -1,0 +1,14 @@
+SetEnv PHP_VER 5_TEST
+SetEnv REGISTER_GLOBALS 0
+SetEnv MAGIC_QUOTES 0
+Header set Access-Control-Allow-Origin "*"
+#AuthName "Protected access"
+#AuthType Basic
+#AuthUserFile "/homez.667/publicar/private/htpasswd"
+#require valid-user
+
+RewriteEngine On
+#RewriteRule ^(tmp)($|/) - [L]
+
+RewriteRule ^/?wiki(/.*)?$ %{DOCUMENT_ROOT}/w/index.php [L]
+RewriteRule ^/*$ %{DOCUMENT_ROOT}/w/index.php [L]

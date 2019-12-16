@@ -2,46 +2,24 @@ var artworks_map = [];
 var clusterSource;
 
 $(document).ready(function() {
-  let dataAM = null
-  let dataWD = null
+  let data = null
 
-  $.getJSON('http://publicartmuseum.net/w/amapi/index.php?action=amgetmap&origin=atlasmuseum')
+ $.getJSON('http://publicartmuseum.net/w/amapi/index.php?action=amgetmap2')
     .then(function(result) {
-      console.log('AM OK')
-      dataAM = result.entities
-      if (dataWD) {
-        initMap(dataAM, dataWD)
-      }
-    })
-
-  $.getJSON('http://publicartmuseum.net/w/amapi/index.php?action=amgetmap&origin=wikidata')
-    .then(function(result) {
-      console.log('WD OK')
-      dataWD = result.entities
-      if (dataAM) {
-        initMap(dataAM, dataWD)
+      data = result.entities
+      if (data) {
+        initMap(data)
       }
     })
 })
 
 /**
- * Initialisation de la carte, après réception des données AM et WD
+ * Initialisation de la carte, après réception des données
  */
-initMap = function (dataAM, dataWD) {
-  const wikidataIdsAM = []
-
-  for (var key in dataAM)
-    if (dataAM[key].wikidata != '')
-      wikidataIdsAM.push(dataAM[key].wikidata)
-
-  for (let key in dataWD)
-    if (!wikidataIdsAM.includes(dataWD[key].wikidata)) {
-      dataAM[dataWD[key].wikidata] = dataWD[key]
-    }
-
+initMap = function (data) {
   $('#map-loader').hide()
-  artworks_map = dataAM
-  createMap(dataAM)
+  artworks_map = data
+  createMap(data)
 
   $('#map-loader').remove()
   $('.map-checkbox').removeAttr("disabled")
@@ -54,7 +32,7 @@ createMap = function(artworksData, divId = 'map') {
   const features = []
   for (let key in artworksData)
     features.push(new ol.Feature({
-      geometry: new ol.geom.Point(ol.proj.transform([artworksData[key].lon, artworksData[key].lat], "EPSG:4326", "EPSG:3857")),
+      geometry: new ol.geom.Point(ol.proj.transform([parseFloat(artworksData[key].lon), parseFloat(artworksData[key].lat)], "EPSG:4326", "EPSG:3857")),
       title: artworksData[key].title,
       artist: artworksData[key].artist,
       id: artworksData[key].wikidata,

@@ -40,6 +40,23 @@ if (!class_exists('Router')) {
       }
     }
 
+    protected static function getMap2($response) {
+      require_once ('generators/map2.php');
+      $validation = Map2::validateQuery();
+      if ($validation['success']) {
+        $data = Map2::getMap($validation['payload']);
+        if (sizeof($data) > 0) {
+          $response->setValue('entities', $data);
+          $response->setSuccess(true);
+          $response->setStatusCode(200);
+        } else {
+          $response->setError('no_data', 'No data found for map', 200);
+        }
+      } else {
+        $response->setError($validation['error']['code'], $validation['error']['info'], $validation['error']['status']);
+      }
+    }
+
     protected static function getCollection($response) {
       require_once ('generators/collection.php');
       $validation = Collection::validateQuery();
@@ -213,6 +230,11 @@ if (!class_exists('Router')) {
           case 'amgetmap':
             // Carte
             self::getMap($response);
+            break;
+
+          case 'amgetmap2':
+            // Carte
+            self::getMap2($response);
             break;
           
           case 'amgetcollection':
