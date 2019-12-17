@@ -380,7 +380,7 @@ class ArtistEditTest {
     if (!is_null($id)) {
       // Récupération des données de l'artiste
       $parameters = [
-        'action' => 'amgetartist2',
+        'action' => 'amgetartist',
         'article' => $id
       ];
       $data = API::call_api($parameters, 'am');
