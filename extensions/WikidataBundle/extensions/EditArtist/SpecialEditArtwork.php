@@ -27,7 +27,7 @@ class SpecialEditArtwork extends SpecialPage {
     if ($id == $request->getText('title'))
       $id = null;
 
-    require_once(ATLASMUSEUM_UTILS_PATH_PHP . 'artworkEditTest.php');
+    require_once(ATLASMUSEUM_UTILS_PATH_PHP . 'artworkEdit.php');
 
     $out = $this->getOutput();
     $data = artworkEditTest::renderEdit($id);

@@ -3,129 +3,132 @@
 require_once(ATLASMUSEUM_UTILS_PATH_PHP . 'artworkGetData.php');
 require_once(ATLASMUSEUM_UTILS_PATH_PHP . 'constants.php');
 
-class ArtworkEdit {
-
-  public static function get_image($image, $width=320) {
-    return Api::call_api(array(
-      'action' => 'query',
-      'prop' => 'imageinfo',
-      'iiprop' => 'url',
-      'iiurlwidth' => $width,
-      'titles' => 'File:'.$image
-    ), 'Commons');
-  }
-
-  public static function get_image_am($image, $width=320) {
-    return Api::call_api(array(
-      'action' => 'query',
-      'prop' => 'imageinfo',
-      'iiprop' => 'url',
-      'iiurlwidth' => $width,
-      'titles' => 'File:'.$image
-    ), 'atlasmuseum');
-  }
-
-  public static function render_wikidata($data, $wikidata = false) {
+class ArtworkEditTest {
+  public static function renderWikidata($entity) {
+    $wikidataID = !is_null($entity->data->wikidata) ? $entity->data->wikidata->value[0] : '';
+    $wikidataOrigin = ($entity->origin === 'wikidata');
     ?>
       <tr>
         <th>Wikidata</th>
-        <td><span class="inputSpan"><input id="input_label" class="createboxInput" size="70" value="<?php print $data['id']; ?>" name="Edit[id]">
+        <td><span class="inputSpan"><input id="input_label" class="createboxInput" size="70" value="<?php print $wikidataID; ?>" name="Edit[wikidata]">
         <?php
-          if (!$wikidata) {
+          if (!$wikidataOrigin) {
             ?>
-              <br /><br /><button id="amImportButton" onclick="import_wikidata();">Importer</button></span></td>
+              <br /><br /><button id="amImportButton" onclick="importWikidata();">Importer</button>
             <?php
           }
         ?>
+        </span></td>
       </tr>
     <?php
   }
 
-  public static function render_label($data) {
+  public static function renderLabel($data) {
+    $label = !is_null($data) ? $data->value[0] : '';
     ?>
       <tr>
         <th>Titre<span class="mandatory">*</span></th>
-        <td> <span class="inputSpan mandatoryFieldSpan"><input id="input_2" tabindex="2" class="createboxInput mandatoryField" size="70" value="<?php print $data['label']; ?>" name="Edit[label]"></span></td>
+        <td> <span class="inputSpan mandatoryFieldSpan"><input id="input_2" tabindex="2" class="createboxInput mandatoryField" size="70" value="<?php print $label; ?>" name="Edit[titre]"></span></td>
       </tr>
     <?php
   }
 
-  public static function render_coordinates($data) {
+  public static function renderCoordinates($data) {
+    $latitude = 0;
+    $longitude = 0;
+    if (!is_null($data)) {
+      $latitude = $data->value[0]->lat;
+      $longitude = $data->value[0]->lon;
+    }
     ?>
       <tr>
         <th>Coordonnées<span class="mandatory">*</span></th>
         <td>
           <p>
-            <span class="inputSpan mandatoryFieldSpan"><input class="createboxInput mandatoryField" id="coordinates_input" size="40" value="<?php print $data['P625']['latitude'] . ', ' . $data['P625']['longitude']; ?>" name="Edit[P625]"></span>
+            <span class="inputSpan mandatoryFieldSpan"><input class="createboxInput mandatoryField" id="coordinates_input" size="40" value="<?php print $latitude . ', ' . $longitude; ?>" name="Edit[site_coordonnees]"></span>
             <button onclick="change_map_input()">Mise à jour de la carte</button>
           </p>
           <p>
             <span class="inputSpan"><input class="createboxInput" id="address_input" size="40" value="" name=""></span>
             <button onclick="change_map_address()">Estimer les coordonnées</button>
           </p>
-          <div id="map" style="height:350px"></div>
+          <div id="map" data-lat="<?php print $latitude; ?>" data-lon="<?php print $longitude; ?>" style="height:350px"></div>
         </td>
       </tr>
     <?php
   }
 
-  public static function render_nature($data) {
+  public static function renderNature($data) {
+    $nature = !is_null($data) ? $data->value[0] : 'pérenne';
+    $values = ['pérenne', 'éphémère', 'détruite', 'non réalisée', 'à vérifier'];
     ?>
       <tr>
         <th>Nature</th>
         <td>
-          <span id="span_10" class="radioButtonSpan mandatoryFieldSpan">
-            <label class="radioButtonItem"><input name="Edit[nature]" type="radio" value="pérenne" checked="checked" id="input_6" tabindex="6"> pérenne</label>
-            <label class="radioButtonItem"><input name="Edit[nature]" type="radio" value="éphémère" id="input_7" tabindex="7"> éphémère</label>
-            <label class="radioButtonItem"><input name="Edit[nature]" type="radio" value="détruite" id="input_8" tabindex="8"> détruite</label>
-            <label class="radioButtonItem"><input name="Edit[nature]" type="radio" value="non réalisée" id="input_9" tabindex="9"> non réalisée</label>
-            <label class="radioButtonItem"><input name="Edit[nature]" type="radio" value="à vérifier" id="input_10" tabindex="10"> à vérifier</label>
+          <span class="radioButtonSpan mandatoryFieldSpan">
+            <?php
+              for ($i = 0; $i < sizeof($values); $i++) {
+                print '<label class="radioButtonItem"><input name="Edit[nature]" type="radio" value="' . $values[$i] . '"';
+                if ($nature === $values[$i])
+                  print ' checked="checked"';
+                print '>' . $values[$i] . '</label>';
+              }
+            ?>
           </span>
         </td>
       </tr>
     <?php
   }
   
-  public static function render_text($data, $property, $title, $key, $mandatory=false) {
+  public static function renderText($data, $key, $title, $mandatory=false) {
+    $text = '';
+    if (!is_null($data))
+      $text = $data->value[0];
     ?>
       <tr>
         <th><?php print $title; ?><?php if ($mandatory) print ' <span class="mandatory">*</span>'; ?></th>
-        <td id="input_<?php print $property; ?>">
-          <input type="text" id="input_<?php print $property; ?>" value="<?php print $data[$property]; ?>" name="Edit[<?php print $key; ?>]" class="createboxInput" size="45">
+        <td id="input_<?php print $key; ?>">
+          <input type="text" id="input_<?php print $key; ?>" value="<?php print $text; ?>" name="Edit[<?php print $key; ?>]" class="createboxInput" size="45">
         </td>
       </tr>
     <?
   }
 
-  public static function render_main_image($data, $property, $title, $key, $mandatory=false) {
-    /*var_dump($data);
-    var_dump($property);
-    exit;*/
+  public static function renderMainImage($data, $key, $title, $mandatory=false) {
+    $imageFile = '';
+    $imageOrigin = 'atlasmuseum';
+    $imageThumb = '';
+    if (!is_null($data)) {
+      $imageFile = $data->value[0]->value;
+      $imageOrigin = $data->value[0]->origin;
+
+      // Récupération des données de l'œuvre
+      $parameters = [
+        'action' => 'amgetimage',
+        'image' => $imageFile,
+        'origin' => $imageOrigin,
+        'width' => 200
+      ];
+      $imageData = API::call_api($parameters, 'am');
+
+      if ($imageData->success === 1)
+        $imageThumb = $imageData->entities->thumbnail;
+    }
     ?>
       <tr>
         <th><?php print $title; ?><?php if ($mandatory) print ' <span class="mandatory">*</span>'; ?></th>
-        <td id="input_<?php print $property; ?>_cell">
-          <input type="text" id="input_<?php print $property; ?>" value="<?php print $data[$property]['file']; ?>" name="Edit[<?php print $key; ?>]" class="createboxInput createboxInputMainImage" size="45">
-          <a data-fancybox data-type="iframe" data-src="<?php print BASE_MAIN; ?>index.php?title=Sp%C3%A9cial:UploadWindow&amp;pfInputID=input_<?php print $property; ?>" href="javascript:;">Importer un fichier</a>
+        <td id="input_<?php print $key; ?>_cell">
+          <input type="text" id="input_<?php print $key; ?>" value="<?php print $imageFile; ?>" name="Edit[<?php print $key; ?>]" class="createboxInput createboxInputMainImage" size="45">
+          <a data-fancybox data-type="iframe" data-src="<?php print BASE_MAIN; ?>index.php?title=Sp%C3%A9cial:UploadWindow&amp;pfInputID=input_<?php print $key; ?>" href="javascript:;">Importer un fichier</a>
           <br />
-          <input id="input_checkbox_<?php print $property; ?>" name="Edit[<?php print $key; ?>_origin]" type="checkbox" class="createboxInput" <?php if ($data[$property]['origin'] == 'commons') print 'checked'; ?>><i>Cette image provient de Wikimedia Commons</i>
+          <input id="input_checkbox_<?php print $key; ?>" name="Edit[<?php print $key; ?>_origin]" type="checkbox" class="createboxInput" <?php if ($imageOrigin === 'commons') print 'checked'; ?>><i>Cette image provient de Wikimedia Commons</i>
           <?php
-            if (isset($data[$property]['file']) && $data[$property]['file'] != '') {
-              if ($data[$property]['origin'] == 'commons')
-                $tmp = self::get_image($data[$property]['file'], 200);
-              else
-                $tmp = self::get_image_am($data[$property]['file'], 200);
-              $image_thumb = '';
-              if (isset($tmp->query->pages))
-                foreach($tmp->query->pages as $image)
-                  $image_thumb = $image->imageinfo[0]->thumburl;
-                  if ($image_thumb != '') {
-                ?>
-                  <div id="input_<?php print $property; ?>_thumb"  class="image_thumb">
-                    <img src="<?php print $image_thumb; ?>" />
-                  </div>
-                <?php
-              }
+            if ($imageThumb != '') {
+            ?>
+              <div id="input_<?php print $key; ?>_thumb"  class="image_thumb">
+                <img src="<?php print $imageThumb; ?>" style="max-width: 200px; height: auto;" />
+              </div>
+            <?php
             }
           ?>
           <div class="image_disclaimer">
@@ -137,16 +140,15 @@ class ArtworkEdit {
     <?
   }
 
-  public static function render_image_list($data, $property, $title, $key, $mandatory=false) {
-    $images = explode(';', $data[$property]);
+  public static function renderImageList($data, $key, $title, $mandatory=false) {
     ?>
     <div class="multipleTemplateWrapper">
-	    <div class="multipleTemplateList ui-sortable" id="input_<?php print $property; ?>_container">
+	    <div class="multipleTemplateList ui-sortable" id="input_<?php print $key; ?>_container">
       <?php
-        for ($i=0; $i < sizeof($images); $i++) {
-          
+        if (!is_null($data))
+          for ($i = 0; $i < sizeof($data->value); $i++) {  
           ?>
-          <div class="multipleTemplateInstance multipleTemplate" id="input_<?php print $property; ?>_instance_<?php print $i; ?>">
+          <div class="multipleTemplateInstance multipleTemplate" id="input_<?php print $key; ?>_instance_<?php print $i; ?>">
             <table>
               <tbody>
                 <tr>
@@ -157,8 +159,8 @@ class ArtworkEdit {
                           <td style="width:140px;"><b>Importer une image&nbsp;:</b></td>
                           <td>
                             <span class="inputSpan">
-                              <input id="input_<?php print $property; ?>_<?php print $i; ?>" class="createboxInput" size="35" value="<?php print $images[$i]; ?>" name="Edit[<?php print $key; ?>][<?php print $i; ?>]" type="text">
-                              <a data-fancybox data-type="iframe" data-src="<?php print BASE_MAIN; ?>index.php?title=Sp%C3%A9cial:UploadWindow&amp;pfInputID=input_<?php print $property; ?>_<?php print $i; ?>" href="javascript:;">Importer un fichier</a>
+                              <input id="input_<?php print $key; ?>_<?php print $i; ?>" class="createboxInput" size="35" value="<?php print $data->value[$i]->value; ?>" name="Edit[<?php print $key; ?>][<?php print $i; ?>]" type="text">
+                              <a data-fancybox data-type="iframe" data-src="<?php print BASE_MAIN; ?>index.php?title=Sp%C3%A9cial:UploadWindow&amp;pfInputID=input_<?php print $key; ?>_<?php print $i; ?>" href="javascript:;">Importer un fichier</a>
                             </span>
                           </td>
                         </tr>
@@ -166,7 +168,7 @@ class ArtworkEdit {
                     </table>
                   </td>
 			            <td><a class="addAboveButton" title="Ajouter une autre instance au-dessus de celle-ci"><img src="/w/extensions/SemanticForms/skins/SF_add_above.png" class="multipleTemplateButton"></a></td>
-			            <td><button class="removeButton" title="Enlever cette instance" onclick="remove_image_line('<?php print $property; ?>', <?php print $i; ?>)"><img src="/w/extensions/SemanticForms/skins/SF_remove.png" class="multipleTemplateButton"></button></td>
+			            <td><button class="removeButton" title="Enlever cette instance" onclick="remove_image_line('<?php print $key; ?>', <?php print $i; ?>)"><img src="/w/extensions/SemanticForms/skins/SF_remove.png" class="multipleTemplateButton"></button></td>
 			            <td class="instanceRearranger"><img src="/w/extensions/SemanticForms/skins/rearranger.png" class="rearrangerImage"></td>
                 </tr>
               </tbody>
@@ -176,42 +178,47 @@ class ArtworkEdit {
         }
       ?>
       </div>
-      <p><button class="multipleTemplateAdder" onclick="add_image_line('<?php print $property; ?>');">Importer d'autres images</button></p>
+      <p><button class="multipleTemplateAdder" onclick="add_image_line('<?php print $key; ?>');">Importer d'autres images</button></p>
     </div>
     <?php
   }
 
-  public static function render_textarea($data, $property, $title, $key, $mandatory=false) {
-    $data[$property] = str_replace('\\n', "\n", $data[$property]);
+  public static function renderTextarea($data, $key, $title, $mandatory=false) {
+    $text = '';
+    if (!is_null($data)) {
+      $text = str_replace('\\n', "\n", $data->value[0]);
+    }
     ?>
       <tr>
         <th><?php print $title; ?><?php if ($mandatory) print ' <span class="mandatory">*</span>'; ?></th>
-        <td id="input_<?php print $property; ?>">
-          <textarea id="input_<?php print $property; ?>" name="Edit[<?php print $key; ?>]" class="createboxInput" rows="5" cols="40" style="width: auto"><?php print $data[$property]; ?></textarea>
+        <td id="input_<?php print $key; ?>">
+          <textarea id="input_<?php print $key; ?>" name="Edit[<?php print $key; ?>]" class="createboxInput" rows="5" cols="40" style="width: 100%"><?php print $text; ?></textarea>
         </td>
       </tr>
     <?
   }
 
-  public static function render_item($data, $property, $title, $key, $mandatory=false) {
+  public static function renderItem($data, $key, $title, $mandatory=false) {
     ?>
       <tr>
         <th><?php print $title; ?><?php if ($mandatory) print ' <span class="mandatory">*</span>'; ?></th>
-        <td id="input_<?php print $property; ?>">
-    <?php
-      foreach ($data[$property] as $index => $value) {
-    ?>
-          <div id="input_<?php print $property; ?>_wrapper_<?php print $index; ?>" class="inputSpan<?php if ($mandatory) print ' mandatoryFieldSpan'; ?> autocomplete">
-            <input id="input_<?php print $property; ?>_<?php print $index; ?>" class="createboxInput<?php if ($mandatory) print ' mandatoryField'; ?>" size="60" value="<?php print $value['label']; ?>" name="Edit[<?php print $key; ?>][<?php print $index; ?>]">
-            <input type="hidden" id="input_<?php print $property; ?>_id_<?php print $index; ?>" name="Edit[<?php print $key; ?>][id][<?php print $index; ?>]" value="<?php print $value['id']; ?>">
-            <span class="edit_item_button" title="Supprimer cette ligne" onclick="removeLine('input_<?php print $property; ?>_wrapper_<?php print $index; ?>');">
-              [&nbsp;x&nbsp;]
-            </span>
-          </div>
-    <?php
-      }
-    ?>
-          <div class="edit_item_button add_button" title="Ajouter une ligne" onclick="addLine('input_<?php print $property; ?>', '<?php print $property; ?>', '<?php print $key; ?>', <?php print $mandatory; ?>);">
+        <td id="input_<?php print $key; ?>">
+          <?php
+            if (!is_null($data)) {
+              foreach ($data->value as $index => $value) {
+              ?>
+                <div id="input_<?php print $key; ?>_wrapper_<?php print $index; ?>" class="inputSpan<?php if ($mandatory) print ' mandatoryFieldSpan'; ?> autocomplete">
+                  <input id="input_<?php print $key; ?>_<?php print $index; ?>" class="createboxInput<?php if ($mandatory) print ' mandatoryField'; ?>" size="60" value="<?php print $value->label; ?>" name="Edit[<?php print $key; ?>][<?php print $index; ?>]">
+                  <input type="hidden" id="input_<?php print $key; ?>_id_<?php print $index; ?>" name="Edit[<?php print $key; ?>][id][<?php print $index; ?>]" value="<?php print $value->article; ?>">
+                  <span class="edit_item_button" title="Supprimer cette ligne" onclick="removeLine('input_<?php print $key; ?>_wrapper_<?php print $index; ?>');">
+                    [&nbsp;x&nbsp;]
+                  </span>
+                </div>
+              <?php
+              }
+            }
+          ?>
+          <div class="edit_item_button add_button" title="Ajouter une ligne" onclick="addLine('input_<?php print $key; ?>', '<?php print $key; ?>', '<?php print $key; ?>', <?php print $mandatory; ?>);">
             [&nbsp;+&nbsp;]
           </div>
         </td>
@@ -219,40 +226,38 @@ class ArtworkEdit {
     <?
   }
 
-  public static function render_item_checkboxes($data, $property, $title, $key, $list, $mandatory=false) {
+  public static function renderItemCheckboxes($data, $key, $title, $list, $mandatory=false) {
     $d = [];
 
-    if (is_array($data[$property])) {
-      for ($i=0; $i<sizeof($data[$property]); $i++) {
-        if (is_array($data[$property][$i])) {
-          
-          if ($data[$property][$i]['label'] != '')
-            array_push($d, $data[$property][$i]['label']);
-          if ($data[$property][$i]['id'] != '')
-            array_push($d, $data[$property][$i]['id']);
+    if (!is_null($data)) {
+      for ($i = 0; $i < sizeof($data->value); $i++) {
+        if ($data->type === 'item') {
+          array_push($d, $data->value[$i]->article);
+          if ($data->value[$i]->label != $data->value[$i]->article)
+            array_push($d, $data->value[$i]->label);
+        } else
+        if ($data->type === 'text') {
+          array_push($d, $data->value[$i]);
         }
-        else
-          array_push($d, $data[$property][$i]);
       }
     }
-    else
-      array_push($d, $data[$property]);
+
     ?>
       <tr>
         <th><?php print $title; ?><?php if ($mandatory) print ' <span class="mandatory">*</span>'; ?></th>
-        <td id="input_<?php print $property; ?>">
+        <td id="input_<?php print $key; ?>">
           <div class="checkboxes3columns">
             <span class="checkboxesSpan">
-    <?php
-      for ($i=0; $i<sizeof($list); $i++) {
-        $checked = (in_array($list[$i]['label'], $d) || ($list[$i]['id'] != '' && in_array($list[$i]['id'], $d)));
-    ?>
-              <label class="checkboxLabel">
-                <input id="input_<?php print $property . '_' . $i; ?>" class="createboxInput" type="checkbox" value="<?php if ($list[$i]['id'] != '') print $list[$i]['id']; else print $list[$i]['label']; ?>" name=Edit[<?php print $key; ?>][<?php print $i; ?>] <?php if ($checked) print 'checked'; ?>> <?php print $list[$i]['label']; ?>
-              </label>
-    <?php
-      }
-    ?>
+              <?php
+                for ($i=0; $i<sizeof($list); $i++) {
+                  $checked = (in_array($list[$i]['label'], $d) || ($list[$i]['id'] != '' && in_array($list[$i]['id'], $d)));
+                  ?>
+                    <label class="checkboxLabel">
+                      <input id="input_<?php print $key . '_' . $i; ?>" class="createboxInput" type="checkbox" value="<?php if ($list[$i]['id'] != '') print $list[$i]['id']; else print $list[$i]['label']; ?>" name=Edit[<?php print $key; ?>][<?php print $i; ?>] <?php if ($checked) print 'checked'; ?>> <?php print $list[$i]['label']; ?>
+                    </label>
+                  <?php
+                }
+              ?>
             </span>
           </div>
         </td>
@@ -260,30 +265,33 @@ class ArtworkEdit {
     <?
   }
 
-  public static function render_item_radio($data, $property, $title, $key, $list, $mandatory=false) {
+  public static function renderItemRadio($data, $key, $title, $list, $mandatory=false) {
     $d = [];
-    for ($i=0; $i<sizeof($data[$property]); $i++) {
-      if ($data[$property][$i]['label'] != '')
-        array_push($d, $data[$property][$i]['label']);
-      if ($data[$property][$i]['id'] != '')
-        array_push($d, $data[$property][$i]['id']);
+
+    if (!is_null($data)) {
+      for ($i = 0; $i < sizeof($data->value); $i++) {
+        array_push($d, $data->value[$i]->article);
+        if ($data->value[$i]->label != $data->value[$i]->article)
+          array_push($d, $data->value[$i]->label);
+      }
     }
+
     ?>
       <tr>
         <th><?php print $title; ?><?php if ($mandatory) print ' <span class="mandatory">*</span>'; ?></th>
-        <td id="input_<?php print $property; ?>">
+        <td id="input_<?php print $key; ?>">
           <div class="checkboxes1column">
             <span class="radioButtonSpan">
-    <?php
-      for ($i=0; $i<sizeof($list); $i++) {
-        $checked = (in_array($list[$i]['label'], $d) || ($list[$i]['id'] != '' && in_array($list[$i]['id'], $d)));
-    ?>
-              <label class="radioButtonItem">
-                <input id="input_<?php print $property . '_' . $i; ?>" class="createboxInput" type="radio" value="<?php if ($list[$i]['id'] != '') print $list[$i]['id']; else print $list[$i]['label']; ?>" name=Edit[<?php print $key; ?>] <?php if ($checked) print 'checked'; ?>> <?php print $list[$i]['label']; ?>
-              </label>
-    <?php
-      }
-    ?>
+              <?php
+                for ($i=0; $i<sizeof($list); $i++) {
+                  $checked = (in_array($list[$i]['label'], $d) || ($list[$i]['id'] != '' && in_array($list[$i]['id'], $d)));
+              ?>
+                <label class="radioButtonItem">
+                  <input id="input_<?php print $key . '_' . $i; ?>" class="createboxInput" type="radio" value="<?php if ($list[$i]['id'] != '') print $list[$i]['id']; else print $list[$i]['label']; ?>" name=Edit[<?php print $key; ?>] <?php if ($checked) print 'checked'; ?>> <?php print $list[$i]['label']; ?>
+                </label>
+              <?php
+                }
+              ?>
             </span>
           </div>
         </td>
@@ -292,256 +300,362 @@ class ArtworkEdit {
   }
 
   /**
+   * En-tête
+   */
+  protected static function renderHeader($entity) {
+    // Nom de l'article en cours (vide si création)
+    $article = '';
+    if (!is_null($entity)) {
+      // Si origine atlasmuseum, le nom de l'article est passé dans l'entité
+      $article = $entity->article;
+
+      // Si origine Wikidata, il faut construire le nom à partir du titre et des auteurs
+      if ($entity->origin === 'wikidata') {
+        $artists = [];
+        if (!is_null($entity->data->artiste))
+          for ($i = 0; $i < sizeof($entity->data->artiste->value); $i++)
+            array_push($artists, $entity->data->artiste->value[$i]->label);
+        $article = $entity->title . ' (' . (sizeof($artists > 0) ? implode(', ', $artists) : 'artiste inconnu') . ')';
+      }
+    }
+
+    ?>
+    <form id="edit_form" onsubmit="return false;">
+      <input type="hidden" id="article" name="article" value="<?php print $article; ?>">
+      <div class="jquery-large headertabs">
+      <div>
+          <ul class="edit-tabs">
+            <li class="edit_tab tab_selected" onclick="showTab(this, 'infos_essentielles');">Infos essentielles</li>
+            <li class="edit_tab tab_unselected" onclick="showTab(this, 'description');">Description</li>
+            <li class="edit_tab tab_unselected" onclick="showTab(this, 'production');">Production</li>
+            <li class="edit_tab tab_unselected" onclick="showTab(this, 'site');">Site</li>
+            <li class="edit_tab tab_unselected" onclick="showTab(this, 'acteurs');">Acteurs</li>
+            <li class="edit_tab tab_unselected" onclick="showTab(this, 'conservation');">Conservation</li>
+            <li class="edit_tab tab_unselected" onclick="showTab(this, 'sources');">Sources</li>
+            <li class="edit_tab tab_unselected" onclick="showTab(this, 'photos');">Photos</li>
+          </ul>
+        </div>
+    <?php
+  }
+
+  /**
+   * Pied de page
+   */
+  protected static function renderFooter() {
+    ?>
+        <div class="edit_publish">
+          <input type="button" value="Publier" name="wpSave" onclick="publish();">
+        </div>
+      </form>
+
+      <div style="display:none">
+        <form id="editform" name="editform" method="post" action="" enctype="multipart/form-data">
+          <div id="antispam-container" style="display: none;"><input type="text" name="wpAntispam" id="wpAntispam" value="" /></div>
+          <input type="hidden" name="editingStatsId" id="editingStatsId" value="" />
+          <input type='hidden' value="" name="wpSection"/>
+          <input type='hidden' value="" name="wpStarttime" />
+          <input type='hidden' value="" name="wpEdittime" />
+          <input type='hidden' value="" name="wpScrolltop" id="wpScrolltop" />
+          <input type="hidden" value="" name="wpAutoSummary"/>
+          <input type="hidden" value="" name="oldid"/>
+          <input type="hidden" value="30307" name="parentRevId"/>
+          <input type="hidden" value="text/x-wiki" name="format"/>
+          <input type="hidden" value="wikitext" name="model"/>
+          <input type="hidden" value=<?php print Api::get_token(); ?> name="wpEditToken"/>
+          <textarea tabindex="1" accesskey="," id="wpTextbox1" cols="80" rows="25" style="" lang="fr" dir="ltr" name="wpTextbox1"></textarea>
+        </form>
+      </div>
+
+      <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+      <script type="text/javascript" src="<?php print ATLASMUSEUM_UTILS_FULL_PATH_JS; ?>jquery-ui.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+      <script type="text/javascript" src="<?php print OPEN_LAYER_JS; ?>"></script>
+      <script type="text/javascript" src="<?php print ATLASMUSEUM_UTILS_FULL_PATH_JS; ?>autocomplete.js"></script>
+      <script type="text/javascript" src="<?php print ATLASMUSEUM_UTILS_FULL_PATH_JS; ?>artworkEdit.js"></script>
+      <link rel="stylesheet" href="<?php print ATLASMUSEUM_UTILS_FULL_PATH_CSS; ?>edit.css">
+      <link rel="stylesheet" href="<?php print ATLASMUSEUM_UTILS_FULL_PATH_CSS; ?>autocomplete.css">
+      <link rel="stylesheet" href="<?php print OPEN_LAYER_CSS; ?>" type="text/css">
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+    <?php
+  }
+
+  protected static function renderOpenBlock($blockName) {
+    // $blockId = str_replace('%', '.', urlencode(str_replace(' ', '_', strtolower($blockName))));
+    ?>
+      <h2><span class="mw-headline"><?php print $blockName; ?></span></h2>
+      <table class="formtable">
+        <tbody>
+    <?php
+  }
+
+  protected static function renderCloseBlock() {
+    ?>
+        </tbody>
+      </table>
+    <?php
+  }
+
+  /**
+   * Infos principales
+   */
+  protected static function renderMainInfos($entity) {
+    print '<div id="infos_essentielles" class="edit_section section_selected">';
+
+    self::renderOpenBlock('Wikidata');
+    self::renderWikidata($entity);
+    self::renderCloseBlock();
+
+    self::renderOpenBlock('Titre et coordonnées');
+    self::renderLabel($entity->data->titre);
+    self::renderCoordinates($entity->data->site_coordonnees);
+    self::renderCloseBlock();
+
+    self::renderOpenBlock('Artiste');
+    self::renderItem($entity->data->artiste, 'artiste', 'Artiste', true);
+    self::renderCloseBlock();
+
+    self::renderOpenBlock('Nature');
+    self::renderNature($entity->data->nature);
+    self::renderCloseBlock();
+
+    self::renderOpenBlock('Image principale');
+    self::renderMainImage($entity->data->image_principale, 'image_principale', 'Image principale', false);
+    self::renderCloseBlock();
+
+    print '</div>';
+  }
+
+  protected static function renderDescription($entity) {
+    print '<div id="description" class="edit_section section_unselected">';
+
+    self::renderOpenBlock('Description de l\'œuvre');
+    self::renderText($entity->data->{'sous-titre'}, 'sous-titre', 'Sous-titre');
+    self::renderTextarea($entity->data->description, 'description', 'Description');
+    self::renderItemCheckboxes($entity->data->type_art, 'type_art', 'Domaine(s)', Constants::get_domains());
+    self::renderText($entity->data->precision_type_art, 'precision_type_art', 'Précision sur le domaine');
+    self::renderItemCheckboxes($entity->data->couleur, 'couleur', 'Couleur(s)', Constants::get_colors());
+    self::renderText($entity->data->precision_couleur, 'precision_couleur', 'Précision sur les couleurs');
+    self::renderItemCheckboxes($entity->data->materiaux, 'materiaux', 'Matériau(s)', Constants::get_materials());
+    self::renderText($entity->data->precision_materiaux, 'precision_materiaux', 'Précision sur les matériaux');
+    self::renderText($entity->data->techniques, 'techniques', 'Techniques');
+    self::renderText($entity->data->hauteur, 'hauteur', 'Hauteur (m)');
+    self::renderText($entity->data->profondeur, 'profondeur', 'Profondeur (m)');
+    self::renderText($entity->data->largeur, 'largeur', 'Largeur (m)');
+    self::renderText($entity->data->diametre, 'diametre', 'Diamètre (m)');
+    self::renderText($entity->data->surface, 'surface', 'Surface (m²)');
+    self::renderText($entity->data->precision_dimensions, 'precision_dimensions', 'Précision sur les dimensions');
+    self::renderText($entity->data->symbole, 'symbole', 'Références');
+    self::renderItem($entity->data->forme, 'forme', 'Sujet représenté');
+    self::renderText($entity->data->mot_cle, 'mot_cle', 'Mots clés');
+    self::renderText($entity->data->influences, 'influences', 'Influences');
+    self::renderText($entity->data->a_influence, 'a_influence', 'À influencé');
+    self::renderTextarea($entity->data->notice_augmentee, 'notice_augmentee', 'Notice augmentée');
+    self::renderCloseBlock();
+
+    print '</div>';
+  }
+
+  /**
+   * Production
+   */
+  protected static function renderProduction($entity) {
+    print '<div id="production" class="edit_section section_unselected">';
+
+    self::renderOpenBlock('Production de l\'œuvre');
+    self::renderText($entity->data->inauguration, 'inauguration', 'Date d\'inauguration');
+    self::renderText($entity->data->restauration, 'restauration', 'Date de restauration');
+    self::renderText($entity->data->fin, 'fin', 'Date de fin');
+    self::renderText($entity->data->precision_date, 'precision_date', 'Précision sur les dates');
+    self::renderText($entity->data->programme, 'programme', 'Procédure');
+    self::renderText($entity->data->numero_inventaire, 'numero_inventaire', 'Numéro d\'inventaire');
+    self::renderText($entity->data->contexte_production, 'contexte_production', 'Contexte de production');
+    self::renderText($entity->data->periode_art, 'periode_art', 'Période(s)');
+    self::renderItemCheckboxes($entity->data->mouvement_artistes, 'mouvement_artistes', 'Mouvement(s)', Constants::get_movements());
+    self::renderText($entity->data->precision_mouvement_artistes, 'precision_mouvement_artistes', 'Précision sur le mouvement');
+    self::renderCloseBlock();
+
+    print '</div>';
+  }
+
+  /**
+   * Site
+   */
+  protected static function renderSite($entity) {
+    print '<div id="site" class="edit_section section_unselected">';
+
+    self::renderOpenBlock('Site');
+    self::renderItem($entity->data->site_nom, 'site_nom', 'Nom du site');
+    self::renderTextarea($entity->data->site_details, 'site_details', 'Détails sur le site');
+    self::renderText($entity->data->site_lieu_dit, 'site_lieu_dit', 'Lieu-dit');
+    self::renderText($entity->data->site_adresse, 'site_adresse', 'Adresse');
+    self::renderText($entity->data->site_code_postal, 'site_code_postal', 'Code postal');
+    self::renderItem($entity->data->site_ville, 'site_ville', 'Ville, localité...');
+    self::renderText($entity->data->site_departement, 'site_departement', 'Département, comté, district...');
+    self::renderText($entity->data->site_region, 'site_region', 'Région, province...');
+    self::renderItem($entity->data->site_pays, 'site_pays', 'Pays');
+    self::renderTextarea($entity->data->site_acces, 'site_acces', 'Accès');
+    self::renderTextarea($entity->data->site_visibilite, 'site_visibilite', 'Visibilité');
+    self::renderItemRadio($entity->data->site_pmr, 'site_pmr', 'Accessibilité PMR', Constants::get_pmr());
+    self::renderTextarea($entity->data->site_urls, 'site_urls', 'URLs');
+    self::renderTextarea($entity->data->site_pois, 'site_pois', 'Points d\'intérêt');
+    self::renderCloseBlock();
+
+    print '</div>';
+  }
+
+  /**
+   * Acteurs
+   */
+  protected static function renderActors($entity) {
+    print '<div id="acteurs" class="edit_section section_unselected">';
+
+    self::renderOpenBlock('Acteurs');
+    self::renderItem($entity->data->commissaires, 'commissaires', 'Commissaires');
+    self::renderItem($entity->data->commanditaires, 'commanditaires', 'Commanditaires');
+    self::renderText($entity->data->partenaires_publics, 'partenaires_publics', 'Partenaire(s) public(s)');
+    self::renderText($entity->data->partenaires_prives, 'partenaires_prives', 'Partenaire(s) privé(s)');
+    self::renderText($entity->data->collaborateurs, 'collaborateurs', 'Collaborateur(s)');
+    self::renderText($entity->data->maitrise_oeuvre, 'maitrise_oeuvre', 'Maîtrise d\'œuvre');
+    self::renderText($entity->data->maitrise_oeuvre_deleguee, 'maitrise_oeuvre_deleguee', 'Maîtrise d\'œuvre déléguée');
+    self::renderText($entity->data->maîtrise_ouvrage, 'maîtrise_ouvrage', 'Maîtrise d\'ouvrage');
+    self::renderText($entity->data->maitrise_ouvrage_deleguee, 'maitrise_ouvrage_deleguee', 'Maîtrise d\'ouvrage déléguée');
+    self::renderText($entity->data->proprietaire, 'proprietaire', 'Propriétaire');
+    self::renderCloseBlock();
+
+    print '</div>';
+  }
+
+  /**
+   * Conservation
+   */
+  protected static function renderConservation($entity) {
+    print '<div id="conservation" class="edit_section section_unselected">';
+
+    self::renderOpenBlock('État de conservation');
+    self::renderItemCheckboxes($entity->data->conservation, 'conservation', 'État de conservation', Constants::get_conservation());
+    self::renderItemCheckboxes($entity->data->precision_etat_conservation, 'precision_etat_conservation', 'Précisions sur l\'état de conservation', Constants::get_conservation_precision());
+    self::renderTextarea($entity->data->autre_precision_etat_conservation, 'autre_precision_etat_conservation', 'Autres précisions sur l\'état de conservation');
+    self::renderCloseBlock();
+
+    print '</div>';
+  }
+
+  /**
+   * Sources
+   */
+  protected static function renderSources($entity) {
+    print '<div id="sources" class="edit_section section_unselected">';
+
+    self::renderOpenBlock('Sources');
+    self::renderTextarea($entity->data->source, 'source', 'Source');
+    self::renderCloseBlock();
+
+    print '</div>';
+  }
+
+  /**
+   * Photos
+   */
+  protected static function renderPhotos($entity) {
+    print '<div id="photos" class="edit_section section_unselected">';
+
+    print '<h2><span class="mw-headline"> Construction / installation / Montage </span></h2>';
+    self::renderImageList($entity->data->image_galerie_construction, 'image_galerie_construction', 'Construction');
+
+    print '<h2><span class="mw-headline"> Autres prises de vue </span></h2>';
+    self::renderImageList($entity->data->image_galerie_autre, 'image_galerie_autre', 'Autres');
+
+    print '</div>';
+  }
+
+  /**
    * Affiche le formulaire d'édition d'une œuvre
    */
-  public static function renderEdit($id) {
-    $creation = false;
-    $wikidata = false;
-
-    if (isset($id) && preg_match('/^Q[0-9]+$/', $id)) {
-      $wikidata = true;
-      require_once(ATLASMUSEUM_UTILS_PATH_PHP . 'updateDB.php');
-      $article = get_artwork_from_q($id);
-
-      $values = ArtworkGetData::get_props($id);
-      $ids = ArtworkGetData::get_ids($values);
-      $labels = ArtworkGetData::get_labels($ids);
-
-      $data = ArtworkGetData::get_data($id, $values, $labels);
-      if ($article != '') {
-        $data_am = ArtworkGetData::get_data_am($article);
-        $data = ArtworkGetData::merge_data($data_am, $data);
-      }
-    } else
-    if (isset($id)) {
-      $data = ArtworkGetData::get_data_am($id);
-      $data = ArtworkGetData::get_labels_am($data);
-      $article = $id;
-    } else {
-      $creation = true;
-      $data = ArtworkGetData::get_data('', null, null);
-      $article = '';
-    }
-
+  public static function renderEntityEdit($entity) {    
     ob_start();
 
-    if ($wikidata) {
-      ?>
-        <script>document.getElementById('firstHeading').getElementsByTagName('span')[0].textContent = "Importer : <?php print $data['label']; ?>"</script>
-      <?php
+    // En-tête
+    self::renderHeader($entity);
+
+    // Infos essentielles
+    self::renderMainInfos($entity);
+
+    // Description
+    self::renderDescription($entity);
+
+    // Production
+    self::renderProduction($entity);
+
+    // Site
+    self::renderSite($entity);
+
+    // Acteurs
+    self::renderActors($entity);
+
+    // Conservation
+    self::renderConservation($entity);
+
+    // Sources
+    self::renderSources($entity);
+
+    // Photos
+    self::renderPhotos($entity);
+
+    // Pied de page
+    self::renderFooter();
+
+    $contents = ob_get_contents();
+    ob_end_clean();
+
+    return $contents;
+  }
+
+  /**
+   * Rendu si erreur
+   */
+  protected static function renderError() {
+    return '<div>Problème lors de la récupération des données... Veuillez recharger la page.</div>';
+  }
+
+  /**
+   * Rendu d'édition d'une œuvre
+   */
+  public static function renderEdit($id = null) {
+    $title = 'Ajouter une œuvre';
+
+    if (!is_null($id)) {
+      // Récupération des données de l'œuvre
+      $parameters = [
+        'action' => 'amgetartwork',
+        'article' => $id
+      ];
+      $data = API::call_api($parameters, 'am');
+
+      if ($data->success === 1) {
+        // Œuvre ok
+        if ($data->entities->origin === 'wikidata')
+          $title = 'Importer : ' . $data->entities->title;
+        else
+          $title = 'Modifier : ' . $data->entities->title;
+        $content = self::renderEntityEdit($data->entities);
+      } else {
+        // Problème de données
+        $content = self::renderError();
+      }
+    } else {
+      $data = (object)[
+        'article' => '',
+        'title' => '',
+        'origin' => 'atlasmuseum',
+        'data' => (object)[]
+      ];
+      $content = self::renderEntityEdit($data);
     }
-?>
-<form id="edit_form" onsubmit="return false;">
-  <input type="hidden" id="article" name="article" value="<?php print $article; ?>">
-  <div class="jquery-large headertabs">
-  <div>
-      <ul class="edit-tabs">
-        <li class="edit_tab tab_selected" onclick="show_tab(this, 'Infos_essentielles');">Infos essentielles</li>
-        <li class="edit_tab tab_unselected" onclick="show_tab(this, 'Description');">Description</li>
-        <li class="edit_tab tab_unselected" onclick="show_tab(this, 'Production');">Production</li>
-        <li class="edit_tab tab_unselected" onclick="show_tab(this, 'Site');">Site</li>
-        <li class="edit_tab tab_unselected" onclick="show_tab(this, 'Acteurs');">Acteurs</li>
-        <li class="edit_tab tab_unselected" onclick="show_tab(this, 'Conservation');">Conservation</li>
-        <li class="edit_tab tab_unselected" onclick="show_tab(this, 'Sources');">Sources</li>
-        <li class="edit_tab tab_unselected" onclick="show_tab(this, 'Photos');">Photos</li>
-      </ul>
-    </div>
 
-    <div id="Infos_essentielles" class="edit_section section_selected">
-      <h2> <span class="mw-headline" id="Wikidata"> Wikidata </span></h2>
-      <table class="formtable">
-        <tbody>
-          <?php self::render_wikidata($data, $wikidata); ?>
-        </tbody>
-      </table>
-
-      <h2> <span class="mw-headline" id="Titre_et_coordonn.C3.A9es"> Titre et coordonnées </span></h2>
-      <table class="formtable">
-        <tbody>
-          <?php self::render_label($data); ?>
-          <?php self::render_coordinates($data); ?>
-        </tbody>
-      </table>
-
-      <h2> <span class="mw-headline" id="Artiste">Artiste</span></h2>
-      <table class="formtable">
-        <tbody>
-          <?php self::render_item($data, 'P170', 'Artiste', 'P170', true); ?>
-        </tbody>
-      </table>
-
-      <h2> <span class="mw-headline" id="Nature"> Nature </span></h2>
-      <table class="formtable">
-        <tbody>
-          <?php self::render_nature($data); ?>
-        </tbody>
-      </table>
-
-      <h2> <span class="mw-headline" id="Image_principale"> Image principale </span></h2>
-      <table class="formtable">
-        <tbody>
-          <?php self::render_main_image($data, 'P18', 'Image principale', 'image_principale', false);
-          /*self::render_image($data); */?>
-        </tbody>
-      </table>
-    </div>
-
-    <div id="Description" class="edit_section section_unselected">
-      <h2> <span class="mw-headline" id="Description_oeuvre"> Description de l'œuvre </span></h2>
-      <table class="formtable">
-        <tbody>
-          <?php self::render_text($data, 'sous-titre', 'Sous-titre', 'sous-titre', false); ?>
-          <?php self::render_textarea($data, 'description', 'Description', 'description', false); ?>
-          <?php self::render_item_checkboxes($data, 'P31', 'Domaine(s)', 'P31', Constants::get_domains(), false); ?>
-          <?php self::render_text($data, 'precision_type_art', 'Précision sur le domaine', 'precision_type_art', false); ?>
-          <?php self::render_item_checkboxes($data, 'P462', 'Couleur(s)', 'P462', Constants::get_colors(), false); ?>
-          <?php self::render_text($data, 'precision_couleur', 'Précision sur les couleurs', 'precision_couleur', false); ?>
-          <?php self::render_item_checkboxes($data, 'P186', 'Matériau(s)', 'P186', Constants::get_materials(), false); ?>
-          <?php self::render_text($data, 'precision_materiaux', 'Précision sur les matériaux', 'precision_materiaux', false); ?>
-          <?php self::render_text($data, 'techniques', 'Techniques', 'techniques', false); ?>
-          <?php self::render_text($data, 'hauteur', 'Hauteur (m)', 'hauteur', false); ?>
-          <?php self::render_text($data, 'profondeur', 'Profondeur (m)', 'profondeur', false); ?>
-          <?php self::render_text($data, 'largeur', 'Largeur (m)', 'largeur', false); ?>
-          <?php self::render_text($data, 'diametre', 'Diamètre (m)', 'diametre', false); ?>
-          <?php self::render_text($data, 'surface', 'Surface (m²)', 'surface', false); ?>
-          <?php self::render_text($data, 'precision_dimensions', 'Précision sur les dimensions', 'precision_dimensions', false); ?>
-          <?php self::render_text($data, 'symbole', 'Références', 'symbole', false); ?>
-          <?php self::render_item($data, 'P921', 'Sujet représenté', 'P921', false); ?>
-          <?php self::render_text($data, 'mot_cle', 'Mots clés', 'mot_cle', false); ?>
-          <?php self::render_text($data, 'influences', 'Influences', 'influences', false); ?>
-          <?php self::render_text($data, 'a_influence', 'À influencé', 'a_influence', false); ?>
-          <?php self::render_textarea($data, 'notice_augmentee', 'Notice augmentée', 'notice_augmentee', false); ?>
-        </tbody>
-      </table>
-    </div>
-
-    <div id="Production" class="edit_section section_unselected">
-      <h2> <span class="mw-headline" id="Production_oeuvre"> Production de l'œuvre </span></h2>
-      <table class="formtable">
-        <tbody>
-          <?php self::render_text($data, 'inauguration', 'Date d\'inauguration', 'inauguration', false); ?>
-          <?php self::render_text($data, 'restauration', 'Date de restauration', 'restauration', false); ?>
-          <?php self::render_text($data, 'fin', 'Date de fin', 'fin', false); ?>
-          <?php self::render_text($data, 'precision_date', 'Précision sur les dates', 'precision_date', false); ?>
-          <?php self::render_text($data, 'programme', 'Procédure', 'programme', false); ?>
-          <?php self::render_text($data, 'numero_inventaire', 'Numéro d\'inventaire', 'numero_inventaire', false); ?>
-          <?php self::render_text($data, 'contexte_production', 'Contexte de production', 'contexte_production', false); ?>
-          <?php self::render_text($data, 'periode_art', 'Période(s)', 'periode_art', false); ?>
-          <?php self::render_item_checkboxes($data, 'P135', 'Mouvement(s)', 'P135', Constants::get_movements(), false); ?>
-          <?php self::render_text($data, 'precision_mouvement_artistes', 'Précision sur le mouvement', 'precision_mouvement_artistes', false); ?>
-        </tbody>
-      </table>
-    </div>
-
-    <div id="Site" class="edit_section section_unselected">
-      <h2> <span class="mw-headline" id="Site_oeuvre"> Site </span></h2>
-      <table class="formtable">
-        <tbody>
-          <?php self::render_item($data, 'P276', 'Nom du site', 'P276', false); ?>
-          <?php self::render_textarea($data, 'site_details', 'Détails sur le site', 'site_details', false); ?>
-          <?php self::render_text($data, 'site_lieu_dit', 'Lieu-dit', 'site_lieu_dit', false); ?>
-          <?php self::render_text($data, 'site_adresse', 'Adresse', 'site_adresse', false); ?>
-          <?php self::render_text($data, 'site_code_postal', 'Code postal', 'site_code_postal', false); ?>
-          <?php self::render_item($data, 'P131', 'Ville, localité...', 'P131', false); ?>
-          <?php self::render_text($data, 'site_departement', 'Département, comté, district...', 'site_departement', false); ?>
-          <?php self::render_text($data, 'site_region', 'Région, province...', 'site_region', false); ?>
-          <?php self::render_item($data, 'P17', 'Pays', 'P17', false); ?>
-          <?php self::render_textarea($data, 'site_acces', 'Accès', 'site_acces', false); ?>
-          <?php self::render_textarea($data, 'site_visibilite', 'Visibilité', 'site_visibilite', false); ?>
-          <?php self::render_item_radio($data, 'P2846', 'Accessibilité PMR', 'P2846', Constants::get_pmr(), false); ?>
-          <?php self::render_textarea($data, 'site_urls', 'URLs', 'site urls', false); ?>
-          <?php self::render_textarea($data, 'site_pois', 'Points d\'intérêt', 'site_pois', false); ?>
-        </tbody>
-      </table>
-    </div>
-
-    <div id="Acteurs" class="edit_section section_unselected">
-      <h2> <span class="mw-headline" id="Acteurs_oeuvre"> Acteurs </span></h2>
-      <table class="formtable">
-        <tbody>
-          <?php self::render_item($data, 'P1640', 'Commissaires', 'P1640', false); ?>
-          <?php self::render_item($data, 'P88', 'Commanditaires', 'P88', false); ?>
-          <?php self::render_text($data, 'partenaires_publics', 'Partenaire(s) public(s)', 'partenaires_publics', false); ?>
-          <?php self::render_text($data, 'partenaires_prives', 'Partenaire(s) privé(s)', 'partenaires_prives', false); ?>
-          <?php self::render_text($data, 'collaborateurs', 'Collaborateur(s)', 'collaborateurs', false); ?>
-          <?php self::render_text($data, 'maitrise_oeuvre', 'Maîtrise d\'œuvre', 'maitrise_oeuvre', false); ?>
-          <?php self::render_text($data, 'maitrise_oeuvre_deleguee', 'Maîtrise d\'œuvre déléguée', 'maitrise_oeuvre_deleguee', false); ?>
-          <?php self::render_text($data, 'maîtrise_ouvrage', 'Maîtrise d\'ouvrage', 'maîtrise_ouvrage', false); ?>
-          <?php self::render_text($data, 'maitrise_ouvrage_deleguee', 'Maîtrise d\'ouvrage déléguée', 'maitrise_ouvrage_deleguee', false); ?>
-          <?php self::render_text($data, 'proprietaire', 'Propriétaire', 'proprietaire', false); ?>
-        </tbody>
-      </table>
-    </div>
-
-    <div id="Conservation" class="edit_section section_unselected">
-      <h2> <span class="mw-headline" id="Conservation_oeuvre"> État de conservation </span></h2>
-      <table class="formtable">
-        <tbody>
-          <?php self::render_item_checkboxes($data, 'conservation', 'État de conservation', 'conservation', Constants::get_conservation(), false); ?>
-          <?php self::render_item_checkboxes($data, 'precision_etat_conservation', 'Précisions sur l\'état de conservation', 'precision_etat_conservation', Constants::get_conservation_precision(), false); ?>
-          <?php self::render_textarea($data, 'autre_precision_etat_conservation', 'Autres précisions sur l\'état de conservation', 'autre_precision_etat_conservation', false); ?>
-        </tbody>
-      </table>
-    </div>
-
-    <div id="Sources" class="edit_section section_unselected">
-      <h2> <span class="mw-headline" id="Description_oeuvre"> Sources </span></h2>
-      <table class="formtable">
-        <tbody>
-          <?php self::render_textarea($data, 'source', 'Source', 'source', false); ?>
-        </tbody>
-      </table>
-    </div>
-
-    <div id="Photos" class="edit_section section_unselected">
-      <h2> <span class="mw-headline" id="Description_oeuvre"> Construction / installation / Montage </span></h2>
-      <?php self::render_image_list($data, 'image_galerie_construction', 'Construction', 'image_galerie_construction', false); ?>
-
-      <h2> <span class="mw-headline" id="Description_oeuvre"> Autres prises de vue </span></h2>
-      <?php self::render_image_list($data, 'image_galerie_autre', 'Autres', 'image_galerie_autre', false); ?>
-    </div>
-
-  </div>
-  <div class="edit_publish">
-    <input type="button" value="Publier" name="wpSave" onclick="publish();">
-  </div>
-</form>
-
-<div style="display:none">
-<form id="editform" name="editform" method="post" action="" enctype="multipart/form-data">
-  <div id="antispam-container" style="display: none;"><input type="text" name="wpAntispam" id="wpAntispam" value="" /></div>
-  <input type="hidden" name="editingStatsId" id="editingStatsId" value="" />
-  <input type='hidden' value="" name="wpSection"/>
-  <input type='hidden' value="" name="wpStarttime" />
-  <input type='hidden' value="" name="wpEdittime" />
-  <input type='hidden' value="" name="wpScrolltop" id="wpScrolltop" />
-  <input type="hidden" value="" name="wpAutoSummary"/>
-  <input type="hidden" value="" name="oldid"/>
-  <input type="hidden" value="30307" name="parentRevId"/>
-  <input type="hidden" value="text/x-wiki" name="format"/>
-  <input type="hidden" value="wikitext" name="model"/>
-  <input type="hidden" value=<?php print Api::get_token(); ?> name="wpEditToken"/>
-  <textarea tabindex="1" accesskey="," id="wpTextbox1" cols="80" rows="25" style="" lang="fr" dir="ltr" name="wpTextbox1"></textarea>
-</form>
-</div>
-
-<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-<script type="text/javascript" src="<?php print ATLASMUSEUM_UTILS_FULL_PATH_JS; ?>jquery-ui.min.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
-<script type="text/javascript" src="<?php print OPEN_LAYER_JS; ?>"></script>
-<script type="text/javascript" src="<?php print ATLASMUSEUM_UTILS_FULL_PATH_JS; ?>autocomplete.js"></script>
-<script type="text/javascript" src="<?php print ATLASMUSEUM_UTILS_FULL_PATH_JS; ?>edit.js"></script>
-<link rel="stylesheet" href="<?php print ATLASMUSEUM_UTILS_FULL_PATH_CSS; ?>edit.css">
-<link rel="stylesheet" href="<?php print ATLASMUSEUM_UTILS_FULL_PATH_CSS; ?>autocomplete.css">
-<link rel="stylesheet" href="<?php print OPEN_LAYER_CSS; ?>" type="text/css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
-<?php
-
-      $contents = ob_get_contents();
-      ob_end_clean();
-
-      return $contents;
-
+    return [
+      'title' => $title,
+      'content' => preg_replace("/\r|\n/", "", $content),
+    ];
   }
 
 }
