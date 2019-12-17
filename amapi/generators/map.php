@@ -226,7 +226,7 @@ if (!class_exists('Map')) {
      * Get data from database
      * 
      */
-    protected static function getData($origin) {
+    protected static function getMap($origin) {
       $data = [];
 
       $mysqli = new mysqli(DB_SERVER, DB_NAME, DB_PASSWORD, DB_USER);
@@ -266,8 +266,8 @@ if (!class_exists('Map')) {
      *
      * @return {Object} Tableau contenant les données
      */
-    public static function getMap($payload) {
-      $data = self::getData($payload['origin']);
+    public static function getData($payload) {
+      $data = self::getMap($payload['origin']);
 
       return array_merge($data);
     }

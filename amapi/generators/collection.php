@@ -17,8 +17,22 @@ if (!class_exists('Collection')) {
      * @return {Object} Tableau contenant le résultat de la validation
      */
     public static function validateQuery() {
+      $collection = getRequestParameter('collection');
+      if (is_null($collection))
+        return [
+          'success' => 0,
+          'error' => [
+            'code' => 'no_collection',
+            'info' => 'No value provided for parameter "collection".',
+            'status' => 400
+          ]
+        ];
+
       return [
         'success' => 1,
+        'payload' => [
+          'collection' => str_replace('_', ' ', urldecode($collection))
+        ]
       ];
     }
 
@@ -220,8 +234,8 @@ if (!class_exists('Collection')) {
      *
      * @return {Object} Œuvres
      */
-    public static function getCollection($collection) {
-      $data = self::getCollectionAM($collection);
+    public static function getData($payload) {
+      $data = self::getCollectionAM($payload['collection']);
       $artworks = self::convertArtworks($data);
 
       return $artworks;

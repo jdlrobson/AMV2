@@ -455,7 +455,7 @@ if (!class_exists('Artist')) {
      * @param {string} $redirect - Si Wikidata, rediriger vers un éventuel article atlasmuseum
      * @return {Object} Contenu de l'artiste
      */
-    public static function getArtist($payload) {
+    public static function getData($payload) {
       $artists = [];
 
       if (preg_match('/^[qQ][0-9]+$/', $payload['article'])) {
@@ -472,8 +472,10 @@ if (!class_exists('Artist')) {
         $artists = self::getArtistAM($payload['article']);
       }
 
-      $artists = self::convertItems($artists);
-      $artists = self::convertImages($artists);
+      if (sizeof($artists) > 0) {
+        $artists = self::convertItems($artists);
+        $artists = self::convertImages($artists);
+      }
 
       return $artists;
     }

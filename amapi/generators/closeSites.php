@@ -180,7 +180,7 @@ if (!class_exists('CloseSites')) {
      * @param {float} $distance - Distance au point
      * @return {Object} sites
      */
-    public static function getCloseSites($payload) {
+    public static function getData($payload) {
       return self::getCloseSitesWD($payload['latitude'], $payload['longitude'], $payload['distance'], $payload['exclude']);
     }
 

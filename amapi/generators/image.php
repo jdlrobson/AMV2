@@ -146,14 +146,15 @@ if (!class_exists('Image')) {
      * @param {bool} $legend - Faut-il inclure la légende ?
      * @return {Object} Contenu de l'image
      */
-    public static function getImage($image, $origin = 'atlasmuseum', $width = 420, $legend = false) {
+    public static function getData($payload) {
+      // image, $origin = 'atlasmuseum', $width = 420, $legend = false) {
       $images = [];
 
-      if ($origin === 'atlasmuseum') {
-        $images = self::getImageAM($image, $width, $legend);
+      if ($payload['origin'] === 'atlasmuseum') {
+        $images = self::getImageAM($payload['image'], $payload['width'], $payload['legend']);
       } else
-      if ($origin === 'commons') {
-        $images = self::getImageCommons($image, $width);
+      if ($payload['origin'] === 'commons') {
+        $images = self::getImageCommons($payload['image'], $payload['width']);
       }
 
       return $images;

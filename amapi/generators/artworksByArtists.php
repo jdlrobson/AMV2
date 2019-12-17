@@ -250,7 +250,7 @@ if (!class_exists('ArtworksByArtists')) {
      * @param {float} $distance - Distance au point
      * @return {Object} sites
      */
-    public static function getArtworksByArtists($payload) {
+    public static function getData($payload) {
       $idsWikidata = self::getIdsWikidata($payload['artists']);
       $equivalentsAtlasmuseum = self::convertArtistsWikidata($idsWikidata);
 

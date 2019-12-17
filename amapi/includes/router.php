@@ -9,152 +9,77 @@ require_once ('./includes/utils.php');
 require_once ('./includes/config.php');
 require_once ('./includes/response.php');
 
+$actions = [
+  'amgetmap' => [
+    'include' => 'map.php',
+    'class' => Map::class,
+    'noData' => 'No data found for map.'
+  ],
+  'amgetcollection' => [
+    'include' => 'collection.php',
+    'class' => Collection::class,
+    'noData' => 'No data found for collection.'
+  ],
+  'amgetartwork' => [
+    'include' => 'artwork.php',
+    'class' => Artwork::class,
+    'noData' => 'No data found for artwork.'
+  ],
+  'amgetartist' => [
+    'include' => 'artist.php',
+    'class' => Artist::class,
+    'noData' => 'No data found for artist.'
+  ],
+  'amgetimage' => [
+    'include' => 'image.php',
+    'class' => Image::class,
+    'noData' => 'No data found for image.'
+  ],
+  'amgetcloseartworks' => [
+    'include' => 'closeArtworks.php',
+    'class' => CloseArtworks::class,
+    'noData' => 'No data found.'
+  ],
+  'amgetclosesites' => [
+    'include' => 'closeSites.php',
+    'class' => CloseSites::class,
+    'noData' => 'No data found.'
+  ],
+  'amgetartworksbyartists' => [
+    'include' => 'artworksByArtists.php',
+    'class' => ArtworksByArtists::class,
+    'noData' => 'No data found.'
+  ],
+];
+
 if (!class_exists('Router')) {
 
   class Router {
-    protected static function getMap($response) {
-      require_once ('generators/map.php');
-      $validation = Map::validateQuery();
+    /**
+     * Génère une action
+     *
+     * @param {Object} $response
+     * @param {Object} $actionData
+     */
+    protected static function action($response, $actionData) {
+      // Inclusion du fichier de la classe désirée
+      require_once ('generators/' . $actionData['include']);
+      // Validation des paramètres entrés dans l'url
+      $validation = $actionData['class']::validateQuery();
       if ($validation['success']) {
-        $data = Map::getMap($validation['payload']);
+        // paramètres ok : on récupère les données
+        $data = $actionData['class']::getData($validation['payload']);
         if (sizeof($data) > 0) {
+          // Au moins une donnée : on les retourne
           $response->setValue('entities', $data);
           $response->setSuccess(true);
           $response->setStatusCode(200);
         } else {
-          $response->setError('no_data', 'No data found for map', 200);
+          // Aucune donnée : message d'erreur spécifique
+          $response->setError('no_data', $actionData['noData'], 200);
         }
       } else {
-        $response->setError($validation['error']['code'], $validation['error']['info'], $validation['error']['status']);
-      }
-    }
-
-    protected static function getCollection($response) {
-      require_once ('generators/collection.php');
-      $validation = Collection::validateQuery();
-      if ($validation['success']) {
-        $data = [];
-        $collection = str_replace('_', ' ', urldecode(getRequestParameter('collection')));
-        if (!is_null($collection))
-          $data = Collection::getCollection($collection);
-        if (sizeof($data) > 0) {
-          $response->setValue('entities', $data);
-          $response->setSuccess(true);
-          $response->setStatusCode(200);
-        } else {
-          $response->setError('no_data', 'No data found for collection: ' . $collection, 200);
-        }
-      } else {
-        $response->setError($validation['error']['code'], $validation['error']['info'], $validation['error']['status']);
-      }
-    }
-
-    protected static function getArtwork($response) {
-      require_once ('generators/artwork.php');
-      $validation = Artwork::validateQuery();
-      if ($validation['success']) {
-        $data = [];
-        $article = str_replace('_', ' ', urldecode(getRequestParameter('article')));
-        $redirect = getRequestParameter('redirect');
-        if (!is_null($article))
-          $data = Artwork::getArtwork($article, !is_null($redirect) && ($redirect === "1" || strtolower($redirect) === "true"));
-        if (sizeof($data) > 0) {
-          $response->setValue('entities', $data);
-          $response->setSuccess(true);
-          $response->setStatusCode(200);
-        } else {
-          $response->setError('no_data', 'No data found for artwork: ' . $article, 200);
-        }
-      } else {
-        $response->setError($validation['error']['code'], $validation['error']['info'], $validation['error']['status']);
-      }
-    }
-
-    protected static function getArtist($response) {
-      require_once ('generators/artist.php');
-      $validation = Artist::validateQuery();
-      if ($validation['success']) {
-        $data = Artist::getArtist($validation['payload']);
-        if (sizeof($data) > 0) {
-          $response->setValue('entities', $data);
-          $response->setSuccess(true);
-          $response->setStatusCode(200);
-        } else {
-          $response->setError('no_data', 'No data found for artist: ' . $validation['payload']['article'], 200);
-        }
-      } else {
-        $response->setError($validation['error']['code'], $validation['error']['info'], $validation['error']['status']);
-      }
-    }
-
-    protected static function getImage($response) {
-      require_once ('generators/image.php');
-      $validation = Image::validateQuery();
-      if ($validation['success']) {
-        $data = Image::getImage($validation['payload']['image'], $validation['payload']['origin'], $validation['payload']['width'], $validation['payload']['legend']);
-
-        if (sizeof($data) > 0) {
-          $response->setValue('entities', $data);
-          $response->setSuccess(true);
-          $response->setStatusCode(200);
-        } else {
-          $response->setError('no_data', 'No data found for image: ' . $validation['payload']['image'], 200);
-        }
-      } else {
-        $response->setError($validation['error']['code'], $validation['error']['info'], $validation['error']['status']);
-      }
-    }
-
-    protected static function getCloseArtworks($response) {
-      require_once ('generators/closeArtworks.php');
-      $validation = CloseArtworks::validateQuery();
-      if ($validation['success']) {
-        $data = CloseArtworks::getCloseArtworks($validation['payload']);
-
-        if (sizeof($data) > 0) {
-          $response->setValue('entities', $data);
-          $response->setSuccess(true);
-          $response->setStatusCode(200);
-        } else {
-          $response->setError('no_data', 'No artworks found for coordinates: ' . $validation['payload']['latitude'] . ', ' . $validation['payload']['longitude'], 200);
-        }
-      } else {
-        $response->setError($validation['error']['code'], $validation['error']['info'], $validation['error']['status']);
-      }
-    }
-
-    protected static function getCloseSites($response) {
-      require_once ('generators/closeSites.php');
-      $validation = CloseSites::validateQuery();
-      if ($validation['success']) {
-        $data = CloseSites::getCloseSites($validation['payload']);
-
-        if (sizeof($data) > 0) {
-          $response->setValue('entities', $data);
-          $response->setSuccess(true);
-          $response->setStatusCode(200);
-        } else {
-          $response->setError('no_data', 'No sites found for coordinates: ' . $validation['payload']['latitude'] . ', ' . $validation['payload']['longitude'], 200);
-        }
-      } else {
-        $response->setError($validation['error']['code'], $validation['error']['info'], $validation['error']['status']);
-      }
-    }
-
-    protected static function getArtworksByArtists($response) {
-      require_once ('generators/artworksByArtists.php');
-      $validation = ArtworksByArtists::validateQuery();
-      if ($validation['success']) {
-        $data = ArtworksByArtists::getArtworksByArtists($validation['payload']);
-
-        if (sizeof($data) > 0) {
-          $response->setValue('entities', $data);
-          $response->setSuccess(true);
-          $response->setStatusCode(200);
-        } else {
-          $response->setError('no_data', 'No artwork found', 200);
-        }
-      } else {
+        // Paramètres pas ok
         $response->setError($validation['error']['code'], $validation['error']['info'], $validation['error']['status']);
       }
     }
@@ -165,6 +90,8 @@ if (!class_exists('Router')) {
      * @return {Response} la réponse
      */
     public static function getResponse() {
+      global $actions;
+
       $response = new Response();
 
       /**
@@ -176,51 +103,12 @@ if (!class_exists('Router')) {
         // Pas de code d'action -> erreur
         $response->setError('no_action', 'No value for parameter "action".', 200);
       } else {
+        $action = strtolower($action);
         // Détermination de la réponse en fonction du code d'action
-        switch (strtolower($action)) {
-          case 'amgetmap':
-            // Carte
-            self::getMap($response);
-            break;
-
-          case 'amgetcollection':
-            // Collection
-            self::getCollection($response);
-            break;
-
-          case 'amgetartwork':
-            // Artwork
-            self::getArtwork($response);
-            break;
-
-          case 'amgetartist':
-            // Artist
-            self::getArtist($response);
-            break;
-          case 'amgetimage':
-            // Image
-            self::getImage($response);
-            break;
-          
-          case 'amgetcloseartworks':
-            // Œuvres proches
-            self::getCloseArtworks($response);
-            break;
-          
-          case 'amgetclosesites':
-            // Sites proches
-            self::getCloseSites($response);
-            break;
-          
-          case 'amgetartworksbyartists':
-            // Œuvres d'un ou plusieurs artistes
-            self::getArtworksByArtists($response);
-            break;
-
-          default:
-            // Action inconnue -> erreur
-            $response->setError('unknown_action', 'Unrecognized value for parameter "action": ' . $action . '.', 400);
-        }
+        if (array_key_exists($action, $actions)) {
+          self::action($response, $actions[$action]);
+        } else
+          $response->setError('unknown_action', 'Unrecognized value for parameter "action": ' . $action . '.', 400);
       }
 
       return $response;

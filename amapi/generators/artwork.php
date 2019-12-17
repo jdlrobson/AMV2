@@ -17,7 +17,8 @@ if (!class_exists('Artwork')) {
      * @return {Object} Tableau contenant le résultat de la validation
      */
     public static function validateQuery() {
-      if (is_null(getRequestParameter('article')))
+      $article = getRequestParameter('article');
+      if (is_null($article))
         return [
           'success' => 0,
           'error' => [
@@ -27,8 +28,16 @@ if (!class_exists('Artwork')) {
           ]
         ];
 
+      $redirect = getRequestParameter('redirect');
+
+      $payload = [
+        'article' => str_replace('_', ' ', urldecode($article)),
+        'redirect' => !is_null($redirect) && ($redirect === "1" || strtolower($redirect) === "true")
+      ];
+
       return [
         'success' => 1,
+        'payload' => $payload
       ];
     }
 
@@ -493,21 +502,21 @@ if (!class_exists('Artwork')) {
      * @param {string} $redirect - Si Wikidata, rediriger vers un éventuel article atlasmuseum
      * @return {Object} Contenu de l'œuvre
      */
-    public static function getArtwork($article, $redirect = false) {
+    public static function getData($payload) {
       $artworks = [];
 
-      if (preg_match('/^[qQ][0-9]+$/', $article)) {
-        if ($redirect) {
-          $amArticle = self::findArticle($article);
+      if (preg_match('/^[qQ][0-9]+$/', $payload['article'])) {
+        if ($payload['redirect']) {
+          $amArticle = self::findArticle($payload['article']);
           if ($amArticle != '') {
             $artworks = self::getArtworkAM($amArticle);
           } else {
-            $artworks = self::getArtworkWD($article);
+            $artworks = self::getArtworkWD($payload['article']);
           }
         } else
-          $artworks = self::getArtworkWD($article);
+          $artworks = self::getArtworkWD($payload['article']);
       } else {
-        $artworks = self::getArtworkAM($article);
+        $artworks = self::getArtworkAM($payload['article']);
       }
 
       $artworks = self::convertItems($artworks);

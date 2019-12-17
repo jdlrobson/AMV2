@@ -291,7 +291,7 @@ if (!class_exists('CloseArtworks')) {
      * @param {float} $distance - Distance au point
      * @return {Object} Œuvres
      */
-    public static function getCloseArtworks($payload) {
+    public static function getData($payload) {
       $artworks = [];
 
       $artworksAM = self::getCloseArtworksAM($payload['latitude'], $payload['longitude'], $payload['distance']);
