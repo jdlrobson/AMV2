@@ -1,19 +1,12 @@
 {
 	"name": "RecentChanges",
 	"author": [
-		"Nikola Smolenski",
-		"Brion Vibber",
-		"Steve Sanbeg"
+		"atlasmuseum"
 	],
 	"license-name": "CC0-1.0",
-	"url": "https://www.mediawiki.org/wiki/Extension:RecentChanges",
+	"url": "",
 	"descriptionmsg": "recentChanges-desc",
 	"type": "parserhook",
-	"MessagesDirs": {
-		"RecentChanges": [
-			"i18n"
-		]
-	},
 	"Hooks": {
 		"ParserFirstCallInit": [
 			"RecentChanges::init"
@@ -22,8 +15,5 @@
 	"AutoloadClasses": {
 		"RecentChanges": "RecentChanges.class.php"
 	},
-	"ParserTestFiles": [
-		"recentChangesParserTests.txt"
-	],
 	"manifest_version": 1
 }

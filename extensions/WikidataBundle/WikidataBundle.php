@@ -18,11 +18,9 @@ wfLoadExtension(WIKIDATA_BUNDLE_EXTENSIONS_PATH . 'ArtistPage'); // Page d'artis
 wfLoadExtension(WIKIDATA_BUNDLE_EXTENSIONS_PATH . 'CollectionPage'); // Page d'une collection
 
 wfLoadExtension(WIKIDATA_BUNDLE_EXTENSIONS_PATH . 'Wikidata'); // Page d'une œuvre provenant de Wikidata
+wfLoadExtension(WIKIDATA_BUNDLE_EXTENSIONS_PATH . 'WikidataArtist'); // Page d'un artiste provenant de Wikidata
 wfLoadExtension(WIKIDATA_BUNDLE_EXTENSIONS_PATH . 'EditArtwork'); // Édition d'une œuvre
 wfLoadExtension(WIKIDATA_BUNDLE_EXTENSIONS_PATH . 'EditArtist'); // Édition d'une œuvre
-// wfLoadExtension(WIKIDATA_BUNDLE_EXTENSIONS_PATH . 'WikidataArtist'); // Page d'un artiste provenant de Wikidata
-// wfLoadExtension(WIKIDATA_BUNDLE_EXTENSIONS_PATH . 'WikidataEdit'); // Édition d'une œuvre
-// wfLoadExtension(WIKIDATA_BUNDLE_EXTENSIONS_PATH . 'WikidataEditArtist'); // Édition d'un artiste
 
 wfLoadExtension(WIKIDATA_BUNDLE_EXTENSIONS_PATH . 'RecentChanges'); // Modifications récentes
 

@@ -414,7 +414,7 @@ class Artist {
       }
       ?>
       <div class="import">
-        <a href="<?php print ATLASMUSEUM_PATH; ?>Spécial:WikidataEditArtist/<?php print $q; ?>">
+        <a href="<?php print ATLASMUSEUM_PATH; ?>Spécial:EditArtist/<?php print $q; ?>">
           <img src="http://publicartmuseum.net/w/skins/AtlasMuseum/resources/images/hmodify.png" />
           Importer cette notice dans atlasmuseum
         </a>

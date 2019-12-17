@@ -4,14 +4,9 @@
 		"atlasmuseum"
 	],
 	"license-name": "CC0-1.0",
-	"url": "https://www.mediawiki.org/wiki/Extension:ArtworkMap",
+	"url": "",
 	"descriptionmsg": "artworkMap-desc",
 	"type": "parserhook",
-	"MessagesDirs": {
-		"ArtworkMap": [
-			"i18n"
-		]
-	},
 	"Hooks": {
 		"ParserFirstCallInit": [
 			"ArtworkMap::init"
@@ -20,8 +15,5 @@
 	"AutoloadClasses": {
 		"ArtworkMap": "ArtworkMap.class.php"
 	},
-	"ParserTestFiles": [
-		"artworkMapParserTests.txt"
-	],
 	"manifest_version": 1
 }

@@ -15,8 +15,5 @@
 	"AutoloadClasses": {
 		"ArtistPage": "ArtistPage.class.php"
 	},
-	"ParserTestFiles": [
-		"artistPageParserTests.txt"
-	],
 	"manifest_version": 1
 }

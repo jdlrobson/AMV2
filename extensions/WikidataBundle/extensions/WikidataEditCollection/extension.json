@@ -1,45 +1,27 @@
 {
 	"name": "WikidataEditCollection",
-	"version": "0.0.0",
+	"version": "1.0.0",
 	"author": [
-		"Your Name"
+		"atlasmuseum"
 	],
-	"url": "https://www.mediawiki.org/wiki/Extension:WikidataEditCollection",
+	"url": "",
 	"descriptionmsg": "WikidataEditCollection-desc",
 	"license-name": "MIT",
 	"type": "other",
 	"AutoloadClasses": {
 		"WikidataEditCollectionHooks": "WikidataEditCollection.hooks.php",
-		"SpecialWikidataEditCollection": "specials/SpecialWikidataEditCollection.php"
+		"SpecialWikidataEditCollection": "SpecialWikidataEditCollection.php"
 	},
 	"config": {
-		"WikidataEditCollectionEnableFoo": true
 	},
 	"ExtensionMessagesFiles": {
-		"WikidataEditCollectionAlias": "WikidataEditCollection.i18n.alias.php"
 	},
 	"Hooks": {
 		"NameOfHook": [
 			"WikidataEditCollectionHooks::onNameOfHook"
 		]
 	},
-	"MessagesDirs": {
-		"WikidataEditCollection": [
-			"i18n"
-		]
-	},
 	"ResourceModules": {
-		"ext.WikidataEditCollection.foo": {
-			"scripts": [
-				"modules/ext.WikidataEditCollection.js",
-				"modules/ext.WikidataEditCollection.foo.js"
-			],
-			"styles": [
-				"modules/ext.WikidataEditCollection.foo.css"
-			],
-			"messages": [],
-			"dependencies": []
-		}
 	},
 	"ResourceFileModulePaths": {
 		"localBasePath": "",

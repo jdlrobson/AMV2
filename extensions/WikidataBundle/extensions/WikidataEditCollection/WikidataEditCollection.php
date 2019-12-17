@@ -2,9 +2,6 @@
 
 if ( function_exists( 'wfLoadExtension' ) ) {
 	wfLoadExtension( 'WikidataEditCollection' );
-	// Keep i18n globals so mergeMessageFileList.php doesn't break
-	$wgMessagesDirs['WikidataEditCollection'] = __DIR__ . '/i18n';
-	$wgExtensionMessagesFiles['WikidataEditCollectionAlias'] = __DIR__ . '/WikidataEditCollection.i18n.alias.php';
 	wfWarn(
 		'Deprecated PHP entry point used for WikidataEditCollection extension. Please use wfLoadExtension ' .
 		'instead, see https://www.mediawiki.org/wiki/Extension_registration for more details.'

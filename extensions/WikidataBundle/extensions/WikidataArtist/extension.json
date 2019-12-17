@@ -1,45 +1,27 @@
 {
 	"name": "WikidataArtist",
-	"version": "0.0.0",
+	"version": "1.0.0",
 	"author": [
-		"Your Name"
+		"atlasmuseum"
 	],
-	"url": "https://www.mediawiki.org/wiki/Extension:WikidataArtist",
+	"url": "",
 	"descriptionmsg": "WikidataArtist-desc",
 	"license-name": "MIT",
 	"type": "other",
 	"AutoloadClasses": {
 		"WikidataArtistHooks": "WikidataArtist.hooks.php",
-		"SpecialWikidataArtist": "specials/SpecialWikidataArtist.php"
+		"SpecialWikidataArtist": "SpecialWikidataArtist.php"
 	},
 	"config": {
-		"WikidataArtistEnableFoo": true
 	},
 	"ExtensionMessagesFiles": {
-		"WikidataArtistAlias": "WikidataArtist.i18n.alias.php"
 	},
 	"Hooks": {
 		"NameOfHook": [
 			"WikidataArtistHooks::onNameOfHook"
 		]
 	},
-	"MessagesDirs": {
-		"WikidataArtist": [
-			"i18n"
-		]
-	},
 	"ResourceModules": {
-		"ext.WikidataArtist.foo": {
-			"scripts": [
-				"modules/ext.WikidataArtist.js",
-				"modules/ext.WikidataArtist.foo.js"
-			],
-			"styles": [
-				"modules/ext.WikidataArtist.foo.css"
-			],
-			"messages": [],
-			"dependencies": []
-		}
 	},
 	"ResourceFileModulePaths": {
 		"localBasePath": "",
