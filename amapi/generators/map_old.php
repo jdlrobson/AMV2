@@ -8,7 +8,6 @@
 if (!class_exists('Map')) {
 
   require_once('includes/api.php');
-  require_once('includes/config.php');
 
   class Map {
 
@@ -18,18 +17,8 @@ if (!class_exists('Map')) {
      * @return {Object} Tableau contenant le résultat de la validation
      */
     public static function validateQuery() {
-      $origin = getRequestParameter('origin');
-
-      if (!is_null($origin))
-        $origin = explode('|', $origin);
-      else
-        $origin = [];
-
       return [
         'success' => 1,
-        'payload' => [
-          'origin' => $origin
-        ]
       ];
     }
 
@@ -223,53 +212,17 @@ if (!class_exists('Map')) {
     }
 
     /**
-     * Get data from database
-     * 
-     */
-    protected static function getData($origin) {
-      $data = [];
-
-      $mysqli = new mysqli(DB_SERVER, DB_NAME, DB_PASSWORD, DB_USER);
-      $mysqli->set_charset("utf8");
-
-      $query = 'SELECT * FROM ' . DATABASE_MAP;
-
-      if (sizeof($origin) > 0) {
-        $queryValues = [];
-        for ($i = 0; $i < sizeof($origin); $i++)
-          array_push($queryValues, '"' . str_replace('"', '\"', $origin[$i]) . '"');
-        $query .= ' WHERE nature IN(' . implode(', ', $queryValues) . ')';
-      }
-      $query .= ';';
-
-      $result = $mysqli->query($query);
-
-      while ($row = $result->fetch_assoc()) {
-        $artwork = [
-          'article' => $row['article'],
-          'title' => $row['title'],
-          'artist' => $row['artist'],
-          'lat' => floatval($row['lat']),
-          'lon' => floatval($row['lon']),
-          'nature' => $row['nature'],
-          'wikidata' => $row['wikidata']
-        ];
-        
-        array_push($data, $artwork);
-      }
-
-      return $data;
-    }
-
-    /**
      * Récupère les données en vue de leur affichage sur une carte
      *
      * @return {Object} Tableau contenant les données
      */
-    public static function getMap($payload) {
-      $data = self::getData($payload['origin']);
+    public static function getMap() {
+      $dataAM = self::convertDataAM(self::getDataAM());
+      $wikidataIdsAM = self::getWikidataIdsAM($dataAM);
 
-      return array_merge($data);
+      $dataWD = self::getDataWD($wikidataIdsAM);
+
+      return array_merge($dataAM, $dataWD);
     }
   }
 

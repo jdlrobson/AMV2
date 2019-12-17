@@ -12,39 +12,11 @@ require_once ('./includes/response.php');
 if (!class_exists('Router')) {
 
   class Router {
-
     protected static function getMap($response) {
       require_once ('generators/map.php');
       $validation = Map::validateQuery();
       if ($validation['success']) {
-        $data = [];
-        $origin = strtolower(getRequestParameter('origin'));
-        if (is_null($origin)) 
-          $data = Map::getMap();
-        else {
-          if ($origin == 'atlasmuseum')
-            $data = Map::getMapAM();
-          else
-          if ($origin == 'wikidata')
-            $data = Map::getMapWD();
-        }
-        if (sizeof($data) > 0) {
-          $response->setValue('entities', $data);
-          $response->setSuccess(true);
-          $response->setStatusCode(200);
-        } else {
-          $response->setError('no_data', 'No data found for map.', 200);
-        }
-      } else {
-        $response->setError($validation['error']['code'], $validation['error']['info'], $validation['error']['status']);
-      }
-    }
-
-    protected static function getMap2($response) {
-      require_once ('generators/map2.php');
-      $validation = Map2::validateQuery();
-      if ($validation['success']) {
-        $data = Map2::getMap($validation['payload']);
+        $data = Map::getMap($validation['payload']);
         if (sizeof($data) > 0) {
           $response->setValue('entities', $data);
           $response->setSuccess(true);
@@ -102,28 +74,7 @@ if (!class_exists('Router')) {
       require_once ('generators/artist.php');
       $validation = Artist::validateQuery();
       if ($validation['success']) {
-        $data = [];
-        $article = str_replace('_', ' ', urldecode(getRequestParameter('article')));
-        $redirect = getRequestParameter('redirect');
-        if (!is_null($article))
-          $data = Artist::getArtist($article, !is_null($redirect) && ($redirect === "1" || strtolower($redirect) === "true"));
-        if (sizeof($data) > 0) {
-          $response->setValue('entities', $data);
-          $response->setSuccess(true);
-          $response->setStatusCode(200);
-        } else {
-          $response->setError('no_data', 'No data found for artist: ' . $article, 200);
-        }
-      } else {
-        $response->setError($validation['error']['code'], $validation['error']['info'], $validation['error']['status']);
-      }
-    }
-
-    protected static function getArtist2($response) {
-      require_once ('generators/artist2.php');
-      $validation = Artist2::validateQuery();
-      if ($validation['success']) {
-        $data = Artist2::getArtist($validation['payload']);
+        $data = Artist::getArtist($validation['payload']);
         if (sizeof($data) > 0) {
           $response->setValue('entities', $data);
           $response->setSuccess(true);
@@ -232,11 +183,6 @@ if (!class_exists('Router')) {
             self::getMap($response);
             break;
 
-          case 'amgetmap2':
-            // Carte
-            self::getMap2($response);
-            break;
-          
           case 'amgetcollection':
             // Collection
             self::getCollection($response);
@@ -251,12 +197,6 @@ if (!class_exists('Router')) {
             // Artist
             self::getArtist($response);
             break;
-          
-          case 'amgetartist2':
-            // Artist
-            self::getArtist2($response);
-            break;
-
           case 'amgetimage':
             // Image
             self::getImage($response);

@@ -4,7 +4,7 @@ require_once(ATLASMUSEUM_UTILS_PATH_PHP . 'api.php');
 
 class ArtistPage {
 	/**
-	 * Bind the renderArtistPage function to the <artistPage> tag
+	 * Bind the renderArtistPage function to the <ArtistPage> tag
 	 * @param Parser $parser
 	 * @return bool true
 	 */
@@ -22,16 +22,16 @@ class ArtistPage {
 	 * @return string
 	 */
 	public static function renderArtistPage( $in, $param = array(), $parser = null, $frame = false ) {
-    $attribs = Sanitizer::validateTagAttributes( $param, 'div' );
-
+    $article = null;
     if (!isset($param['full_name'])) {
       $fullName = preg_replace('/^.*\/wiki\//', '', $_SERVER['REQUEST_URI']);
       $fullName = urldecode(str_replace('_', ' ', $fullName));
-      $param['full_name'] = $fullName;
-    }
+      $article = $fullName;
+    } else
+      $article = $param['full_name'];
 
-    require_once(ATLASMUSEUM_UTILS_PATH_PHP . 'artistPage.php');
+    require_once(ATLASMUSEUM_UTILS_PATH_PHP . 'artist.php');
 
-    return Artist::renderArtist($param, false);
+    return Artist::renderArtist($article);
 	}
 }

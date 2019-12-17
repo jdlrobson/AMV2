@@ -37,5 +37,6 @@ define('DB_PASSWORD', "1dwy2Myi");
 define('DATABASE_PREFIX', 'tmp_');
 define('DATABASE_LIBRARY', DATABASE_PREFIX . 'library_2');
 define('DATABASE_ARTISTS', DATABASE_PREFIX . 'artists');
+define('DATABASE_MAP', DATABASE_PREFIX . 'map');
 
 ?>

@@ -16,7 +16,8 @@ if (!class_exists('Artist')) {
      * @return {Object} Tableau contenant le résultat de la validation
      */
     public static function validateQuery() {
-      if (is_null(getRequestParameter('article')))
+      $article = getRequestParameter('article');
+      if (is_null($article))
         return [
           'success' => 0,
           'error' => [
@@ -26,8 +27,16 @@ if (!class_exists('Artist')) {
           ]
         ];
 
+      $redirect = getRequestParameter('redirect');
+
+      $payload = [
+        'article' => str_replace('_', ' ', urldecode($article)),
+        'redirect' => !is_null($redirect) && ($redirect === "1" || strtolower($redirect) === "true")
+      ];
+
       return [
         'success' => 1,
+        'payload' => $payload
       ];
     }
 
@@ -197,11 +206,9 @@ if (!class_exists('Artist')) {
       $data = [];
       $lineIndex = 0;
 
-      while(strpos(strtolower($content[$lineIndex]), '<artistpage') !== false && $lineIndex++ < sizeof($content));
-
       while($lineIndex < sizeof($content) && strpos($content[$lineIndex], '/>') === false) {
-        $key = strtolower(preg_replace('/^([^=]+)=.*$/', '$1', $content[$lineIndex]));
-        $value = preg_replace('/^[^=]+=\"(.*)\"$/', '$1', $content[$lineIndex]);
+        $key = strtolower(preg_replace('/^[\s]*\|[\s]*([^=]+)[\s]*=.*$/', '$1', $content[$lineIndex]));
+        $value = preg_replace('/^[^=]+=[\s]*(.*)$/', '$1', $content[$lineIndex]);
         $value = str_replace('&quot;', '"', $value);
         $value = str_replace('\n', '<br />', $value);
 
@@ -224,6 +231,10 @@ if (!class_exists('Artist')) {
             $data[$key] = self::processItems($value);
             break;
 
+          case '{{artiste':
+          case '}}':
+            break;
+
           default:
             $data[$key] = self::processText($value);
         }
@@ -244,9 +255,9 @@ if (!class_exists('Artist')) {
       $data = [];
 
       // Identifiant Wikidata
-      $data['q'] = self::processText($entity->id);
+      $data['wikidata'] = self::processText($entity->id);
 
-      // Titre de l'œuvre : label français ou anglais
+      // Titre de l'artiste : label français ou anglais
       if (!is_null($entity->labels)) {
         if (!is_null($entity->labels->fr))
           $data['titre'] = self::processText($entity->labels->fr->value);
@@ -256,9 +267,6 @@ if (!class_exists('Artist')) {
         else
           $data['titre'] = self::processText($entity->id);
       }
-
-      // Nature : pérenne
-      $data['nature'] = self::processText('Pérenne');
 
       // Claims
       if (!is_null($entity->claims)) {
@@ -361,7 +369,7 @@ if (!class_exists('Artist')) {
     /**
      * Recherche les images des éléments sur Wikidata
      *
-     * @param {Object} $artists - Objet contenant les données de l'œuvre
+     * @param {Object} $artists - Objet contenant les données de l'artiste
      * @return {Object} Objet d'entrée mis à jour
      */
     protected static function convertImages($artists) {
@@ -447,21 +455,21 @@ if (!class_exists('Artist')) {
      * @param {string} $redirect - Si Wikidata, rediriger vers un éventuel article atlasmuseum
      * @return {Object} Contenu de l'artiste
      */
-    public static function getArtist($article, $redirect = false) {
+    public static function getArtist($payload) {
       $artists = [];
 
-      if (preg_match('/^[qQ][0-9]+$/', $article)) {
-        if ($redirect) {
-          $amArticle = self::findArticle($article);
+      if (preg_match('/^[qQ][0-9]+$/', $payload['article'])) {
+        if ($payload['redirect']) {
+          $amArticle = self::findArticle($payload['article']);
           if ($amArticle != '') {
             $artists = self::getArtistAM($amArticle);
           } else {
-            $artists = self::getArtistWD($article);
+            $artists = self::getArtistWD($payload['article']);
           }
         } else
-          $artists = self::getArtistWD($article);
+          $artists = self::getArtistWD($payload['article']);
       } else {
-        $artists = self::getArtistAM($article);
+        $artists = self::getArtistAM($payload['article']);
       }
 
       $artists = self::convertItems($artists);

@@ -4,7 +4,7 @@ var clusterSource;
 $(document).ready(function() {
   let data = null
 
- $.getJSON('http://publicartmuseum.net/w/amapi/index.php?action=amgetmap2')
+ $.getJSON('http://publicartmuseum.net/w/amapi/index.php?action=amgetmap')
     .then(function(result) {
       data = result.entities
       if (data) {
@@ -20,7 +20,6 @@ initMap = function (data) {
   $('#map-loader').hide()
   artworks_map = data
   createMap(data)
-
   $('#map-loader').remove()
   $('.map-checkbox').removeAttr("disabled")
 }
@@ -32,7 +31,7 @@ createMap = function(artworksData, divId = 'map') {
   const features = []
   for (let key in artworksData)
     features.push(new ol.Feature({
-      geometry: new ol.geom.Point(ol.proj.transform([parseFloat(artworksData[key].lon), parseFloat(artworksData[key].lat)], "EPSG:4326", "EPSG:3857")),
+      geometry: new ol.geom.Point(ol.proj.transform([artworksData[key].lon, artworksData[key].lat], "EPSG:4326", "EPSG:3857")),
       title: artworksData[key].title,
       artist: artworksData[key].artist,
       id: artworksData[key].wikidata,
@@ -223,20 +222,20 @@ createPopup = function (map, overlay, container, content, closer) {
 changeMarkers = function() {
   clusterSource.getSource().clear()
   features = Array()
-  for (var key in artworks_map) {
-    if ((artworks_map[key].nature == "pérenne" && $("#checkbox-perenne").is(":checked")) ||
-        (artworks_map[key].nature == "éphémère" && $("#checkbox-ephemere").is(":checked")) ||
-        (artworks_map[key].nature == "détruite" && $("#checkbox-detruite").is(":checked")) ||
-        (artworks_map[key].nature == "non réalisée" && $("#checkbox-non-realisee").is(":checked")) ||
-        (artworks_map[key].nature == "à vérifier" && $("#checkbox-verifier").is(":checked")) ||
-        (artworks_map[key].nature == "wikidata" && $("#checkbox-wikidata").is(":checked")))
+  for (let i = 0; i < artworks_map.length; i++) {
+    if ((artworks_map[i].nature == "pérenne" && $("#checkbox-perenne").is(":checked")) ||
+        (artworks_map[i].nature == "éphémère" && $("#checkbox-ephemere").is(":checked")) ||
+        (artworks_map[i].nature == "détruite" && $("#checkbox-detruite").is(":checked")) ||
+        (artworks_map[i].nature == "non réalisée" && $("#checkbox-non-realisee").is(":checked")) ||
+        (artworks_map[i].nature == "à vérifier" && $("#checkbox-verifier").is(":checked")) ||
+        (artworks_map[i].nature == "wikidata" && $("#checkbox-wikidata").is(":checked")))
       features.push(new ol.Feature({
-        geometry: new ol.geom.Point(ol.proj.transform([artworks_map[key].lon, artworks_map[key].lat], "EPSG:4326", "EPSG:3857")),
-        title: artworks_map[key].title,
-        artist: artworks_map[key].artist,
-        id: artworks_map[key].wikidata,
-        nature: artworks_map[key].nature,
-        article: artworks_map[key].article,
+        geometry: new ol.geom.Point(ol.proj.transform([artworks_map[i].lon, artworks_map[i].lat], "EPSG:4326", "EPSG:3857")),
+        title: artworks_map[i].title,
+        artist: artworks_map[i].artist,
+        id: artworks_map[i].wikidata,
+        nature: artworks_map[i].nature,
+        article: artworks_map[i].article,
       }))
   }
 
