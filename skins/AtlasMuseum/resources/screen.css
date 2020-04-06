@@ -284,7 +284,8 @@ h1 > span {
 
 .homeCtnr,
 .mapCtnr {
-	font-family:"ITCFranklinGothicW02-Bk 812924";
+  font-family:"ITCFranklinGothicW02-Bk 812924";
+  overflow-wrap: break-word;
 }
 
 .homeCtnr h3,

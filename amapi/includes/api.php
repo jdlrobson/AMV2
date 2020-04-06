@@ -43,6 +43,8 @@ class Api {
     $url = sprintf("%s?%s", $url, http_build_query($data, null, '&', PHP_QUERY_RFC3986));
 
     $url = str_replace('%5Cn', '%0A', $url);
+    $url = str_replace('%253D', '%3D', $url);
+
     curl_setopt($curl, CURLOPT_URL, $url);
     return json_decode(curl_exec($curl));
   }

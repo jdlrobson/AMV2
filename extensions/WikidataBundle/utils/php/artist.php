@@ -122,7 +122,7 @@ class Artist {
   }
 
   /**
-   * Écriture d'une œuvre
+   * Écriture d'un artiste
    */
   protected static function renderEntity($entity, $artworks) {
     ob_start();

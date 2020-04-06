@@ -325,6 +325,10 @@ change_map_input = function() {
       var new_location = ol.proj.transform([longitude, latitude], "EPSG:4326", "EPSG:3857")
       marker.getGeometry().setCoordinates(new_location);
       map.getView().setCenter(new_location);
+      reverse_geocoding({
+        lat: latitude,
+        lon: longitude,
+      })
     }
   }
 }
@@ -334,7 +338,8 @@ change_map_address = function() {
   if (address != "") {
     var params = {
       "address": address,
-      "key": "AIzaSyBlETt3Lsnmn6Rz7eE42Fwtci0ZU6UUBkU"
+      // "key": "AIzaSyBlETt3Lsnmn6Rz7eE42Fwtci0ZU6UUBkU"
+      "key": "AIzaSyDdtlAVCL9s3s5SLxPIa58ueeXQIsKv-UU"
     }
     
     $.getJSON('https://maps.google.com/maps/api/geocode/json', params).then(function(res) {
@@ -345,6 +350,10 @@ change_map_address = function() {
         map.getView().setCenter(new_location);
 
         document.getElementById('coordinates_input').value = res.results[0].geometry.location.lat + ", " + res.results[0].geometry.location.lng
+        reverse_geocoding({
+          lat: res.results[0].geometry.location.lat,
+          lon: res.results[0].geometry.location.lng,
+        })
       }
     });
   }
@@ -383,13 +392,17 @@ document.addEventListener("DOMContentLoaded", function(event) {
   map.getView().fit(extent);
   map.getView().setZoom(15);
 
-	map.on('click', function(evt) {
-		map.getView().setCenter(evt.coordinate);
-		var coordinates = ol.proj.transform(evt.coordinate, 'EPSG:3857', 'EPSG:4326');
-		marker.getGeometry().setCoordinates(evt.coordinate);
+  map.on('click', function(evt) {
+    map.getView().setCenter(evt.coordinate);
+    var coordinates = ol.proj.transform(evt.coordinate, 'EPSG:3857', 'EPSG:4326');
+    marker.getGeometry().setCoordinates(evt.coordinate);
 
     document.getElementById('coordinates_input').value = coordinates[1] + ", " + coordinates[0];
-	});
+    reverse_geocoding({
+      lat: coordinates[0],
+      lon: coordinates[1],
+    })
+  });
 });
 
 change_image_thumb = function(inputId) {
@@ -409,7 +422,8 @@ change_image_thumb = function(inputId) {
 add_image_line = function(property) {
   let container = document.getElementById('input_' + property + '_container');
   let n = container.childElementCount;
-  let html = '<div class="multipleTemplateInstance multipleTemplate" id="input_' + property + '_instance_' + n + '"><table><tbody><tr><td> <table><tbody><tr><td style="width:140px;"><b>Importer une image&nbsp;:</b></td><td><span class="inputSpan"><input id="input_' + property + '_' + n + '" class="createboxInput" size="35" value="" name="Edit[' + property + '][' + n + ']" type="text">\n<a data-fancybox data-type="iframe" data-src="index.php?title=Sp%C3%A9cial:UploadWindow&amp;pfInputID=input_' + property + '_' + n + '" href="javascript:;">Importer un fichier</a></span></td></tr></tbody></table></td><td><a class="addAboveButton" title="Ajouter une autre instance au-dessus de celle-ci"><img src="/w/extensions/SemanticForms/skins/SF_add_above.png" class="multipleTemplateButton"></a></td><td><button class="removeButton" title="Enlever cette instance" onclick="remove_image_line(\'' + property + '\', ' + n + ')"><img src="/w/extensions/SemanticForms/skins/SF_remove.png" class="multipleTemplateButton"></button></td><td class="instanceRearranger"><img src="/w/extensions/SemanticForms/skins/rearranger.png" class="rearrangerImage"></td></tr></tbody></table></div>';
+  // let html = '<div class="multipleTemplateInstance multipleTemplate" id="input_' + property + '_instance_' + n + '"><table><tbody><tr><td> <table><tbody><tr><td style="width:140px;"><b>Importer une image&nbsp;:</b></td><td><span class="inputSpan"><input id="input_' + property + '_' + n + '" class="createboxInput" size="35" value="" name="Edit[' + property + '][' + n + ']" type="text">\n<a data-fancybox data-type="iframe" data-src="http://publicartmuseum.net/w/index.php?title=Sp%C3%A9cial:UploadWindow&amp;pfInputID=input_' + property + '_' + n + '" href="javascript:;">Importer un fichier</a></span></td></tr></tbody></table></td><td><a class="addAboveButton" title="Ajouter une autre instance au-dessus de celle-ci"><img src="/w/extensions/SemanticForms/skins/SF_add_above.png" class="multipleTemplateButton"></a></td><td><button class="removeButton" title="Enlever cette instance" onclick="remove_image_line(\'' + property + '\', ' + n + ')"><img src="/w/extensions/SemanticForms/skins/SF_remove.png" class="multipleTemplateButton"></button></td><td class="instanceRearranger"><img src="/w/extensions/SemanticForms/skins/rearranger.png" class="rearrangerImage"></td></tr></tbody></table></div>';
+  let html = '<div class="multipleTemplateInstance multipleTemplate" id="input_' + property + '_instance_' + n + '"><table><tbody><tr><td> <table><tbody><tr><td style="width:140px;"><b>Importer une image&nbsp;:</b></td><td><span class="inputSpan"><input id="input_' + property + '_' + n + '" class="createboxInput" size="35" value="" name="Edit[' + property + '][' + n + ']" type="text">\n<a data-fancybox data-type="iframe" data-src="http://publicartmuseum.net/w/index.php?title=Sp%C3%A9cial:UploadWindow&amp;pfInputID=input_' + property + '_' + n + '" href="javascript:;">Importer un fichier</a></span></td></tr></tbody></table></td><td><button class="removeButton" title="Enlever cette instance" onclick="remove_image_line(\'' + property + '\', ' + n + ')"><img src="/w/extensions/SemanticForms/skins/SF_remove.png" class="multipleTemplateButton"></button></td></tr></tbody></table></div>';
   let e = document.createElement('div');
   e.innerHTML = html;
   while(e.firstChild) {
@@ -420,4 +434,49 @@ add_image_line = function(property) {
 remove_image_line = function(property, index) {
   let instance = document.getElementById('input_' + property + '_instance_' + index);
   instance.remove();
+}
+
+reverse_geocoding = function(coordinates) {
+  //-- check if reverse geocoding car be used (i.e. adequate form fields are empty)
+  const geocoding_ok = $('#input_site_region').val() !== undefined && 
+    $('#input_site_departement').val() !== undefined && 
+    $('#input_site_ville_wrapper_0').length === 0 &&
+    $('#input_site_pays_wrapper_0').length === 0
+console.log(coordinates)
+console.log(geocoding_ok)
+  if (geocoding_ok) {
+    //-- call gmaps.php
+    $.getJSON('http://publicartmuseum.net/w/amapi/gmaps.php?latitude='+coordinates.lat+'&longitude='+coordinates.lon+'&username=atlasmuseum', function(response) {
+      $.each(response, function(key, value) {
+        switch (key) {
+          case 'country':
+            country = value
+            break
+          case 'administrative_area_level_1':
+            adm1 = value
+            break
+          case 'administrative_area_level_2':
+            adm2 = value
+            break
+          case 'locality':
+            locality = value
+            break
+        }
+      });
+      
+      // update form fields if needed
+      if (country) {
+        addLine('input_site_pays', 'site_pays', 'site_pays')
+        $('#input_site_pays_0').val(country)
+      }
+      if (adm1)
+        $('#input_site_region').val(adm1)
+      if (adm2)
+        $('#input_site_departement').val(adm2)
+      if (locality) {
+        addLine('input_site_ville', 'site_ville', 'site_ville')
+        $('#input_site_ville_0').val(locality)
+      }
+    });
+  }
 }

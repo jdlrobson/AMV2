@@ -30,3 +30,4 @@ wfLoadExtension(WIKIDATA_BUNDLE_EXTENSIONS_PATH . 'WikidataArtistExport'); // Ex
 wfLoadExtension(WIKIDATA_BUNDLE_EXTENSIONS_PATH . 'WikidataQuery'); // Page de requête
 
 // wfLoadExtension(WIKIDATA_BUNDLE_EXTENSIONS_PATH . 'CatchAll'); // Test
+wfLoadExtension(WIKIDATA_BUNDLE_EXTENSIONS_PATH . 'CollectionPage2'); // Page d'une collection

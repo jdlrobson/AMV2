@@ -87,7 +87,7 @@ class ArtworkEditTest {
     ?>
       <tr>
         <th><?php print $title; ?><?php if ($mandatory) print ' <span class="mandatory">*</span>'; ?></th>
-        <td id="input_<?php print $key; ?>">
+        <td id="input_<?php print $key; ?>_container">
           <input type="text" id="input_<?php print $key; ?>" value="<?php print $text; ?>" name="Edit[<?php print $key; ?>]" class="createboxInput" size="45">
         </td>
       </tr>
@@ -167,9 +167,17 @@ class ArtworkEditTest {
                       </tbody>
                     </table>
                   </td>
-			            <td><a class="addAboveButton" title="Ajouter une autre instance au-dessus de celle-ci"><img src="/w/extensions/SemanticForms/skins/SF_add_above.png" class="multipleTemplateButton"></a></td>
+                  <?php
+                  /*
+                  <td><a class="addAboveButton" title="Ajouter une autre instance au-dessus de celle-ci"><img src="/w/extensions/SemanticForms/skins/SF_add_above.png" class="multipleTemplateButton"></a></td>
+                  */
+                  ?>
 			            <td><button class="removeButton" title="Enlever cette instance" onclick="remove_image_line('<?php print $key; ?>', <?php print $i; ?>)"><img src="/w/extensions/SemanticForms/skins/SF_remove.png" class="multipleTemplateButton"></button></td>
+                  <?php
+                  /*
 			            <td class="instanceRearranger"><img src="/w/extensions/SemanticForms/skins/rearranger.png" class="rearrangerImage"></td>
+                  */
+                  ?>
                 </tr>
               </tbody>
             </table>

@@ -1,0 +1,19 @@
+{
+	"name": "CollectionPage2",
+	"author": [
+		"atlasmuseum"
+	],
+	"license-name": "CC0-1.0",
+	"url": "",
+	"descriptionmsg": "collectionPage2-desc",
+	"type": "parserhook",
+	"Hooks": {
+		"ParserFirstCallInit": [
+			"CollectionPage2::init"
+		]
+	},
+	"AutoloadClasses": {
+		"CollectionPage2": "CollectionPage2.class.php"
+	},
+	"manifest_version": 1
+}

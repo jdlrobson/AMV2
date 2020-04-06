@@ -24,8 +24,18 @@ class ArtworkPage {
 	public static function renderArtworkPage( $in, $param = array(), $parser = null, $frame = false ) {
     $article = null;
     if (!isset($param['full_name'])) {
-      $fullName = preg_replace('/^.*\/wiki\//', '', $_SERVER['REQUEST_URI']);
-      $fullName = urldecode(str_replace('_', ' ', $fullName));
+      $fullName = '';
+      if (strpos($_SERVER['REQUEST_URI'], '/w/index.php?') !== false) {
+        $params = explode('&', preg_replace('/^.*\?/', '', $_SERVER['REQUEST_URI']));
+        for ($i = 0; $i < sizeof($params); $i++) {
+          $data = explode('=', $params[$i]);
+          if (strtolower($data[0]) === 'title')
+            $fullName = $data[1];
+        }
+      } else {
+        $fullName = preg_replace('/^.*\/wiki\//', '', $_SERVER['REQUEST_URI']);
+        $fullName = urldecode(str_replace('_', ' ', $fullName));
+      }
       $article = $fullName;
     } else
       $article = $param['full_name'];

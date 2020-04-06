@@ -417,8 +417,12 @@ class Artwork {
    * Écriture si erreur
    */
   protected static function renderError($article) {
-
     $link = 'http://publicartmuseum.net/w/index.php?title=' . urlencode($article) . '&action=purge';
+    /*
+    var_dump($article);
+    var_dump($link);
+    exit;
+    */
 
     $text = '<div style="margin-bottom: 20px;">Erreur lors de la récupération des données...</div>';
     $text .= '<div><button onclick="window.location.href=\'' . $link . '\';">Recharger la page</button></div>';
