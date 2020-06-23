@@ -156,6 +156,7 @@ class Api {
     $result = $data->parse->text->{'*'};
     $result = str_replace('<div class="mw-parser-output">', '', $result);
     $result = preg_replace('/<\/div>$/', '', $result);
+    $result = str_replace('class="external free"', 'class="external free" target="_blank"', $result);
 
     return $result;
   }

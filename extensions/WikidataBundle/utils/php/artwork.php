@@ -151,6 +151,25 @@ class Artwork {
     }
   }
 
+  /**
+   * Ligne wiki text
+   */
+  protected static function renderLineWikiText($titleSingular, $titlePlural, $data, $twoLines = false) {
+    if (!is_null($data)) {
+      $text = [];
+      for ($i=0; $i < sizeof($data->value) ; $i++) {
+        array_push($text, API::convert_to_wiki_text($data->value[$i]));
+      }
+
+      print '<tr>';
+      print ($twoLines ? '<td colspan="2"><b>' : '<th>');
+      print (sizeof($text) > 1 ? $titleSingular : $titleSingular);
+      print ($twoLines ? '</b><br />' : '</th><td>');
+      print implode(', ', $text);
+      print '</td></tr>';
+    }
+  }
+
   protected static function renderArtists($artists) {
     if (!is_null($artists)) {
       for ($i = 0; $i < sizeof($artists->value); $i++) {
@@ -358,7 +377,7 @@ class Artwork {
     self::renderLine('Accès', 'Accès', $entity->data->site_acces);
     self::renderLine('Visibilité', 'Visibilité', $entity->data->site_visibilite);
     self::renderLine('PMR', 'PMR', $entity->data->site_pmr);
-    self::renderLine('URLs', 'URLs', $entity->data->site_urls);
+    self::renderLineWikiText('URLs', 'URLs', $entity->data->site_urls);
     self::renderLine('Points d\'intérêt', 'Points d\'intérêt', $entity->data->site_pois);
     self::renderLine('Latitude/Longitude', 'Latitude/Longitude', $entity->data->site_coordonnees);
 

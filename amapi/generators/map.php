@@ -18,17 +18,26 @@ if (!class_exists('Map')) {
      * @return {Object} Tableau contenant le résultat de la validation
      */
     public static function validateQuery() {
+      $update = getRequestParameter('update');
       $origin = getRequestParameter('origin');
+      $nature = getRequestParameter('nature');
 
       if (!is_null($origin))
         $origin = explode('|', $origin);
       else
         $origin = [];
 
+      if (!is_null($nature))
+        $nature = explode('|', $nature);
+      else
+        $nature = [];
+
       return [
         'success' => 1,
         'payload' => [
-          'origin' => $origin
+          'update' => $update,
+          'origin' => $origin,
+          'nature' => $nature
         ]
       ];
     }
@@ -226,7 +235,7 @@ if (!class_exists('Map')) {
      * Get data from database
      * 
      */
-    protected static function getMap($origin) {
+    protected static function getMap($nature) {
       $data = [];
 
       $mysqli = new mysqli(DB_SERVER, DB_NAME, DB_PASSWORD, DB_USER);
@@ -234,14 +243,13 @@ if (!class_exists('Map')) {
 
       $query = 'SELECT * FROM ' . DATABASE_MAP;
 
-      if (sizeof($origin) > 0) {
+      if (sizeof($nature) > 0) {
         $queryValues = [];
-        for ($i = 0; $i < sizeof($origin); $i++)
-          array_push($queryValues, '"' . str_replace('"', '\"', $origin[$i]) . '"');
+        for ($i = 0; $i < sizeof($nature); $i++)
+          array_push($queryValues, '"' . str_replace('"', '\"', $nature[$i]) . '"');
         $query .= ' WHERE nature IN(' . implode(', ', $queryValues) . ')';
       }
       $query .= ';';
-
       $result = $mysqli->query($query);
 
       while ($row = $result->fetch_assoc()) {
@@ -254,7 +262,7 @@ if (!class_exists('Map')) {
           'nature' => $row['nature'],
           'wikidata' => $row['wikidata']
         ];
-        
+
         array_push($data, $artwork);
       }
 
@@ -267,9 +275,17 @@ if (!class_exists('Map')) {
      * @return {Object} Tableau contenant les données
      */
     public static function getData($payload) {
-      $data = self::getMap($payload['origin']);
-
-      return array_merge($data);
+      if (array_key_exists('update', $payload) && $payload['update']) {
+        $dataAM = [];
+        $dataWD = [];
+        if (sizeof($payload['origin']) == 0 || in_array('atlasmuseum', $payload['origin']))
+          $dataAM = self::getMapAM();
+        if (sizeof($payload['origin']) == 0 || in_array('wikidata', $payload['origin']))
+          $dataWD = self::getMapwD();
+        return array_merge($dataAM, $dataWD);
+      } else {
+        return self::getMap($payload['nature']);
+      }
     }
   }
 

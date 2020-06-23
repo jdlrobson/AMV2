@@ -18,6 +18,7 @@ function callApi($origin = 'atlasmuseum') {
   $parameters = [
     'action' => 'amgetmap',
     'origin' => $origin,
+    'update' => true,
     'format' => 'json'
   ];
 
@@ -40,13 +41,15 @@ $dataWD = callApi('wikidata');
 
 $wikidataIdsAM = [];
 for ($i = 0; $i < sizeof($dataAM); $i++)
-  if ($dataAM[$i]->wikidata != '')
+  if ($dataAM[$i]->wikidata != '') {
     array_push($wikidataIdsAM, $dataAM[$i]->wikidata);
+  }
 
-for ($i = 0; $i < sizeof($dataWD); $i++)
+for ($i = 0; $i < sizeof($dataWD); $i++)  
   if (!in_array($dataWD[$i]->wikidata, $wikidataIdsAM))
     array_push($dataAM, $dataWD[$i]);
 
+//Q19759555
 $j = 0;
 $batchSize = 100;
 
@@ -57,19 +60,28 @@ $mysqli->query('TRUNCATE ' . DB_PREFIX . 'map;');
 while ($j < sizeof($dataAM)) {
   $query = 'INSERT INTO ' . DB_PREFIX . 'map(article, title, artist, lat, lon, nature, wikidata) VALUES ';
   $valuesTable = [];
-  for ($i = 0; $i < $batchSize && $i + $j < sizeof($dataAM); $i++)
+  $stop = false;
+  for ($i = 0; $i < $batchSize && $i + $j < sizeof($dataAM); $i++) {
     array_push($valuesTable, '(' .
-      '"' . str_replace('"', '\"', $dataAM[$i+$j]->article) . '",' .
-      '"' . str_replace('"', '\"', $dataAM[$i+$j]->title) . '",' .
-      '"' . str_replace('"', '\"', $dataAM[$i+$j]->artist) . '",' .
+      '"' . str_replace('\\', '\\\\', str_replace('"', '\"', $dataAM[$i+$j]->article)) . '",' .
+      '"' . str_replace('\\', '\\\\', str_replace('"', '\"', $dataAM[$i+$j]->title)) . '",' .
+      '"' . str_replace('\\', '\\\\', str_replace('"', '\"', $dataAM[$i+$j]->artist)) . '",' .
       $dataAM[$i+$j]->lat . ',' .
       $dataAM[$i+$j]->lon . ',' .
-      '"' . str_replace('"', '\"', $dataAM[$i+$j]->nature) . '",' .
-      '"' . str_replace('"', '\"', $dataAM[$i+$j]->wikidata) . '"' .
+      '"' . str_replace('\\', '\\\\', str_replace('"', '\"', $dataAM[$i+$j]->nature)) . '",' .
+      '"' . str_replace('\\', '\\\\', str_replace('"', '\"', $dataAM[$i+$j]->wikidata)) . '"' .
       ')');
+      if ($dataAM[$i+$j]->wikidata == 'Q19759555') {
+        $stop = true;
+      }
+  }
 
   $query .= implode(', ', $valuesTable) . ';';
-  
+
+  if ($stop) {
+    var_dump($query);
+  }
+
   $mysqli->query($query);
 
   $j += $batchSize;
