@@ -443,7 +443,7 @@ class ArtworkEditTest {
     self::renderText($entity->data->precision_type_art, 'precision_type_art', 'Précision sur le domaine');
     self::renderItemCheckboxes($entity->data->couleur, 'couleur', 'Couleur(s)', Constants::get_colors());
     self::renderText($entity->data->precision_couleur, 'precision_couleur', 'Précision sur les couleurs');
-    self::renderItemCheckboxes($entity->data->materiaux, 'materiaux', 'Matériau(s)', Constants::get_materials());
+    self::renderItemCheckboxes($entity->data->materiaux, 'materiaux', 'Matériau(x)', Constants::get_materials());
     self::renderText($entity->data->precision_materiaux, 'precision_materiaux', 'Précision sur les matériaux');
     self::renderText($entity->data->techniques, 'techniques', 'Techniques');
     self::renderText($entity->data->hauteur, 'hauteur', 'Hauteur (m)');

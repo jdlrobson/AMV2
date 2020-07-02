@@ -374,11 +374,11 @@ class Artwork {
     self::renderLine('Région', 'Région', $entity->data->site_region);
     self::renderLine('Pays', 'Pays', $entity->data->site_pays);
     self::renderLine('Détails sur le site', 'Détails sur le site', $entity->data->site_details, true);
-    self::renderLine('Accès', 'Accès', $entity->data->site_acces);
-    self::renderLine('Visibilité', 'Visibilité', $entity->data->site_visibilite);
+    self::renderLine('Accès', 'Accès', $entity->data->site_acces, true);
+    self::renderLine('Visibilité', 'Visibilité', $entity->data->site_visibilite, true);
     self::renderLine('PMR', 'PMR', $entity->data->site_pmr);
     self::renderLineWikiText('URLs', 'URLs', $entity->data->site_urls);
-    self::renderLine('Points d\'intérêt', 'Points d\'intérêt', $entity->data->site_pois);
+    self::renderLine('Points d\'intérêt', 'Points d\'intérêt', $entity->data->site_pois, true);
     self::renderLine('Latitude/Longitude', 'Latitude/Longitude', $entity->data->site_coordonnees);
 
     // Fermeture du bloc "Site"

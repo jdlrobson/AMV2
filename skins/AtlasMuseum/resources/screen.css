@@ -545,6 +545,17 @@ div#mw-panel.collapsible-nav .portal.persistent .body {
     margin: 0;
     padding: 7px 0;
 }
+.portal .body ul {
+  list-style-type: none;
+}
+.portal.collapsed h3 a:before {
+  content: '▶ ';
+  color: #4d4d4d;
+}
+.portal.expanded h3 a:before {
+  content: '▼ ';
+  color: #4d4d4d;
+}
 div#mw-panel.collapsible-nav .portal.collapsed h3 a, div#mw-panel.collapsible-nav .portal.collapsed h5 a,
 #mw-panel.collapsible-nav .portal.collapsed h3 a, #mw-panel.collapsible-nav .portal.collapsed h5 a {
     color: #0487d2;
@@ -1020,6 +1031,9 @@ a,
 
 ul {
     list-style-image: url("images/libullet.png");
+}
+#navigation-panel ul {
+  list-style-image: none;
 }
 .wikidata ul {
   list-style-image: url("images/libullet-blue.png");

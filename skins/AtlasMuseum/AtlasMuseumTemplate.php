@@ -277,16 +277,16 @@ class AtlasMuseumTemplate extends BaseTemplate {
 		$msgObj = wfMessage( $msg );
 		$labelId = Sanitizer::escapeId( "p-$name-label" );
 		?>
-		<div class="portal" role="navigation" id='<?php
+		<div class="portal collapsed" role="navigation" id='<?php
 		echo Sanitizer::escapeId( "p-$name" )
 		?>'<?php
 		echo Linker::tooltip( 'p-' . $name )
 		?> aria-labelledby='<?php echo $labelId ?>'>
-			<h3<?php $this->html( 'userlangattributes' ) ?> id='<?php echo $labelId ?>'><?php
+			<h3<?php $this->html( 'userlangattributes' ) ?> id='<?php echo $labelId ?>'><a href="#"><?php
 				echo htmlspecialchars( $msgObj->exists() ? $msgObj->text() : $msg );
-				?></h3>
+				?></a></h3>
 
-			<div class="body">
+			<div class="body"<?php if ($name != 'navigation') print ' style="display: none;"'; ?>>
 				<?php
 				if ( is_array( $content ) ) {
 					?>

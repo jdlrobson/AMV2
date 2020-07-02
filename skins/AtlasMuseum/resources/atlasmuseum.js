@@ -14,5 +14,16 @@ jQuery( function ( $ ) {
 			.blur( function () {
 				$el.removeClass( 'vectorMenuFocus' );
 			} );
-	} );
+  } );
+  $('.portal > h3 > a').click(function(event) {
+    event.preventDefault();
+    const body = $(this).parent().parent().find('.body')[0]
+    $(this).parent().parent().toggleClass('collapsed')
+    $(this).parent().parent().toggleClass('expanded')
+    if ($(body).css('display') === 'none') {
+      $(body).css('display', 'block');
+    } else {
+      $(body).css('display', 'none');
+    }
+  })
 });
