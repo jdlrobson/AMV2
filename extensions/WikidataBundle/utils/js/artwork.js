@@ -170,7 +170,7 @@ function loadArtists() {
               $(artistDiv).remove()
             } else {
               // Il s'agit d'un article atlasmuseum inexistant : lien vers page de création
-              $(artistDiv).find('a').attr('href', 'http://publicartmuseum.net/wiki/Spécial:WikidataEditArtist/' + article)
+              $(artistDiv).find('a').attr('href', 'http://publicartmuseum.net/wiki/Spécial:EditArtist/' + article)
               // Ajout de l'image manquante générique
               $(artistDiv).append('<p style="text-align:center"><a href="http://publicartmuseum.net/wiki/Fichier:Image-manquante.jpg" class="image"><img alt="" src="http://publicartmuseum.net/w/images/5/5f/Image-manquante.jpg" style="width:auto;max-width224px;max-height:149px"></a></p>')
             }

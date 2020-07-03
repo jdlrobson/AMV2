@@ -398,7 +398,19 @@ class ArtistEditTest {
         $content = self::renderEntityEdit($data->entities);
       } else {
         // Problème de données
-        $content = self::renderError();
+        if ($data->error->code === 'no_data') {
+          // L'artiste n'existe pas : le créer
+          $data = (object)[
+            'article' => '',
+            'title' => '',
+            'origin' => 'atlasmuseum',
+            'data' => (object)[]
+          ];
+          $content = self::renderEntityEdit($data);
+        } else {
+          // Autre erreur
+          $content = self::renderError();
+        }
       }
     } else {
       $data = (object)[
