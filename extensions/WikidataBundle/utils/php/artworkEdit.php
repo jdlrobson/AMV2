@@ -528,6 +528,7 @@ class ArtworkEditTest {
     self::renderText($entity->data->maîtrise_ouvrage, 'maîtrise_ouvrage', 'Maîtrise d\'ouvrage');
     self::renderText($entity->data->maitrise_ouvrage_deleguee, 'maitrise_ouvrage_deleguee', 'Maîtrise d\'ouvrage déléguée');
     self::renderText($entity->data->proprietaire, 'proprietaire', 'Propriétaire');
+    self::renderText($entity->data->architecte, 'architecte', 'Architecte');
     self::renderCloseBlock();
 
     print '</div>';

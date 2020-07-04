@@ -353,6 +353,7 @@ class Artwork {
     self::renderLine('Maîtrise d\'ouvrage', 'Maîtrise d\'ouvrage', $entity->data->maitrise_ouvrage);
     self::renderLine('Maîtrise d\'ouvrage déléguée', 'Maîtrise d\'ouvrage déléguée', $entity->data->maitrise_ouvrage_deleguee);
     self::renderLine('Propriétaire', 'Propriétaire', $entity->data->proprietaire);
+    self::renderLine('Architecte', 'Architecte', $entity->data->architecte);
 
     // Fermeture du bloc "Œuvre"
     print '</table>';
