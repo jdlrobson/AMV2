@@ -103,7 +103,7 @@ if (!class_exists('Image')) {
 
           if (is_null($legend->query->pages->{'-1'})) {
             foreach ($legend->query->pages as $l) {
-              $data['legend'] = $l->revisions[0]->{'*'};
+              $data['legend'] = API::convertToWikiText($l->revisions[0]->{'*'});
             }
           }
         }
