@@ -60,7 +60,6 @@ $mysqli->query('TRUNCATE ' . DB_PREFIX . 'map;');
 while ($j < sizeof($dataAM)) {
   $query = 'INSERT INTO ' . DB_PREFIX . 'map(article, title, artist, lat, lon, nature, wikidata) VALUES ';
   $valuesTable = [];
-  $stop = false;
   for ($i = 0; $i < $batchSize && $i + $j < sizeof($dataAM); $i++) {
     array_push($valuesTable, '(' .
       '"' . str_replace('\\', '\\\\', str_replace('"', '\"', $dataAM[$i+$j]->article)) . '",' .
@@ -71,16 +70,9 @@ while ($j < sizeof($dataAM)) {
       '"' . str_replace('\\', '\\\\', str_replace('"', '\"', $dataAM[$i+$j]->nature)) . '",' .
       '"' . str_replace('\\', '\\\\', str_replace('"', '\"', $dataAM[$i+$j]->wikidata)) . '"' .
       ')');
-      if ($dataAM[$i+$j]->wikidata == 'Q19759555') {
-        $stop = true;
-      }
   }
 
   $query .= implode(', ', $valuesTable) . ';';
-
-  if ($stop) {
-    var_dump($query);
-  }
 
   $mysqli->query($query);
 
