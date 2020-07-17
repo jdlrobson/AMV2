@@ -158,7 +158,7 @@ class ArtistEditTest {
     ?>
       <tr>
         <th><?php print $title; ?><?php if ($mandatory) print ' <span class="mandatory">*</span>'; ?></th>
-        <td id="input_<?php print $key; ?>">
+        <td id="input_<?php print $key; ?>_cell">
           <input type="text" id="input_<?php print $key; ?>" value="<?php print $text; ?>" name="Edit[<?php print $key; ?>]" class="createboxInput" size="45">
         </td>
       </tr>
@@ -173,7 +173,7 @@ class ArtistEditTest {
     ?>
       <tr>
         <th><?php print $title; ?><?php if ($mandatory) print ' <span class="mandatory">*</span>'; ?></th>
-        <td id="input_<?php print $key; ?>">
+        <td id="input_<?php print $key; ?>_cell">
           <textarea id="input_<?php print $key; ?>" name="Edit[<?php print $key; ?>]" class="createboxInput" rows="5" cols="40" style="width: 100%"><?php print $text; ?></textarea>
         </td>
       </tr>
