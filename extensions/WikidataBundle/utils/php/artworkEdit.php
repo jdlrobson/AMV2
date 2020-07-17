@@ -525,7 +525,7 @@ class ArtworkEditTest {
     self::renderText($entity->data->collaborateurs, 'collaborateurs', 'Collaborateur(s)');
     self::renderText($entity->data->maitrise_oeuvre, 'maitrise_oeuvre', 'Maîtrise d\'œuvre');
     self::renderText($entity->data->maitrise_oeuvre_deleguee, 'maitrise_oeuvre_deleguee', 'Maîtrise d\'œuvre déléguée');
-    self::renderText($entity->data->maîtrise_ouvrage, 'maîtrise_ouvrage', 'Maîtrise d\'ouvrage');
+    self::renderText($entity->data->maitrise_ouvrage, 'maitrise_ouvrage', 'Maîtrise d\'ouvrage');
     self::renderText($entity->data->maitrise_ouvrage_deleguee, 'maitrise_ouvrage_deleguee', 'Maîtrise d\'ouvrage déléguée');
     self::renderText($entity->data->proprietaire, 'proprietaire', 'Propriétaire');
     self::renderText($entity->data->architecte, 'architecte', 'Architecte');

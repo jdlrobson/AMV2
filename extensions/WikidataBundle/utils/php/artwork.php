@@ -133,9 +133,9 @@ class Artwork {
           $coords .= ($lat < 10 ? '0' : '') . round($lat) . '″ ' . $ns . '<br />';
 
           $coords .= floor($lon) . '° ';
-          $lat = ($lon - floor($lon)) * 60;
+          $lon = ($lon - floor($lon)) * 60;
           $coords .= ($lon < 10 ? '0' : '') . floor($lon) . '′ ';
-          $lat = ($lon - floor($lat)) * 60;
+          $lon = ($lon - floor($lon)) * 60;
           $coords .= ($lon < 10 ? '0' : '') . round($lon) . '″ ' . $ew;
 
           array_push($text, $coords);
@@ -279,7 +279,6 @@ class Artwork {
    */
   protected static function renderEntity($entity) {
     ob_start();
-    
     // En-tête
     self::renderHeader($entity);
 
