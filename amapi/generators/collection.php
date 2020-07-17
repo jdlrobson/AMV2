@@ -54,7 +54,10 @@ if (!class_exists('Collection')) {
         foreach($labels_data->entities as $id=>$value) {
           if (isset($value->labels->fr)) {
             $labels[$id] = $value->labels->fr->value;
-          }
+          } else
+          if (isset($value->labels->en)) {
+            $labels[$id] = $value->labels->en->value;
+          } 
         }
       }
 
@@ -350,19 +353,23 @@ if (!class_exists('Collection')) {
               break;
 
             case 'Auteur':
-              $name = $data[$i]->printouts[$j]->{'0'}->fulltext;
-              $url = $data[$i]->printouts[$j]->{'0'}->fullurl;
-              if (preg_match('/^[qQ][0-9]+$/', $name)) {
-                array_push($ids, $name);
-                $url = 'http://publicartmuseum.net/wiki/Sp%C3%A9cial:WikidataArtist/' . $name;
-              } else
-              if (is_null($data[$i]->printouts[$j]->{'0'}->exists)) {
-                $url = 'http://publicartmuseum.net/wiki/Sp%C3%A9cial:EditArtist/' . $name;
+              $k = 0;
+              while (isset($data[$i]->printouts[$j]->{$k})) {
+                $name = $data[$i]->printouts[$j]->{$k}->fulltext;
+                $url = $data[$i]->printouts[$j]->{$k}->fullurl;
+                if (preg_match('/^[qQ][0-9]+$/', $name)) {
+                  array_push($ids, $name);
+                  $url = 'http://publicartmuseum.net/wiki/Sp%C3%A9cial:WikidataArtist/' . $name;
+                } else
+                if (is_null($data[$i]->printouts[$j]->{'0'}->exists)) {
+                  $url = 'http://publicartmuseum.net/wiki/Sp%C3%A9cial:EditArtist/' . $name;
+                }
+                array_push($artwork['artists'], [
+                  'name' => $name,
+                  'url' => $url
+                ]);
+                $k++;
               }
-              array_push($artwork['artists'], [
-                'name' => $name,
-                'url' => $url
-              ]);
               break;
 
             case 'Coordonnées':
@@ -392,6 +399,7 @@ if (!class_exists('Collection')) {
       // Recherche les éventuelles ids Wikidata présentes en fait sur atlasmuseum
       if (sizeof($ids) > 0) {
         $artistsAM = self::getArtistsAM($ids);
+
         $ids = [];
 
         for ($i = 0; $i < sizeof($artworks); $i++) {
