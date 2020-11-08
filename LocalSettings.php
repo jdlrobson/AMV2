@@ -35,7 +35,7 @@ $wgArticlePath = "/wiki/$1";
 $wgUsePathInfo = true;
 
 ## The protocol and server name to use in fully-qualified URLs
-$wgServer = "http://publicartmuseum.net";
+$wgServer = "http://atlasmuseum.net";
 
 
 ## The URL path to static resources (images, scripts, etc.)
@@ -50,8 +50,8 @@ $wgLogo = "$wgResourceBasePath/resources/assets/wiki.png";
 $wgEnableEmail = true;
 $wgEnableUserEmail = true; # UPO
 
-$wgEmergencyContact = "apache@publicartmuseum.net";
-$wgPasswordSender = "apache@publicartmuseum.net";
+$wgEmergencyContact = "apache@atlasmuseum.net";
+$wgPasswordSender = "apache@atlasmuseum.net";
 
 $wgEnotifUserTalk = false; # UPO
 $wgEnotifWatchlist = false; # UPO
@@ -59,10 +59,10 @@ $wgEmailAuthentication = true;
 
 ## Database settings
 $wgDBtype = "mysql";
-$wgDBserver = "publicarmod1.mysql.db";
-$wgDBname = "publicarmod1";
-$wgDBuser = "publicarmod1";
-$wgDBpassword = "1dwy2Myi";
+$wgDBserver = "atlasmusatlasmus.mysql.db";
+$wgDBname = "atlasmusatlasmus";
+$wgDBuser = "atlasmusatlasmus";
+$wgDBpassword = "Parisnewyork75212";
 
 # MySQL specific settings
 $wgDBprefix = "tmp_";
@@ -177,7 +177,7 @@ $wgJobRunRate = 0.01;
 $wgRunJobsAsync = false;
 */
 
-$wgFavicon = "http://publicartmuseum.net/w/skins/common/images/favicon.ico";
+$wgFavicon = "http://atlasmuseum.net/w/skins/common/images/favicon.ico";
 
 $wgMaxShellMemory = 100524288;
 $wgMemoryLimit = "64M";
@@ -211,3 +211,12 @@ $wgCaptchaTriggers['addurl']        = true;
 */
 $wgCaptchaTriggers['createaccount'] = true;
 $wgCaptchaTriggers['badlogin']      = true;
+
+wfLoadExtension( 'HitCounters' );
+require_once "$IP/extensions/SemanticDrilldown/SemanticDrilldown.php";
+
+/*
+$wgDebugDumpSql = true;
+$wgShowSQLErrors = true;
+$wgShowDBErrorBacktrace = true;
+*/

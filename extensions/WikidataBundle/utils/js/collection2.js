@@ -15,12 +15,12 @@ $(document).ready(function() {
     newLi.classList.add('collapsible')
     newLi.classList.add('selected')
 
-    newLi.innerHTML = '<span><a href="http://publicartmuseum.net/wiki/Spécial:WikidataEditCollection/'+page+'">Modifier avec formulaire</a></span></li>';
+    newLi.innerHTML = '<span><a href="http://atlasmuseum.net/wiki/Spécial:WikidataEditCollection/'+page+'">Modifier avec formulaire</a></span></li>';
 
     ul.insertBefore(newLi, li)
   }
 
-  $.getJSON('http://publicartmuseum.net/w/amapi/index.php?action=amgetcollection&props=artworks&collection=' + page)
+  $.getJSON('http://atlasmuseum.net/w/amapi/index.php?action=amgetcollection&props=artworks&collection=' + page)
     .then(function(result) {
       data = result.entities.data.artworks
       initMap(data)
@@ -187,22 +187,22 @@ createClusters = function(clusterSource) {
             let icon_src = "";
             switch (feature.get("features")[0].get("nature")) {
               case "pérenne":
-                icon_src = "http://publicartmuseum.net/w/images/a/a0/Picto-gris.png";
+                icon_src = "http://atlasmuseum.net/w/images/a/a0/Picto-gris.png";
                 break;
               case "éphémère":
-                icon_src = "http://publicartmuseum.net/w/images/4/49/Picto-jaune.png";
+                icon_src = "http://atlasmuseum.net/w/images/4/49/Picto-jaune.png";
                 break;
               case "détruite":
-                icon_src = "http://publicartmuseum.net/w/images/a/a8/Picto-rouge.png";
+                icon_src = "http://atlasmuseum.net/w/images/a/a8/Picto-rouge.png";
                 break;
               case "non réalisée":
-                icon_src = "http://publicartmuseum.net/w/images/2/2d/Picto-blanc.png";
+                icon_src = "http://atlasmuseum.net/w/images/2/2d/Picto-blanc.png";
                 break;
               case "à vérifier":
-                icon_src = "http://publicartmuseum.net/w/images/9/90/Picto-bleu.png";
+                icon_src = "http://atlasmuseum.net/w/images/9/90/Picto-bleu.png";
                 break;
               default:
-                icon_src = "http://publicartmuseum.net/w/images/d/dd/Picto-Wikidata.png";
+                icon_src = "http://atlasmuseum.net/w/images/d/dd/Picto-Wikidata.png";
             }
                 
             style = new ol.style.Style({

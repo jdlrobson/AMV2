@@ -4,7 +4,7 @@ var clusterSource;
 $(document).ready(function() {
   let data = null
 
- $.getJSON('http://publicartmuseum.net/w/amapi/index.php?action=amgetmap')
+ $.getJSON('http://atlasmuseum.net/w/amapi/index.php?action=amgetmap')
     .then(function(result) {
       data = result.entities
       if (data) {
@@ -143,22 +143,22 @@ createClusters = function(clusterSource) {
             let icon_src = "";
             switch (feature.get("features")[0].get("nature")) {
               case "pérenne":
-                icon_src = "http://publicartmuseum.net/w/images/a/a0/Picto-gris.png";
+                icon_src = "http://atlasmuseum.net/w/images/a/a0/Picto-gris.png";
                 break;
               case "éphémère":
-                icon_src = "http://publicartmuseum.net/w/images/4/49/Picto-jaune.png";
+                icon_src = "http://atlasmuseum.net/w/images/4/49/Picto-jaune.png";
                 break;
               case "détruite":
-                icon_src = "http://publicartmuseum.net/w/images/a/a8/Picto-rouge.png";
+                icon_src = "http://atlasmuseum.net/w/images/a/a8/Picto-rouge.png";
                 break;
               case "non réalisée":
-                icon_src = "http://publicartmuseum.net/w/images/2/2d/Picto-blanc.png";
+                icon_src = "http://atlasmuseum.net/w/images/2/2d/Picto-blanc.png";
                 break;
               case "à vérifier":
-                icon_src = "http://publicartmuseum.net/w/images/9/90/Picto-bleu.png";
+                icon_src = "http://atlasmuseum.net/w/images/9/90/Picto-bleu.png";
                 break;
               default:
-                icon_src = "http://publicartmuseum.net/w/images/d/dd/Picto-Wikidata.png";
+                icon_src = "http://atlasmuseum.net/w/images/d/dd/Picto-Wikidata.png";
             }
                 
             style = new ol.style.Style({
@@ -202,7 +202,7 @@ createPopup = function (map, overlay, container, content, closer) {
       else
         link = "Spécial:Wikidata/" + id
 
-      let text = "<p><b><a href=\"" + link + "\">" + title + "</a></b></p><hr />"
+      let text = "<p><b><a href=\"" + link + "\">" + title + "</a></b></p><div id=\"map-image-placeholder\"></div><hr />"
 
       text += '<table><tbody>'
 
@@ -214,9 +214,34 @@ createPopup = function (map, overlay, container, content, closer) {
       text += '</tbody></table>'
 
       content.innerHTML = text
+
+      loadImage(article ? article : id, nature === "wikidata")
+
       overlay.setPosition(coordinate)
     }
   });
+}
+
+loadImage = function(article, wikidata) {
+  let getArtworkUrl = 'http://atlasmuseum.net/w/amapi/index.php?action=amgetartwork&article=' + encodeURIComponent(article)
+  if (wikidata) {
+    getArtworkUrl += '&origin=wikidata'
+  }
+  $.getJSON(getArtworkUrl)
+    .then(function(result) {
+      if (result && result.entities && result.entities.data && result.entities.data.image_principale) {
+        const imageData = result.entities.data.image_principale
+        const getImageUrl = 'http://atlasmuseum.net/w/amapi/index.php?action=amgetimage&image=' + encodeURIComponent(imageData.value[0].value) + '&width=200&origin=' + imageData.value[0].origin
+        $.getJSON(getImageUrl)
+          .then(function(resultImage) {
+            const replaceImg = '<img src="' + resultImage.entities.thumbnail + '" />'
+            document.getElementById('map-image-placeholder').innerHTML = replaceImg
+          })
+      } else {
+        const replaceImg = '<img src="http://atlasmuseum.net/w/images/thumb/5/5f/Image-manquante.jpg/200px-Image-manquante.jpg" />'
+        document.getElementById('map-image-placeholder').innerHTML = replaceImg
+      }
+    })
 }
 
 changeMarkers = function() {

@@ -71,7 +71,7 @@ export_artwork = function() {
       const ret = [];
       for (let p in params)
       ret.push(encodeURIComponent(p) + '=' + encodeURIComponent(params[p]));
-      const url = 'http://publicartmuseum.net/w/extensions/WikidataBundle/utils/php/updateDB.php?' + ret.join('&')
+      const url = 'http://atlasmuseum.net/w/extensions/WikidataBundle/utils/php/updateDB.php?' + ret.join('&')
       $.get(url, function(res) {
         // Update article
       })

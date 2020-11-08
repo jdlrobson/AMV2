@@ -25,7 +25,7 @@ function editWithForm() {
     newLi.classList.add('collapsible')
     newLi.classList.add('selected')
 
-    newLi.innerHTML = '<span><a href="http://publicartmuseum.net/wiki/Spécial:EditArtwork/' + page + '">Modifier avec formulaire</a></span></li>';
+    newLi.innerHTML = '<span><a href="http://atlasmuseum.net/wiki/Spécial:EditArtwork/' + page + '">Modifier avec formulaire</a></span></li>';
 
     ul.insertBefore(newLi, li)
   }
@@ -58,7 +58,7 @@ function loadMap() {
       anchorXUnits: 'fraction',
       anchorYUnits: 'pixels',
       opacity: 0.75,
-      src: 'http://publicartmuseum.net/w/images/a/a0/Picto-gris.png'
+      src: 'http://atlasmuseum.net/w/images/a/a0/Picto-gris.png'
     }))
   })
   const vectorLayer = new ol.layer.Vector({
@@ -125,21 +125,21 @@ function loadArtists() {
         redirect: 'true',
       }
       
-      $.getJSON('http://publicartmuseum.net/w/amapi/index.php?' + $.param(params))
+      $.getJSON('http://atlasmuseum.net/w/amapi/index.php?' + $.param(params))
         .then(data => {
           // Supprime le loader
           $(artistDiv).find('.loader').remove()
           if (data.success === 1) {
             // L'id vient de WD mais l'artiste existe sur AM ? Changer le lien
             if (data.entities.origin === 'atlasmuseum') {
-              $(artistDiv).find('a').attr('href', 'http://publicartmuseum.net/wiki/' + data.entities.article)
+              $(artistDiv).find('a').attr('href', 'http://atlasmuseum.net/wiki/' + data.entities.article)
             }
 
             // Image
             if (data.entities.data.thumbnail) {
               $(artistDiv).append('<p style="text-align:center"><a href="' + data.entities.data.thumbnail.value[0].url + '" class="image"><img alt="" src="' + data.entities.data.thumbnail.value[0].thumbnail + '" style="width:auto;max-width224px;max-height:149px"></a></p>')
             } else {
-              $(artistDiv).append('<p style="text-align:center"><a href="http://publicartmuseum.net/wiki/Fichier:Image-manquante.jpg" class="image"><img alt="" src="http://publicartmuseum.net/w/images/5/5f/Image-manquante.jpg" style="width:auto;max-width224px;max-height:149px"></a></p>')
+              $(artistDiv).append('<p style="text-align:center"><a href="http://atlasmuseum.net/wiki/Fichier:Image-manquante.jpg" class="image"><img alt="" src="http://atlasmuseum.net/w/images/5/5f/Image-manquante.jpg" style="width:auto;max-width224px;max-height:149px"></a></p>')
             }
 
             let table = '<table class="wikitable"><tbody>'
@@ -170,9 +170,9 @@ function loadArtists() {
               $(artistDiv).remove()
             } else {
               // Il s'agit d'un article atlasmuseum inexistant : lien vers page de création
-              $(artistDiv).find('a').attr('href', 'http://publicartmuseum.net/wiki/Spécial:EditArtist/' + article)
+              $(artistDiv).find('a').attr('href', 'http://atlasmuseum.net/wiki/Spécial:EditArtist/' + article)
               // Ajout de l'image manquante générique
-              $(artistDiv).append('<p style="text-align:center"><a href="http://publicartmuseum.net/wiki/Fichier:Image-manquante.jpg" class="image"><img alt="" src="http://publicartmuseum.net/w/images/5/5f/Image-manquante.jpg" style="width:auto;max-width224px;max-height:149px"></a></p>')
+              $(artistDiv).append('<p style="text-align:center"><a href="http://atlasmuseum.net/wiki/Fichier:Image-manquante.jpg" class="image"><img alt="" src="http://atlasmuseum.net/w/images/5/5f/Image-manquante.jpg" style="width:auto;max-width224px;max-height:149px"></a></p>')
             }
           }
         })
@@ -198,7 +198,7 @@ function loadImages() {
     if (legend)
       params['legend'] = true
 
-    $.getJSON('http://publicartmuseum.net/w/amapi/index.php?' + $.param(params))
+    $.getJSON('http://atlasmuseum.net/w/amapi/index.php?' + $.param(params))
       .then(data => {
         replaceLoader($(imageDiv), data.entities.url, data.entities.thumbnail, legend ? data.entities.legend : null)
       })
@@ -237,7 +237,7 @@ function loadOtherArtworks() {
       exclude,
     }
 
-    $.getJSON('http://publicartmuseum.net/w/amapi/index.php?' + $.param(params))
+    $.getJSON('http://atlasmuseum.net/w/amapi/index.php?' + $.param(params))
       .then(data => {
         if (data.success === 1) {
           mainDiv.addClass('atmslideshowCtnr')
@@ -258,7 +258,7 @@ function loadOtherArtworks() {
             let link = encodeURIComponent(data.entities[i].article)
             if (data.entities[i].origin === 'wikidata')
               link = 'Spécial:Wikidata/' + link
-            link = 'http://publicartmuseum.net/wiki/' + link
+            link = 'http://atlasmuseum.net/wiki/' + link
 
             text += '<li><div class="thumb tright"><a class="image" href="' + link + '"><div class="thumbinner">'
 
@@ -271,13 +271,13 @@ function loadOtherArtworks() {
                 origin: data.entities[i].image.origin,
                 width: 192,
               }
-              $.getJSON('http://publicartmuseum.net/w/amapi/index.php?' + $.param(imgParams))
+              $.getJSON('http://atlasmuseum.net/w/amapi/index.php?' + $.param(imgParams))
                 .then(data => {
                   replaceLoader($('#image-loader-other-' + i), '', data.entities.thumbnail)
                 })
 
             } else {
-              text += '<div><img alt="" src="http://publicartmuseum.net/w/images/5/5f/Image-manquante.jpg" /></div>'
+              text += '<div><img alt="" src="http://atlasmuseum.net/w/images/5/5f/Image-manquante.jpg" /></div>'
             }
 
           text += '<br />' + data.entities[i].titre + '</div></a></div></li>'
@@ -311,7 +311,7 @@ function loadCloseSites() {
       exclude,
     }
 
-    $.getJSON('http://publicartmuseum.net/w/amapi/index.php?' + $.param(params))
+    $.getJSON('http://atlasmuseum.net/w/amapi/index.php?' + $.param(params))
       .then(data => {
         if (data.success === 1) {
           mainDiv.addClass('atmslideshowCtnr')
@@ -331,13 +331,13 @@ function loadCloseSites() {
                 origin: 'commons',
                 width: 192,
               }
-              $.getJSON('http://publicartmuseum.net/w/amapi/index.php?' + $.param(imgParams))
+              $.getJSON('http://atlasmuseum.net/w/amapi/index.php?' + $.param(imgParams))
                 .then(data => {
                   replaceLoader($('#image-loader-site-' + i), '', data.entities.thumbnail)
                 })
 
             } else {
-              text += '<div><img alt="" src="http://publicartmuseum.net/w/images/5/5f/Image-manquante.jpg" /></div>'
+              text += '<div><img alt="" src="http://atlasmuseum.net/w/images/5/5f/Image-manquante.jpg" /></div>'
             }
 
           text += '<br />' + data.entities[i].label + '</div></a></div></li>'
@@ -372,7 +372,7 @@ function loadCloseArtworks() {
       exclude,
     }
 
-    $.getJSON('http://publicartmuseum.net/w/amapi/index.php?' + $.param(params))
+    $.getJSON('http://atlasmuseum.net/w/amapi/index.php?' + $.param(params))
       .then(data => {
         if (data.success === 1) {
           mainDiv.addClass('atmslideshowCtnr')
@@ -381,7 +381,7 @@ function loadCloseArtworks() {
             let link = encodeURIComponent(data.entities[i].article)
             if (data.entities[i].origin === 'wikidata')
               link = 'Spécial:Wikidata/' + link
-            link = 'http://publicartmuseum.net/wiki/' + link
+            link = 'http://atlasmuseum.net/wiki/' + link
 
             text += '<li><div class="thumb tright"><a class="image" href="' + link + '"><div class="thumbinner">'
 
@@ -394,13 +394,13 @@ function loadCloseArtworks() {
                 origin: data.entities[i].image.origin,
                 width: 192,
               }
-              $.getJSON('http://publicartmuseum.net/w/amapi/index.php?' + $.param(imgParams))
+              $.getJSON('http://atlasmuseum.net/w/amapi/index.php?' + $.param(imgParams))
                 .then(data => {
                   replaceLoader($('#image-loader-close-' + i), '', data.entities.thumbnail)
                 })
 
             } else {
-              text += '<div><img alt="" src="http://publicartmuseum.net/w/images/5/5f/Image-manquante.jpg" /></div>'
+              text += '<div><img alt="" src="http://atlasmuseum.net/w/images/5/5f/Image-manquante.jpg" /></div>'
             }
 
           text += '<br />' + data.entities[i].titre + '</div></a></div></li>'

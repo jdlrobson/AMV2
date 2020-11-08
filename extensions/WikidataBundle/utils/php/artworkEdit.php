@@ -474,7 +474,7 @@ class ArtworkEditTest {
     self::renderText($entity->data->restauration, 'restauration', 'Date de restauration');
     self::renderText($entity->data->fin, 'fin', 'Date de fin');
     self::renderText($entity->data->precision_date, 'precision_date', 'Précision sur les dates');
-    self::renderText($entity->data->programme, 'programme', 'Procédure');
+    self::renderItem($entity->data->programme, 'programme', 'Procédure');
     self::renderText($entity->data->numero_inventaire, 'numero_inventaire', 'Numéro d\'inventaire');
     self::renderText($entity->data->contexte_production, 'contexte_production', 'Contexte de production');
     self::renderText($entity->data->periode_art, 'periode_art', 'Période(s)');

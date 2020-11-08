@@ -63,7 +63,7 @@ getLabel = function(id, callback) {
 }
 
 getImageAm = function(image, width, callback) {
-  const url = 'http://publicartmuseum.net/w/api.php'
+  const url = 'http://atlasmuseum.net/w/api.php'
   const params = {
     action: 'query',
     prop: 'imageinfo',
@@ -104,6 +104,42 @@ importWikidataClaim = function(claim, property) {
       }
       if (!found) {
         addLine('input_' + property, property, property, true, id, label)
+      }
+    })
+  }
+}
+
+importWikidataData = function(claim, property) {
+  for (let i = 0; i < claim.length; i++) {
+    let date = claim[i].mainsnak.datavalue.value.time
+    let year = date.replace('+', '').replace(/-.*$/, '')
+    document.getElementById('input_' + property).value = year
+  }
+}
+
+importWikidataCheckboxes = function(claim, checkboxName, precisionName) {
+  for (let i = 0; i < claim.length; i++) {
+    let id = claim[i].mainsnak.datavalue.value.id
+    getLabel(id, function(label) {
+      let j = 0
+      let found = false
+      while (document.getElementById('input_' + checkboxName + '_' + j)) {
+        const elementId = document.getElementById('input_' + checkboxName + '_' + j).value
+        if (elementId === id) {
+          found = true
+          document.getElementById('input_' + checkboxName + '_' + j).checked = true
+          break
+        }
+        j++
+      }
+      if (!found) {
+        const currentPrecisionValue = document.getElementById('input_' + precisionName).value
+        if (!currentPrecisionValue.includes(label)) {
+          if (currentPrecisionValue != '') {
+            document.getElementById('input_' + precisionName).value += ' ; '
+          }
+          document.getElementById('input_' + precisionName).value += label
+        }
       }
     })
   }
@@ -179,9 +215,33 @@ importWikidata = function() {
             importWikidataClaim(claims.P1640, 'commissaires')
           }
 
+          // Programme / Procédure
+          if (claims.P195) {
+            importWikidataClaim(claims.P195, 'programme')
+          }
+
+          if (claims.P571) {
+            importWikidataData(claims.P571, 'inauguration')
+          }
+
           // Image
           if (claims.P18) {
             importWikidataImage(claims.P18, 'image_principale')
+          }
+
+          // Materiaux
+          if (claims.P186) {
+            importWikidataCheckboxes(claims.P186, 'materiaux', 'precision_materiaux')
+          }
+
+          // Domaine
+          if (claims.P31) {
+            importWikidataCheckboxes(claims.P31, 'type_art', 'precision_type_art')
+          }
+
+          // Couleur
+          if (claims.P462) {
+            importWikidataCheckboxes(claims.P462, 'couleur', 'precision_couleur')
           }
         }
       }
@@ -378,7 +438,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
       anchorXUnits: 'fraction',
       anchorYUnits: 'pixels',
       opacity: 0.75,
-      src: 'http://publicartmuseum.net/w/images/a/a0/Picto-gris.png'
+      src: 'http://atlasmuseum.net/w/images/a/a0/Picto-gris.png'
     }))
   });
   var vectorLayer = new ol.layer.Vector({
@@ -422,8 +482,8 @@ change_image_thumb = function(inputId) {
 add_image_line = function(property) {
   let container = document.getElementById('input_' + property + '_container');
   let n = container.childElementCount;
-  // let html = '<div class="multipleTemplateInstance multipleTemplate" id="input_' + property + '_instance_' + n + '"><table><tbody><tr><td> <table><tbody><tr><td style="width:140px;"><b>Importer une image&nbsp;:</b></td><td><span class="inputSpan"><input id="input_' + property + '_' + n + '" class="createboxInput" size="35" value="" name="Edit[' + property + '][' + n + ']" type="text">\n<a data-fancybox data-type="iframe" data-src="http://publicartmuseum.net/w/index.php?title=Sp%C3%A9cial:UploadWindow&amp;pfInputID=input_' + property + '_' + n + '" href="javascript:;">Importer un fichier</a></span></td></tr></tbody></table></td><td><a class="addAboveButton" title="Ajouter une autre instance au-dessus de celle-ci"><img src="/w/extensions/SemanticForms/skins/SF_add_above.png" class="multipleTemplateButton"></a></td><td><button class="removeButton" title="Enlever cette instance" onclick="remove_image_line(\'' + property + '\', ' + n + ')"><img src="/w/extensions/SemanticForms/skins/SF_remove.png" class="multipleTemplateButton"></button></td><td class="instanceRearranger"><img src="/w/extensions/SemanticForms/skins/rearranger.png" class="rearrangerImage"></td></tr></tbody></table></div>';
-  let html = '<div class="multipleTemplateInstance multipleTemplate" id="input_' + property + '_instance_' + n + '"><table><tbody><tr><td> <table><tbody><tr><td style="width:140px;"><b>Importer une image&nbsp;:</b></td><td><span class="inputSpan"><input id="input_' + property + '_' + n + '" class="createboxInput" size="35" value="" name="Edit[' + property + '][' + n + ']" type="text">\n<a data-fancybox data-type="iframe" data-src="http://publicartmuseum.net/w/index.php?title=Sp%C3%A9cial:UploadWindow&amp;pfInputID=input_' + property + '_' + n + '" href="javascript:;">Importer un fichier</a></span></td></tr></tbody></table></td><td><button class="removeButton" title="Enlever cette instance" onclick="remove_image_line(\'' + property + '\', ' + n + ')"><img src="/w/extensions/SemanticForms/skins/SF_remove.png" class="multipleTemplateButton"></button></td></tr></tbody></table></div>';
+  // let html = '<div class="multipleTemplateInstance multipleTemplate" id="input_' + property + '_instance_' + n + '"><table><tbody><tr><td> <table><tbody><tr><td style="width:140px;"><b>Importer une image&nbsp;:</b></td><td><span class="inputSpan"><input id="input_' + property + '_' + n + '" class="createboxInput" size="35" value="" name="Edit[' + property + '][' + n + ']" type="text">\n<a data-fancybox data-type="iframe" data-src="http://atlasmuseum.net/w/index.php?title=Sp%C3%A9cial:UploadWindow&amp;pfInputID=input_' + property + '_' + n + '" href="javascript:;">Importer un fichier</a></span></td></tr></tbody></table></td><td><a class="addAboveButton" title="Ajouter une autre instance au-dessus de celle-ci"><img src="/w/extensions/SemanticForms/skins/SF_add_above.png" class="multipleTemplateButton"></a></td><td><button class="removeButton" title="Enlever cette instance" onclick="remove_image_line(\'' + property + '\', ' + n + ')"><img src="/w/extensions/SemanticForms/skins/SF_remove.png" class="multipleTemplateButton"></button></td><td class="instanceRearranger"><img src="/w/extensions/SemanticForms/skins/rearranger.png" class="rearrangerImage"></td></tr></tbody></table></div>';
+  let html = '<div class="multipleTemplateInstance multipleTemplate" id="input_' + property + '_instance_' + n + '"><table><tbody><tr><td> <table><tbody><tr><td style="width:140px;"><b>Importer une image&nbsp;:</b></td><td><span class="inputSpan"><input id="input_' + property + '_' + n + '" class="createboxInput" size="35" value="" name="Edit[' + property + '][' + n + ']" type="text">\n<a data-fancybox data-type="iframe" data-src="http://atlasmuseum.net/w/index.php?title=Sp%C3%A9cial:UploadWindow&amp;pfInputID=input_' + property + '_' + n + '" href="javascript:;">Importer un fichier</a></span></td></tr></tbody></table></td><td><button class="removeButton" title="Enlever cette instance" onclick="remove_image_line(\'' + property + '\', ' + n + ')"><img src="/w/extensions/SemanticForms/skins/SF_remove.png" class="multipleTemplateButton"></button></td></tr></tbody></table></div>';
   let e = document.createElement('div');
   e.innerHTML = html;
   while(e.firstChild) {
@@ -446,7 +506,7 @@ console.log(coordinates)
 console.log(geocoding_ok)
   if (geocoding_ok) {
     //-- call gmaps.php
-    $.getJSON('http://publicartmuseum.net/w/amapi/gmaps.php?latitude='+coordinates.lat+'&longitude='+coordinates.lon+'&username=atlasmuseum', function(response) {
+    $.getJSON('http://atlasmuseum.net/w/amapi/gmaps.php?latitude='+coordinates.lat+'&longitude='+coordinates.lon+'&username=atlasmuseum', function(response) {
       $.each(response, function(key, value) {
         switch (key) {
           case 'country':

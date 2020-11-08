@@ -17,7 +17,7 @@ define('WIKIDATA_SPARQL', 'https://query.wikidata.org/bigdata/namespace/wdq/spar
 /**
  * URLs atlasmuseum
  */
-define('ATLASMUSEUM_BASE', 'http://publicartmuseum.net/w/');
+define('ATLASMUSEUM_BASE', 'http://atlasmuseum.net/w/');
 define('ATLASMUSEUM_API', ATLASMUSEUM_BASE . 'api.php');
 
 /**
@@ -29,10 +29,10 @@ define('COMMONS_API', COMMONS_BASE . 'api.php');
 /**
  * Base de données
  */
-define('DB_SERVER', "publicarmod1.mysql.db");
-define('DB_NAME', "publicarmod1");
-define('DB_USER', "publicarmod1");
-define('DB_PASSWORD', "1dwy2Myi");
+define('DB_SERVER', "atlasmusatlasmus.mysql.db");
+define('DB_NAME', "atlasmusatlasmus");
+define('DB_USER', "atlasmusatlasmus");
+define('DB_PASSWORD', "Parisnewyork75212");
 
 define('DATABASE_PREFIX', 'tmp_');
 define('DATABASE_LIBRARY', DATABASE_PREFIX . 'library_2');

@@ -20,7 +20,7 @@ class Artist {
       ?>
       <div class="import">
         <a href="<?php print ATLASMUSEUM_PATH; ?>Spécial:EditArtist/<?php print $entity->article; ?>">
-          <img src="http://publicartmuseum.net/w/skins/AtlasMuseum/resources/images/hmodify.png" />Importer cette notice dans atlasmuseum
+          <img src="http://atlasmuseum.net/w/skins/AtlasMuseum/resources/images/hmodify.png" />Importer cette notice dans atlasmuseum
         </a>
       </div>
       <?php
@@ -29,7 +29,7 @@ class Artist {
       ?>
       <div class="import">
         <a href="<?php print ATLASMUSEUM_PATH; ?>Spécial:WikidataArtistExport/<?php print $entity->article; ?>">
-          <img src="http://publicartmuseum.net/w/skins/AtlasMuseum/resources/images/hmodify.png" />Exporter cette notice sur Wikidata
+          <img src="http://atlasmuseum.net/w/skins/AtlasMuseum/resources/images/hmodify.png" />Exporter cette notice sur Wikidata
         </a>
       </div>
       <?php
@@ -88,7 +88,7 @@ class Artist {
 
   protected static function renderWikidataLink($q) {
     if (!is_null($q)) {
-      print '<div class="wikidataLink"><a href="https://www.wikidata.org/wiki/' . $q->value[0] . '" target="_blank"><img src="http://publicartmuseum.net/w/skins/AtlasMuseum/resources/hwikidata.png" /><span>Voir cette notice sur Wikidata</span></a></div>';
+      print '<div class="wikidataLink"><a href="https://www.wikidata.org/wiki/' . $q->value[0] . '" target="_blank"><img src="http://atlasmuseum.net/w/skins/AtlasMuseum/resources/hwikidata.png" /><span>Voir cette notice sur Wikidata</span></a></div>';
     }
   }
 
@@ -99,7 +99,7 @@ class Artist {
     $titles = [];
     for ($i = 0; $i < sizeof($artworks->entities); $i++) {
       if ($artworks->entities[$i]->origin === 'atlasmuseum') {
-        array_push($titles, '<a href="http://publicartmuseum.net/wiki/'
+        array_push($titles, '<a href="http://atlasmuseum.net/wiki/'
           . urlencode(str_replace(' ', '_', $artworks->entities[$i]->article))
           . '">'
           . $artworks->entities[$i]->titre
@@ -107,7 +107,7 @@ class Artist {
         );
       } else
       if ($artworks->entities[$i]->origin === 'wikidata') {
-        array_push($titles, '<a href="http://publicartmuseum.net/wiki/Spécial:Wikidata/'
+        array_push($titles, '<a href="http://atlasmuseum.net/wiki/Spécial:Wikidata/'
           . $artworks->entities[$i]->article
           . '">'
           . $artworks->entities[$i]->titre
@@ -168,7 +168,7 @@ class Artist {
    */
   protected static function renderError($article) {
 
-    $link = 'http://publicartmuseum.net/w/index.php?title=' . urlencode($article) . '&action=purge';
+    $link = 'http://atlasmuseum.net/w/index.php?title=' . urlencode($article) . '&action=purge';
 
     $text = '<div style="margin-bottom: 20px;">Erreur lors de la récupération des données...</div>';
     $text .= '<div><button onclick="window.location.href=\'' . $link . '\';">Recharger la page</button></div>';

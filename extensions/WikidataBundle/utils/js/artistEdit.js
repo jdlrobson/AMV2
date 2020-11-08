@@ -291,7 +291,7 @@ publish = function() {
     const ret = [];
     for (let p in params)
      ret.push(encodeURIComponent(p) + '=' + encodeURIComponent(params[p]));
-    const url = 'http://publicartmuseum.net/w/extensions/WikidataBundle/utils/php/updateDB.php?' + ret.join('&')
+    const url = 'http://atlasmuseum.net/w/extensions/WikidataBundle/utils/php/updateDB.php?' + ret.join('&')
     // console.log(url)
     $.get(url, function(res) {
       // console.log(res)
@@ -307,7 +307,7 @@ publish = function() {
     const ret = [];
     for (let p in params)
      ret.push(encodeURIComponent(p) + '=' + encodeURIComponent(params[p]));
-    const url = 'http://publicartmuseum.net/w/extensions/WikidataBundle/utils/php/updateDB.php?' + ret.join('&')
+    const url = 'http://atlasmuseum.net/w/extensions/WikidataBundle/utils/php/updateDB.php?' + ret.join('&')
     // console.log(url)
     $.get(url, function(res) {
       // console.log(res)
@@ -371,7 +371,7 @@ get_semantic = function(data) {
 }
 
 get_image_am = function(image, width, callback) {
-  const url = 'http://publicartmuseum.net/w/api.php'
+  const url = 'http://atlasmuseum.net/w/api.php'
   const params = {
     action: 'query',
     prop: 'imageinfo',

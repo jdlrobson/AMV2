@@ -20,7 +20,7 @@ class Artwork {
       ?>
       <div class="import">
         <a href="<?php print ATLASMUSEUM_PATH; ?>Spécial:EditArtwork/<?php print $entity->article; ?>">
-          <img src="http://publicartmuseum.net/w/skins/AtlasMuseum/resources/images/hmodify.png" />Importer cette œuvre dans atlasmuseum
+          <img src="http://atlasmuseum.net/w/skins/AtlasMuseum/resources/images/hmodify.png" />Importer cette œuvre dans atlasmuseum
         </a>
       </div>
       <?php
@@ -29,7 +29,7 @@ class Artwork {
       ?>
       <div class="import">
         <a href="<?php print ATLASMUSEUM_PATH; ?>Spécial:WikidataExport/<?php print $entity->article; ?>">
-          <img src="http://publicartmuseum.net/w/skins/AtlasMuseum/resources/images/hmodify.png" />Exporter cette œuvre sur Wikidata
+          <img src="http://atlasmuseum.net/w/skins/AtlasMuseum/resources/images/hmodify.png" />Exporter cette œuvre sur Wikidata
         </a>
       </div>
       <?php
@@ -197,7 +197,7 @@ class Artwork {
 
   protected static function renderWikidataLink($q) {
     if (!is_null($q)) {
-      print '<div class="wikidataLink"><a href="https://www.wikidata.org/wiki/' . $q->value[0] . '" target="_blank"><img src="http://publicartmuseum.net/w/skins/AtlasMuseum/resources/hwikidata.png" /><span>Voir cette œuvre sur Wikidata</span></a></div>';
+      print '<div class="wikidataLink"><a href="https://www.wikidata.org/wiki/' . $q->value[0] . '" target="_blank"><img src="http://atlasmuseum.net/w/skins/AtlasMuseum/resources/hwikidata.png" /><span>Voir cette œuvre sur Wikidata</span></a></div>';
     }
   }
 
@@ -436,7 +436,7 @@ class Artwork {
    * Écriture si erreur
    */
   protected static function renderError($article) {
-    $link = 'http://publicartmuseum.net/w/index.php?title=' . urlencode($article) . '&action=purge';
+    $link = 'http://atlasmuseum.net/w/index.php?title=' . urlencode($article) . '&action=purge';
     /*
     var_dump($article);
     var_dump($link);

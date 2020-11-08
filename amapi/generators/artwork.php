@@ -342,6 +342,9 @@ if (!class_exists('Artwork')) {
         if (!is_null($claims->P921)) {
           $data['forme'] = self::processItemsWD($claims->P921);
         }
+        if (!is_null($claims->P180)) {
+          $data['forme'] = self::processItemsWD($claims->P180);
+        }
         //-- Image
         if (!is_null($claims->P18)) {
           $data['image_principale'] = self::processImagesWD($claims->P18);

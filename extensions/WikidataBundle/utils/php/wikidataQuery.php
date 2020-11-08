@@ -1,11 +1,11 @@
 <?php
 
-define(DB_SERVER, "publicarmod1.mysql.db");
-define(DB_NAME, "publicarmod1");
-define(DB_USER, "publicarmod1");
-define(DB_PASSWORD, "1dwy2Myi");
+define(DB_SERVER, "atlasmusatlasmus.mysql.db");
+define(DB_NAME, "atlasmusatlasmus");
+define(DB_USER, "atlasmusatlasmus");
+define(DB_PASSWORD, "Parisnewyork75212");
 
-define(MISSING_IMAGE_THUMB, "http://publicartmuseum.net/w/images/5/5f/Image-manquante.jpg");
+define(MISSING_IMAGE_THUMB, "http://atlasmuseum.net/w/images/5/5f/Image-manquante.jpg");
 
 require_once('Wikidata/php/api.php');
 
@@ -54,8 +54,8 @@ class WikidataQuery {
           <button type="submit">Exécuter</button>
         </form>
       </div>
-      <script type="text/javascript" src="http://publicartmuseum.net/w/Wikidata/js/jquery.min.js"></script>
-      <script type="text/javascript" src="http://publicartmuseum.net/w/Wikidata/js/jquery-ui.min.js"></script>
+      <script type="text/javascript" src="http://atlasmuseum.net/w/Wikidata/js/jquery.min.js"></script>
+      <script type="text/javascript" src="http://atlasmuseum.net/w/Wikidata/js/jquery-ui.min.js"></script>
     <?php
     if (sizeof($data)>0) {
       ?>

@@ -1,9 +1,9 @@
 <?php
 
-define(DB_SERVER, "publicarmod1.mysql.db");
-define(DB_NAME, "publicarmod1");
-define(DB_USER, "publicarmod1");
-define(DB_PASSWORD, "1dwy2Myi");
+define(DB_SERVER, "atlasmusatlasmus.mysql.db");
+define(DB_NAME, "atlasmusatlasmus");
+define(DB_USER, "atlasmusatlasmus");
+define(DB_PASSWORD, "Parisnewyork75212");
 
 require_once('../../WikidataPaths.php');
 

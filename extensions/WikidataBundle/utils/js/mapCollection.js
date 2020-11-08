@@ -82,22 +82,22 @@ document.addEventListener("DOMContentLoaded", function(event) {
             var icon_src = "";
             switch (feature.get("features")[0].get("type")) {
               case "pérenne":
-                icon_src = "http://publicartmuseum.net/w/images/a/a0/Picto-gris.png";
+                icon_src = "http://atlasmuseum.net/w/images/a/a0/Picto-gris.png";
                 break;
               case "éphémère":
-                icon_src = "http://publicartmuseum.net/w/images/4/49/Picto-jaune.png";
+                icon_src = "http://atlasmuseum.net/w/images/4/49/Picto-jaune.png";
                 break;
               case "détruite":
-                icon_src = "http://publicartmuseum.net/w/images/a/a8/Picto-rouge.png";
+                icon_src = "http://atlasmuseum.net/w/images/a/a8/Picto-rouge.png";
                 break;
               case "non réalisée":
-                icon_src = "http://publicartmuseum.net/w/images/2/2d/Picto-blanc.png";
+                icon_src = "http://atlasmuseum.net/w/images/2/2d/Picto-blanc.png";
                 break;
               case "à vérifier":
-                icon_src = "http://publicartmuseum.net/w/images/9/90/Picto-bleu.png";
+                icon_src = "http://atlasmuseum.net/w/images/9/90/Picto-bleu.png";
                 break;
               default:
-                icon_src = "http://publicartmuseum.net/w/images/d/dd/Picto-Wikidata.png";
+                icon_src = "http://atlasmuseum.net/w/images/d/dd/Picto-Wikidata.png";
             }
                 
             style = new ol.style.Style({
@@ -178,7 +178,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
       else
         link = "Spécial:Wikidata/"+id
 
-      var text = "<p><b><a href=\"http://publicartmuseum.net/wiki/"+link+"\">"+title+"</a></b></p><hr />";
+      var text = "<p><b><a href=\"http://atlasmuseum.net/wiki/"+link+"\">"+title+"</a></b></p><hr />";
 
       /*if (image != "")
         text += "<div class=\"map_infowindow_image\"><a href=\"index.php?action=artwork&q="+id+"&origin="+((type == "Wikidata")?"wikidata":"atlasmuseum")+"\"><img src=\""+image+"\" /></a></div>";*/

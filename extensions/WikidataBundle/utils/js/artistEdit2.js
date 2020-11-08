@@ -278,7 +278,7 @@ createArticleName = function(data) {
 }
 
 get_image_am = function(image, width, callback) {
-  const url = 'http://publicartmuseum.net/w/api.php'
+  const url = 'http://atlasmuseum.net/w/api.php'
   const params = {
     action: 'query',
     prop: 'imageinfo',

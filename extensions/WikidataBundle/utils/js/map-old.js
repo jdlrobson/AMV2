@@ -2,7 +2,7 @@ var artworks_map = [];
 var clusterSource;
 
 document.addEventListener("DOMContentLoaded", function(event) {
-  $url = 'http://publicartmuseum.net/w/extensions/WikidataBundle/utils/php/getMap.php'
+  $url = 'http://atlasmuseum.net/w/extensions/WikidataBundle/utils/php/getMap.php'
   $.get($url, function(result, status) {
     artworks_map = JSON.parse(result)
 
@@ -83,22 +83,22 @@ document.addEventListener("DOMContentLoaded", function(event) {
               var icon_src = "";
               switch (feature.get("features")[0].get("type")) {
                 case "pérenne":
-                  icon_src = "http://publicartmuseum.net/w/images/a/a0/Picto-gris.png";
+                  icon_src = "http://atlasmuseum.net/w/images/a/a0/Picto-gris.png";
                   break;
                 case "éphémère":
-                  icon_src = "http://publicartmuseum.net/w/images/4/49/Picto-jaune.png";
+                  icon_src = "http://atlasmuseum.net/w/images/4/49/Picto-jaune.png";
                   break;
                 case "détruite":
-                  icon_src = "http://publicartmuseum.net/w/images/a/a8/Picto-rouge.png";
+                  icon_src = "http://atlasmuseum.net/w/images/a/a8/Picto-rouge.png";
                   break;
                 case "non réalisée":
-                  icon_src = "http://publicartmuseum.net/w/images/2/2d/Picto-blanc.png";
+                  icon_src = "http://atlasmuseum.net/w/images/2/2d/Picto-blanc.png";
                   break;
                 case "à vérifier":
-                  icon_src = "http://publicartmuseum.net/w/images/9/90/Picto-bleu.png";
+                  icon_src = "http://atlasmuseum.net/w/images/9/90/Picto-bleu.png";
                   break;
                 default:
-                  icon_src = "http://publicartmuseum.net/w/images/d/dd/Picto-Wikidata.png";
+                  icon_src = "http://atlasmuseum.net/w/images/d/dd/Picto-Wikidata.png";
               }
                   
               style = new ol.style.Style({

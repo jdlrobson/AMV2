@@ -332,7 +332,7 @@ if (!class_exists('Collection')) {
       for ($i = 0; $i < sizeof($data); $i++) {
         $article = $data[$i]->fullurl;
         if (is_null($data[$i]->exists))
-          $article = str_replace('http://publicartmuseum.net/wiki/', 'http://publicartmuseum.net/wiki/Sp%C3%A9cial:EditArtwork/', $article);
+          $article = str_replace('http://atlasmuseum.net/wiki/', 'http://atlasmuseum.net/wiki/Sp%C3%A9cial:EditArtwork/', $article);
 
         $artwork = [
           'article' => $article,
@@ -359,10 +359,10 @@ if (!class_exists('Collection')) {
                 $url = $data[$i]->printouts[$j]->{$k}->fullurl;
                 if (preg_match('/^[qQ][0-9]+$/', $name)) {
                   array_push($ids, $name);
-                  $url = 'http://publicartmuseum.net/wiki/Sp%C3%A9cial:WikidataArtist/' . $name;
+                  $url = 'http://atlasmuseum.net/wiki/Sp%C3%A9cial:WikidataArtist/' . $name;
                 } else
                 if (is_null($data[$i]->printouts[$j]->{'0'}->exists)) {
-                  $url = 'http://publicartmuseum.net/wiki/Sp%C3%A9cial:EditArtist/' . $name;
+                  $url = 'http://atlasmuseum.net/wiki/Sp%C3%A9cial:EditArtist/' . $name;
                 }
                 array_push($artwork['artists'], [
                   'name' => $name,

@@ -1,6 +1,6 @@
 const constants = {
   url: {
-    getMap: 'http://publicartmuseum.net/w/extensions/WikidataBundle/utils/php/getMap.php',
+    getMap: 'http://atlasmuseum.net/w/extensions/WikidataBundle/utils/php/getMap.php',
   },
 }
 

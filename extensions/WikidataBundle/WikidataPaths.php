@@ -41,16 +41,16 @@ define_value('AM_DEBUG', false);
  * Main paths
  */
 
-define_value('BASE_AM', 'http://publicartmuseum.net/');
+define_value('BASE_AM', 'http://atlasmuseum.net/');
 define_value('BASE_ROOT', $_SERVER['DOCUMENT_ROOT'] . '/');
 //define_value('BASE_FOLDER', 'tmp/w/');
 define_value('BASE_FOLDER', 'w/');
 //define_value('BASE_FOLDER', 'tmp/w_old/');
 //define_value('BASE_WIKI', 'tmp/wiki/');
 define_value('BASE_WIKI', 'wiki/');
-//define_value('BASE_MAIN', 'http://publicartmuseum.net/tmp/w/');
-define_value('BASE_MAIN', 'http://publicartmuseum.net/w/');
-//define_value('BASE_MAIN', 'http://publicartmuseum.net/tmp/w_old/');
+//define_value('BASE_MAIN', 'http://atlasmuseum.net/tmp/w/');
+define_value('BASE_MAIN', 'http://atlasmuseum.net/w/');
+//define_value('BASE_MAIN', 'http://atlasmuseum.net/tmp/w_old/');
 define_value('BASE_FOLDER', 'w/');
 //define_value('BASE_FOLDER', 'w_old/');
 define_value('ATLASMUSEUM_MAIN_PATH', BASE_ROOT . BASE_FOLDER);

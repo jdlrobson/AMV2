@@ -8,10 +8,10 @@
 
 // Appel API
 
-define(DB_SERVER, "publicarmod1.mysql.db");
-define(DB_NAME, "publicarmod1");
-define(DB_USER, "publicarmod1");
-define(DB_PASSWORD, "1dwy2Myi");
+define(DB_SERVER, "atlasmusatlasmus.mysql.db");
+define(DB_NAME, "atlasmusatlasmus");
+define(DB_USER, "atlasmusatlasmus");
+define(DB_PASSWORD, "Parisnewyork75212");
 define(DB_PREFIX, 'tmp_');
 
 function callApi($origin = 'atlasmuseum') {
@@ -28,7 +28,7 @@ function callApi($origin = 'atlasmuseum') {
   ));
   curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
   curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-  $url = 'http://publicartmuseum.net/w/amapi/index.php';
+  $url = 'http://atlasmuseum.net/w/amapi/index.php';
   $url = sprintf("%s?%s", $url, http_build_query($parameters));
 
   $url = str_replace('%5Cn', '%0A', $url);

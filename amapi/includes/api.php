@@ -5,7 +5,7 @@
  * API
  *****************************************************************************/
 
-define('BASE_URL', 'http://publicartmuseum.net/');
+define('BASE_URL', 'http://atlasmuseum.net/');
 define('MISSING_IMAGE_THUMBNAIL', BASE_URL . 'w/images/5/5f/Image-manquante.jpg');
 define('MISSING_IMAGE_FILE', 'Fichier:Image-manquante.jpg');
 define('MISSING_IMAGE_URL', BASE_URL . 'wiki/' . MISSING_IMAGE_FILE);
